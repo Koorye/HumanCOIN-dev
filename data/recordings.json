@@ -1,242 +1,258 @@
 [
- {
-  "id": "L3-001-2026-10-27-13-28-54",
-  "title": "把筷子头朝同一个方向摆好",
-  "titleEn": "Align chopstick tips in the same direction",
-  "dir": "",
-  "duration": 16,
-  "fps": 30,
-  "scene": "桌面",
-  "sceneEn": "Tabletop",
-  "task": "筷子整理",
-  "taskEn": "Chopstick arrangement",
-  "modalities": [
-   "RGB",
-   "EEG",
-   "EMG",
-   "Gaze",
-   "Hands",
-   "Pose",
-   "IMU"
-  ],
-  "poster": "thumb-01.jpg",
-  "sample": "sample.json",
-  "annotations": "annotations.json",
-  "views": {
-   "left": "main-headband-left.mp4",
-   "right": "main-headband-right.mp4",
-   "bleft": "main-headband-bleft.mp4",
-   "bright": "main-headband-bright.mp4"
+  {
+    "id": "L3-001-2026-10-27-13-28-54",
+    "title": "把筷子头朝同一个方向摆好",
+    "titleEn": "Align chopstick tips in the same direction",
+    "dir": "",
+    "duration": 16,
+    "fps": 30,
+    "scene": "桌面",
+    "sceneEn": "Tabletop",
+    "task": "筷子整理",
+    "taskEn": "Chopstick arrangement",
+    "modalities": [
+      "RGB",
+      "EEG",
+      "EMG",
+      "Gaze",
+      "Hands",
+      "Pose",
+      "IMU"
+    ],
+    "poster": "thumb-01.jpg",
+    "sample": "sample.json",
+    "annotations": "annotations.json",
+    "views": {
+      "left": "main-headband-left.mp4",
+      "right": "main-headband-right.mp4",
+      "bleft": "main-headband-bleft.mp4",
+      "bright": "main-headband-bright.mp4",
+      "wleft": "main-wrist-left.mp4",
+      "wright": "main-wrist-right.mp4"
+    }
+  },
+  {
+    "id": "L3-001-2026-10-27-13-30-47",
+    "title": "根据卡片放饮品",
+    "titleEn": "Place drinks according to cards",
+    "dir": "recordings/L3-001-2026-10-27-13-30-47/",
+    "duration": 16,
+    "fps": 30,
+    "scene": "桌面",
+    "sceneEn": "Tabletop",
+    "task": "卡片与饮品匹配",
+    "taskEn": "Match drinks to cards",
+    "modalities": [
+      "RGB",
+      "EEG",
+      "EMG",
+      "Gaze",
+      "Hands",
+      "Pose",
+      "IMU"
+    ],
+    "poster": "thumb-02.jpg",
+    "sample": "recordings/L3-001-2026-10-27-13-30-47/sample.json",
+    "annotations": "recordings/L3-001-2026-10-27-13-30-47/annotations.json",
+    "views": {
+      "left": "recordings/L3-001-2026-10-27-13-30-47/main-headband-left.mp4",
+      "right": "recordings/L3-001-2026-10-27-13-30-47/main-headband-right.mp4",
+      "bleft": "recordings/L3-001-2026-10-27-13-30-47/main-headband-bleft.mp4",
+      "bright": "recordings/L3-001-2026-10-27-13-30-47/main-headband-bright.mp4",
+      "wleft": "recordings/L3-001-2026-10-27-13-30-47/main-wrist-left.mp4",
+      "wright": "recordings/L3-001-2026-10-27-13-30-47/main-wrist-right.mp4"
+    }
+  },
+  {
+    "id": "L3-001-2026-10-27-13-33-02",
+    "title": "根据饮品放卡片",
+    "titleEn": "Place cards according to drinks",
+    "dir": "recordings/L3-001-2026-10-27-13-33-02/",
+    "duration": 16,
+    "fps": 30,
+    "scene": "桌面",
+    "sceneEn": "Tabletop",
+    "task": "饮品与卡片匹配",
+    "taskEn": "Match cards to drinks",
+    "modalities": [
+      "RGB",
+      "EEG",
+      "EMG",
+      "Gaze",
+      "Hands",
+      "Pose",
+      "IMU"
+    ],
+    "poster": "thumb-03.jpg",
+    "sample": "recordings/L3-001-2026-10-27-13-33-02/sample.json",
+    "annotations": "recordings/L3-001-2026-10-27-13-33-02/annotations.json",
+    "views": {
+      "left": "recordings/L3-001-2026-10-27-13-33-02/main-headband-left.mp4",
+      "right": "recordings/L3-001-2026-10-27-13-33-02/main-headband-right.mp4",
+      "bleft": "recordings/L3-001-2026-10-27-13-33-02/main-headband-bleft.mp4",
+      "bright": "recordings/L3-001-2026-10-27-13-33-02/main-headband-bright.mp4",
+      "wleft": "recordings/L3-001-2026-10-27-13-33-02/main-wrist-left.mp4",
+      "wright": "recordings/L3-001-2026-10-27-13-33-02/main-wrist-right.mp4"
+    }
+  },
+  {
+    "id": "L3-001-2026-10-27-13-38-41",
+    "title": "分装药品",
+    "titleEn": "Sort medication into portions",
+    "dir": "recordings/L3-001-2026-10-27-13-38-41/",
+    "duration": 16,
+    "fps": 30,
+    "scene": "桌面",
+    "sceneEn": "Tabletop",
+    "task": "药品分装",
+    "taskEn": "Medication sorting",
+    "modalities": [
+      "RGB",
+      "EEG",
+      "EMG",
+      "Gaze",
+      "Hands",
+      "Pose",
+      "IMU"
+    ],
+    "poster": "thumb-04.jpg",
+    "sample": "recordings/L3-001-2026-10-27-13-38-41/sample.json",
+    "annotations": "recordings/L3-001-2026-10-27-13-38-41/annotations.json",
+    "views": {
+      "left": "recordings/L3-001-2026-10-27-13-38-41/main-headband-left.mp4",
+      "right": "recordings/L3-001-2026-10-27-13-38-41/main-headband-right.mp4",
+      "bleft": "recordings/L3-001-2026-10-27-13-38-41/main-headband-bleft.mp4",
+      "bright": "recordings/L3-001-2026-10-27-13-38-41/main-headband-bright.mp4",
+      "wleft": "recordings/L3-001-2026-10-27-13-38-41/main-wrist-left.mp4",
+      "wright": "recordings/L3-001-2026-10-27-13-38-41/main-wrist-right.mp4"
+    }
+  },
+  {
+    "id": "L3-001-2026-10-27-13-42-02",
+    "title": "把筷子头朝同一个方向摆好",
+    "titleEn": "Align chopstick tips in the same direction",
+    "dir": "recordings/L3-001-2026-10-27-13-42-02/",
+    "duration": 16,
+    "fps": 30,
+    "scene": "桌面",
+    "sceneEn": "Tabletop",
+    "task": "筷子整理",
+    "taskEn": "Chopstick arrangement",
+    "modalities": [
+      "RGB",
+      "EEG",
+      "EMG",
+      "Gaze",
+      "Hands",
+      "Pose",
+      "IMU"
+    ],
+    "poster": "thumb-05.jpg",
+    "sample": "recordings/L3-001-2026-10-27-13-42-02/sample.json",
+    "annotations": "recordings/L3-001-2026-10-27-13-42-02/annotations.json",
+    "views": {
+      "left": "recordings/L3-001-2026-10-27-13-42-02/main-headband-left.mp4",
+      "right": "recordings/L3-001-2026-10-27-13-42-02/main-headband-right.mp4",
+      "bleft": "recordings/L3-001-2026-10-27-13-42-02/main-headband-bleft.mp4",
+      "bright": "recordings/L3-001-2026-10-27-13-42-02/main-headband-bright.mp4",
+      "wleft": "recordings/L3-001-2026-10-27-13-42-02/main-wrist-left.mp4",
+      "wright": "recordings/L3-001-2026-10-27-13-42-02/main-wrist-right.mp4"
+    }
+  },
+  {
+    "id": "L3-001-2026-10-27-13-47-37",
+    "title": "根据卡片放饮品",
+    "titleEn": "Place drinks according to cards",
+    "dir": "recordings/L3-001-2026-10-27-13-47-37/",
+    "duration": 16,
+    "fps": 30,
+    "scene": "桌面",
+    "sceneEn": "Tabletop",
+    "task": "卡片与饮品匹配",
+    "taskEn": "Match drinks to cards",
+    "modalities": [
+      "RGB",
+      "EEG",
+      "EMG",
+      "Gaze",
+      "Hands",
+      "Pose",
+      "IMU"
+    ],
+    "poster": "thumb-06.jpg",
+    "sample": "recordings/L3-001-2026-10-27-13-47-37/sample.json",
+    "annotations": "recordings/L3-001-2026-10-27-13-47-37/annotations.json",
+    "views": {
+      "left": "recordings/L3-001-2026-10-27-13-47-37/main-headband-left.mp4",
+      "right": "recordings/L3-001-2026-10-27-13-47-37/main-headband-right.mp4",
+      "bleft": "recordings/L3-001-2026-10-27-13-47-37/main-headband-bleft.mp4",
+      "bright": "recordings/L3-001-2026-10-27-13-47-37/main-headband-bright.mp4",
+      "wleft": "recordings/L3-001-2026-10-27-13-47-37/main-wrist-left.mp4",
+      "wright": "recordings/L3-001-2026-10-27-13-47-37/main-wrist-right.mp4"
+    }
+  },
+  {
+    "id": "L3-001-2026-10-27-13-53-30",
+    "title": "根据饮品放卡片",
+    "titleEn": "Place cards according to drinks",
+    "dir": "recordings/L3-001-2026-10-27-13-53-30/",
+    "duration": 16,
+    "fps": 30,
+    "scene": "桌面",
+    "sceneEn": "Tabletop",
+    "task": "饮品与卡片匹配",
+    "taskEn": "Match cards to drinks",
+    "modalities": [
+      "RGB",
+      "EEG",
+      "EMG",
+      "Gaze",
+      "Hands",
+      "Pose",
+      "IMU"
+    ],
+    "poster": "thumb-07.jpg",
+    "sample": "recordings/L3-001-2026-10-27-13-53-30/sample.json",
+    "annotations": "recordings/L3-001-2026-10-27-13-53-30/annotations.json",
+    "views": {
+      "left": "recordings/L3-001-2026-10-27-13-53-30/main-headband-left.mp4",
+      "right": "recordings/L3-001-2026-10-27-13-53-30/main-headband-right.mp4",
+      "bleft": "recordings/L3-001-2026-10-27-13-53-30/main-headband-bleft.mp4",
+      "bright": "recordings/L3-001-2026-10-27-13-53-30/main-headband-bright.mp4",
+      "wleft": "recordings/L3-001-2026-10-27-13-53-30/main-wrist-left.mp4",
+      "wright": "recordings/L3-001-2026-10-27-13-53-30/main-wrist-right.mp4"
+    }
+  },
+  {
+    "id": "L3-001-2026-10-27-13-54-34",
+    "title": "把筷子头朝同一个方向摆好",
+    "titleEn": "Align chopstick tips in the same direction",
+    "dir": "recordings/L3-001-2026-10-27-13-54-34/",
+    "duration": 16,
+    "fps": 30,
+    "scene": "桌面",
+    "sceneEn": "Tabletop",
+    "task": "筷子整理",
+    "taskEn": "Chopstick arrangement",
+    "modalities": [
+      "RGB",
+      "EEG",
+      "EMG",
+      "Gaze",
+      "Hands",
+      "Pose",
+      "IMU"
+    ],
+    "poster": "thumb-08.jpg",
+    "sample": "recordings/L3-001-2026-10-27-13-54-34/sample.json",
+    "annotations": "recordings/L3-001-2026-10-27-13-54-34/annotations.json",
+    "views": {
+      "left": "recordings/L3-001-2026-10-27-13-54-34/main-headband-left.mp4",
+      "right": "recordings/L3-001-2026-10-27-13-54-34/main-headband-right.mp4",
+      "bleft": "recordings/L3-001-2026-10-27-13-54-34/main-headband-bleft.mp4",
+      "bright": "recordings/L3-001-2026-10-27-13-54-34/main-headband-bright.mp4",
+      "wleft": "recordings/L3-001-2026-10-27-13-54-34/main-wrist-left.mp4",
+      "wright": "recordings/L3-001-2026-10-27-13-54-34/main-wrist-right.mp4"
+    }
   }
- },
- {
-  "id": "L3-001-2026-10-27-13-30-47",
-  "title": "根据卡片放饮品",
-  "titleEn": "Place drinks according to cards",
-  "dir": "recordings/L3-001-2026-10-27-13-30-47/",
-  "duration": 16,
-  "fps": 30,
-  "scene": "桌面",
-  "sceneEn": "Tabletop",
-  "task": "卡片与饮品匹配",
-  "taskEn": "Match drinks to cards",
-  "modalities": [
-   "RGB",
-   "EEG",
-   "EMG",
-   "Gaze",
-   "Hands",
-   "Pose",
-   "IMU"
-  ],
-  "poster": "thumb-02.jpg",
-  "sample": "recordings/L3-001-2026-10-27-13-30-47/sample.json",
-  "annotations": "recordings/L3-001-2026-10-27-13-30-47/annotations.json",
-  "views": {
-   "left": "recordings/L3-001-2026-10-27-13-30-47/main-headband-left.mp4",
-   "right": "recordings/L3-001-2026-10-27-13-30-47/main-headband-right.mp4",
-   "bleft": "recordings/L3-001-2026-10-27-13-30-47/main-headband-bleft.mp4",
-   "bright": "recordings/L3-001-2026-10-27-13-30-47/main-headband-bright.mp4"
-  }
- },
- {
-  "id": "L3-001-2026-10-27-13-33-02",
-  "title": "根据饮品放卡片",
-  "titleEn": "Place cards according to drinks",
-  "dir": "recordings/L3-001-2026-10-27-13-33-02/",
-  "duration": 16,
-  "fps": 30,
-  "scene": "桌面",
-  "sceneEn": "Tabletop",
-  "task": "饮品与卡片匹配",
-  "taskEn": "Match cards to drinks",
-  "modalities": [
-   "RGB",
-   "EEG",
-   "EMG",
-   "Gaze",
-   "Hands",
-   "Pose",
-   "IMU"
-  ],
-  "poster": "thumb-03.jpg",
-  "sample": "recordings/L3-001-2026-10-27-13-33-02/sample.json",
-  "annotations": "recordings/L3-001-2026-10-27-13-33-02/annotations.json",
-  "views": {
-   "left": "recordings/L3-001-2026-10-27-13-33-02/main-headband-left.mp4",
-   "right": "recordings/L3-001-2026-10-27-13-33-02/main-headband-right.mp4",
-   "bleft": "recordings/L3-001-2026-10-27-13-33-02/main-headband-bleft.mp4",
-   "bright": "recordings/L3-001-2026-10-27-13-33-02/main-headband-bright.mp4"
-  }
- },
- {
-  "id": "L3-001-2026-10-27-13-38-41",
-  "title": "分装药品",
-  "titleEn": "Sort medication into portions",
-  "dir": "recordings/L3-001-2026-10-27-13-38-41/",
-  "duration": 16,
-  "fps": 30,
-  "scene": "桌面",
-  "sceneEn": "Tabletop",
-  "task": "药品分装",
-  "taskEn": "Medication sorting",
-  "modalities": [
-   "RGB",
-   "EEG",
-   "EMG",
-   "Gaze",
-   "Hands",
-   "Pose",
-   "IMU"
-  ],
-  "poster": "thumb-04.jpg",
-  "sample": "recordings/L3-001-2026-10-27-13-38-41/sample.json",
-  "annotations": "recordings/L3-001-2026-10-27-13-38-41/annotations.json",
-  "views": {
-   "left": "recordings/L3-001-2026-10-27-13-38-41/main-headband-left.mp4",
-   "right": "recordings/L3-001-2026-10-27-13-38-41/main-headband-right.mp4",
-   "bleft": "recordings/L3-001-2026-10-27-13-38-41/main-headband-bleft.mp4",
-   "bright": "recordings/L3-001-2026-10-27-13-38-41/main-headband-bright.mp4"
-  }
- },
- {
-  "id": "L3-001-2026-10-27-13-42-02",
-  "title": "把筷子头朝同一个方向摆好",
-  "titleEn": "Align chopstick tips in the same direction",
-  "dir": "recordings/L3-001-2026-10-27-13-42-02/",
-  "duration": 16,
-  "fps": 30,
-  "scene": "桌面",
-  "sceneEn": "Tabletop",
-  "task": "筷子整理",
-  "taskEn": "Chopstick arrangement",
-  "modalities": [
-   "RGB",
-   "EEG",
-   "EMG",
-   "Gaze",
-   "Hands",
-   "Pose",
-   "IMU"
-  ],
-  "poster": "thumb-05.jpg",
-  "sample": "recordings/L3-001-2026-10-27-13-42-02/sample.json",
-  "annotations": "recordings/L3-001-2026-10-27-13-42-02/annotations.json",
-  "views": {
-   "left": "recordings/L3-001-2026-10-27-13-42-02/main-headband-left.mp4",
-   "right": "recordings/L3-001-2026-10-27-13-42-02/main-headband-right.mp4",
-   "bleft": "recordings/L3-001-2026-10-27-13-42-02/main-headband-bleft.mp4",
-   "bright": "recordings/L3-001-2026-10-27-13-42-02/main-headband-bright.mp4"
-  }
- },
- {
-  "id": "L3-001-2026-10-27-13-47-37",
-  "title": "根据卡片放饮品",
-  "titleEn": "Place drinks according to cards",
-  "dir": "recordings/L3-001-2026-10-27-13-47-37/",
-  "duration": 16,
-  "fps": 30,
-  "scene": "桌面",
-  "sceneEn": "Tabletop",
-  "task": "卡片与饮品匹配",
-  "taskEn": "Match drinks to cards",
-  "modalities": [
-   "RGB",
-   "EEG",
-   "EMG",
-   "Gaze",
-   "Hands",
-   "Pose",
-   "IMU"
-  ],
-  "poster": "thumb-06.jpg",
-  "sample": "recordings/L3-001-2026-10-27-13-47-37/sample.json",
-  "annotations": "recordings/L3-001-2026-10-27-13-47-37/annotations.json",
-  "views": {
-   "left": "recordings/L3-001-2026-10-27-13-47-37/main-headband-left.mp4",
-   "right": "recordings/L3-001-2026-10-27-13-47-37/main-headband-right.mp4",
-   "bleft": "recordings/L3-001-2026-10-27-13-47-37/main-headband-bleft.mp4",
-   "bright": "recordings/L3-001-2026-10-27-13-47-37/main-headband-bright.mp4"
-  }
- },
- {
-  "id": "L3-001-2026-10-27-13-53-30",
-  "title": "根据饮品放卡片",
-  "titleEn": "Place cards according to drinks",
-  "dir": "recordings/L3-001-2026-10-27-13-53-30/",
-  "duration": 16,
-  "fps": 30,
-  "scene": "桌面",
-  "sceneEn": "Tabletop",
-  "task": "饮品与卡片匹配",
-  "taskEn": "Match cards to drinks",
-  "modalities": [
-   "RGB",
-   "EEG",
-   "EMG",
-   "Gaze",
-   "Hands",
-   "Pose",
-   "IMU"
-  ],
-  "poster": "thumb-07.jpg",
-  "sample": "recordings/L3-001-2026-10-27-13-53-30/sample.json",
-  "annotations": "recordings/L3-001-2026-10-27-13-53-30/annotations.json",
-  "views": {
-   "left": "recordings/L3-001-2026-10-27-13-53-30/main-headband-left.mp4",
-   "right": "recordings/L3-001-2026-10-27-13-53-30/main-headband-right.mp4",
-   "bleft": "recordings/L3-001-2026-10-27-13-53-30/main-headband-bleft.mp4",
-   "bright": "recordings/L3-001-2026-10-27-13-53-30/main-headband-bright.mp4"
-  }
- },
- {
-  "id": "L3-001-2026-10-27-13-54-34",
-  "title": "把筷子头朝同一个方向摆好",
-  "titleEn": "Align chopstick tips in the same direction",
-  "dir": "recordings/L3-001-2026-10-27-13-54-34/",
-  "duration": 16,
-  "fps": 30,
-  "scene": "桌面",
-  "sceneEn": "Tabletop",
-  "task": "筷子整理",
-  "taskEn": "Chopstick arrangement",
-  "modalities": [
-   "RGB",
-   "EEG",
-   "EMG",
-   "Gaze",
-   "Hands",
-   "Pose",
-   "IMU"
-  ],
-  "poster": "thumb-08.jpg",
-  "sample": "recordings/L3-001-2026-10-27-13-54-34/sample.json",
-  "annotations": "recordings/L3-001-2026-10-27-13-54-34/annotations.json",
-  "views": {
-   "left": "recordings/L3-001-2026-10-27-13-54-34/main-headband-left.mp4",
-   "right": "recordings/L3-001-2026-10-27-13-54-34/main-headband-right.mp4",
-   "bleft": "recordings/L3-001-2026-10-27-13-54-34/main-headband-bleft.mp4",
-   "bright": "recordings/L3-001-2026-10-27-13-54-34/main-headband-bright.mp4"
-  }
- }
 ]
