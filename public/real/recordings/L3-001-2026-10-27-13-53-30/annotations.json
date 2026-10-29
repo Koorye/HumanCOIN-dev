@@ -1,0 +1,8 @@
+{
+  "steps": [
+    "1.观察桌子上的饮品",
+    "2.从卡片包中拿出对应的卡片放到饮品边"
+  ],
+  "source": "meta/collect_info.jsonl:notes",
+  "timing": null
+}

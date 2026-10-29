@@ -1,0 +1,172 @@
+/* ============================================================
+   HumanCOIN display — design tokens
+   Single source of truth. No later layer may redefine these.
+   ============================================================ */
+
+:root {
+  /* ---- Type scale (fluid) ----
+     Reading text never goes below --fs-micro (13px). Two smaller steps exist
+     for narrow, non-prose roles only: in-figure tick/axis labels, and purely
+     decorative marks (monograms, icon glyphs). */
+  --fs-tick: 0.6875rem;   /* 11px — axis ticks & mono ordinals    */
+  --fs-mark: 0.625rem;    /* 10px — decorative marks ONLY         */
+  --fs-micro: 0.8125rem;  /* 13px — captions, footnotes, table heads */
+  --fs-small: 0.875rem;   /* 14px — captions, table body          */
+  --fs-body: 1rem;        /* 16px — body copy                     */
+  --fs-lead: 1.125rem;    /* 18px — lead paragraphs               */
+  --fs-h4: 1.25rem;       /* 20px */
+  --fs-h3: clamp(1.5rem, 1.2rem + 0.9vw, 1.875rem);   /* 24 → 30px */
+  --fs-h2: clamp(1.875rem, 1.4rem + 1.6vw, 2.75rem);  /* 30 → 44px */
+  --fs-h1: clamp(2.75rem, 1.8rem + 4vw, 5rem);        /* 44 → 80px */
+  --fs-stat: clamp(2rem, 1.5rem + 2vw, 3rem);
+  /* Cover masthead: the journal-cover title. Slightly smaller than h1 because
+     it is set in the display serif, which runs optically larger at equal size. */
+  --fs-cover: clamp(2.5rem, 1.5rem + 4.6vw, 5.5rem);
+  --fs-fig-num: 0.6875rem;
+
+  /* ---- Line heights ---- */
+  --lh-tight: 1.08;
+  --lh-heading: 1.2;
+  --lh-body: 1.65;
+  --lh-loose: 1.8;
+
+  /* ---- Families ----
+     The display serif carries the cover and the figure-numbered headings;
+     everything else stays in the sans, so the two roles never compete. */
+  --ff-sans: 'Inter var', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --ff-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Source Serif 4',
+    Georgia, 'Songti SC', 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --ff-mono: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  /* ---- Neutrals (AA-checked against --paper) ---- */
+  --paper: #ffffff;
+  --surface: #f7f9fa;
+  --surface-2: #eef3f5;
+  --line: #dbe3e8;
+  --line-strong: #b9c6ce;
+  --ink: #16212a;         /* 14.9:1 — headings */
+  --ink-body: #2c3a44;    /* 11.6:1 — body */
+  --ink-soft: #4a5a66;    /*  7.6:1 — secondary */
+  --ink-mute: #61727d;    /*  5.2:1 — captions (AA for 13px+) */
+  /* Deep ground for the cover band and the viewer stage. */
+  --night: #0a1016;
+  --night-2: #101c26;
+  --night-3: #172634;
+
+  /* ---- Modality accents (each ≥4.5:1 as text on white) ---- */
+  --c-blue: #1c5f8c;      /* L1 / vision      — 6.4:1 */
+  --c-teal: #0f6b63;      /* L2 / gaze        — 6.1:1 */
+  --c-violet: #5b45a8;    /* L3 / neural      — 7.4:1 */
+  --c-amber: #8a5a08;     /* EMG              — 5.9:1 */
+  --c-rose: #9c2f52;      /* events / errors  — 6.8:1 */
+  --c-slate: #43535f;     /* neutral data     — 8.1:1 */
+
+  /* Tint fills (non-text use only) */
+  --t-blue: #eaf2f8;
+  --t-teal: #e7f2f1;
+  --t-violet: #efecf8;
+  --t-rose: #fbeef2;
+  --t-amber: #f9f1e2;
+
+  /* ---- Figure palette ----
+     Categorical scale for charts that need more series than the six modality
+     accents provide. Ordered so the first four stay distinguishable in
+     greyscale, and so adjacent entries never read as one hue. */
+  --p-1: #1c5f8c;
+  --p-2: #0f6b63;
+  --p-3: #5b45a8;
+  --p-4: #8a5a08;
+  --p-5: #9c2f52;
+  --p-6: #2f7d9e;
+  --p-7: #6b7f2a;
+  --p-8: #43535f;
+
+  /* Sequential ramp for heatmaps and density, low → high. */
+  --seq-0: #f2f6f8;
+  --seq-1: #dceaf0;
+  --seq-2: #b6d3e0;
+  --seq-3: #86b4c9;
+  --seq-4: #4e8aa8;
+  --seq-5: #24637f;
+  --seq-6: #123f56;
+
+  /* Diverging pair, for signed gains around a zero baseline. */
+  --div-neg: #5b45a8;
+  --div-pos: #0f6b63;
+
+  /* Bright variants that hold up on the dark cover / stage ground. */
+  --k-blue: #6fb3d8;
+  --k-teal: #5fc7bb;
+  --k-violet: #a48ce0;
+  --k-amber: #e0b25c;
+  --k-rose: #e8879f;
+
+  /* ---- Layout ---- */
+  --shell-max: 1240px;
+  --shell-wide: 1440px;
+  --prose-max: 68ch;
+  --gap: clamp(1.25rem, 0.9rem + 1.4vw, 2.5rem);
+  --gap-sm: clamp(0.75rem, 0.6rem + 0.6vw, 1.25rem);
+  --section-y: clamp(3.5rem, 2.4rem + 4vw, 7rem);
+  --nav-h: 60px;
+
+  /* ---- Radii ---- */
+  --r-xs: 3px;
+  --r-sm: 5px;
+  --r-md: 8px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* ---- Elevation (3 levels) ---- */
+  --e-1: 0 1px 2px rgba(22, 33, 42, 0.06), 0 1px 3px rgba(22, 33, 42, 0.04);
+  --e-2: 0 2px 6px rgba(22, 33, 42, 0.07), 0 8px 24px rgba(22, 33, 42, 0.06);
+  --e-3: 0 4px 12px rgba(22, 33, 42, 0.09), 0 18px 48px rgba(22, 33, 42, 0.1);
+  --e-night: 0 18px 60px rgba(6, 14, 20, 0.5);
+
+  /* ---- Motion ----
+     Four steps, used by role rather than by taste:
+     --dur-1 micro-feedback · --dur-2 state change · --dur-3 entrance
+     --dur-4 figure draw · --dur-5 ambient (loops, drift). */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 380ms;
+  --dur-4: 760ms;
+  --dur-5: 1400ms;
+  --dur: var(--dur-2);          /* legacy alias */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  /* Delay applied between consecutive items of one group. */
+  --stagger: 45ms;
+  --stagger-slow: 90ms;
+
+  /* ---- Focus ---- */
+  --focus: 2px solid var(--c-blue);
+  --focus-offset: 2px;
+}
+
+/* Font loading: self-hosted for privacy + speed, with a system fallback
+   that is visually close so there is no layout shift penalty. */
+@font-face {
+  font-family: 'Inter var';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: local('Inter');
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+    --dur-4: 0ms;
+    --dur-5: 0ms;
+    --dur: 0ms;
+    --stagger: 0ms;
+    --stagger-slow: 0ms;
+  }
+}

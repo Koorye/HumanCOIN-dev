@@ -1,0 +1,3051 @@
+{
+ "L3-001-2026-10-27-13-28-54": {
+  "objects": [
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 16,
+     "l": 18,
+     "w": 10
+    },
+    "id": "fa14d21c-464e-4a1e-8f00-6767092d2645",
+    "material": "塑料",
+    "name": "花",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 69.47,
+     "y": 65.0
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 15,
+     "l": 22,
+     "w": 15
+    },
+    "id": "ed0f9b15-2660-4c34-93e8-a6a53cf3aaf6",
+    "material": "塑料",
+    "name": "花2",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 16.0,
+     "y": 62.5
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#292E39",
+    "dims": {
+     "h": 17.5,
+     "l": 23,
+     "w": 13
+    },
+    "id": "0f97d7eb-192a-4bcf-b62e-0eb360a9dea0",
+    "material": "金属",
+    "name": "水杯架",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 105.2,
+     "y": 63.5
+    },
+    "weightG": 510.0
+   },
+   {
+    "color": "#93A6AF",
+    "dims": {
+     "d": 11.4,
+     "h": 25.1
+    },
+    "id": "06a56d38-8f14-4adf-8007-6cda400e84e5",
+    "material": "塑料",
+    "name": "筷子筒",
+    "shape": "cyl",
+    "table": {
+     "angle": -35.26,
+     "x": 116.72,
+     "y": 45.19
+    },
+    "weightG": 208.0
+   },
+   {
+    "color": "#131112",
+    "dims": {
+     "d": 0.8,
+     "h": 21
+    },
+    "id": "5989f99e-a44e-4f28-a6d2-4c487630c0d8",
+    "material": "塑料",
+    "name": "筷子",
+    "shape": "cyl",
+    "table": {
+     "angle": -35.26,
+     "x": 116.72,
+     "y": 45.19
+    },
+    "weightG": null
+   },
+   {
+    "color": "#ACA082",
+    "dims": {
+     "h": 0.5,
+     "l": 24,
+     "w": 1.1
+    },
+    "id": "469c83c1-c12a-4719-b56a-f43f9f1089ef",
+    "material": "木头",
+    "name": "筷子2",
+    "shape": "box",
+    "table": {
+     "angle": -35.26,
+     "x": 116.72,
+     "y": 45.19
+    },
+    "weightG": null
+   },
+   {
+    "color": "#453122",
+    "dims": {
+     "d": 0.7,
+     "h": 25
+    },
+    "id": "3d76993b-0f7f-47f4-ac54-17b6633cfe1a",
+    "material": "木头",
+    "name": "筷子3",
+    "shape": "cyl",
+    "table": {
+     "angle": -35.26,
+     "x": 116.72,
+     "y": 45.19
+    },
+    "weightG": null
+   },
+   {
+    "color": "#F7F7F7",
+    "dims": {
+     "d": 15,
+     "h": 22
+    },
+    "id": "6b6577de-59a0-44f8-b49a-11cb219f7817",
+    "material": "塑料",
+    "name": "电热水壶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.87,
+     "x": 86.08,
+     "y": 62.39
+    },
+    "weightG": 766.0
+   }
+  ],
+  "scene": "餐桌",
+  "steps": [
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子",
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 0,
+    "mentions": [
+     "筷子筒"
+    ],
+    "text": "把桌上的筷子筒拿到面前"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 1,
+    "mentions": [
+     "筷子"
+    ],
+    "text": "把筷子拿出来放到桌子上"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 2,
+    "mentions": [
+     "筷子"
+    ],
+    "text": "把筷子都摆放成一个方向"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 3,
+    "mentions": [
+     "筷子筒",
+     "筷子"
+    ],
+    "text": "把筷子放回筷子筒"
+   }
+  ],
+  "task": "把筷子头朝同一个方向摆好"
+ },
+ "L3-001-2026-10-27-13-30-47": {
+  "objects": [
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（可乐）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（茶水）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（牛奶）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（清水）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（橙汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（葡萄汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（菠萝汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "a98d3b31-3cc2-4e0d-91ce-a3e9042e5731",
+    "material": "纸质",
+    "name": "（柠檬汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 18.2,
+     "w": 7.3
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（蔓越莓汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（番茄汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（西柚汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 25,
+     "w": 6.4
+    },
+    "id": "6b96601d-e9bb-49e4-91a6-2d3ff692201b",
+    "material": "纸质",
+    "name": "（水蜜桃饮料）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 95.0,
+     "y": 47.96
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "8a69aa15-d58c-4b7f-8fd2-952169026153",
+    "material": "纸质",
+    "name": "（青柠汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 35.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#000000",
+    "dims": {
+     "d": 5.7,
+     "h": 24
+    },
+    "id": "34c13286-3081-49b0-8c11-e56fa3591264",
+    "material": "塑料",
+    "name": "可乐",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 10.7,
+     "y": 55.32
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E60A0A",
+    "dims": {
+     "d": 5.2,
+     "h": 8.7
+    },
+    "id": "f5569070-df78-491d-9614-1d995c23c086",
+    "material": "金属",
+    "name": "旺仔牛奶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 11.65,
+     "y": 59.21
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E7E013",
+    "dims": {
+     "h": 23,
+     "l": 7.6,
+     "w": 7.9
+    },
+    "id": "e2ae7b7c-50c0-4e2b-837a-8cdfad24a209",
+    "material": "塑料",
+    "name": "橙汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 87.91,
+     "y": 56.64
+    },
+    "weightG": null
+   },
+   {
+    "color": "#9608E2",
+    "dims": {
+     "h": 25.5,
+     "l": 6.5,
+     "w": 6.5
+    },
+    "id": "b4e650be-d659-46e0-977e-d6ef3050f188",
+    "material": "塑料",
+    "name": "葡萄汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 21.83,
+     "y": 65.1
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E4C70C",
+    "dims": {
+     "h": 25,
+     "l": 6.5,
+     "w": 6.5
+    },
+    "id": "64be33ca-0670-4bd6-b387-a5c32206b230",
+    "material": "纸质",
+    "name": "菠萝汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 17.36,
+     "y": 60.56
+    },
+    "weightG": null
+   },
+   {
+    "color": "#BF0D5A",
+    "dims": {
+     "d": 6.4,
+     "h": 20
+    },
+    "id": "902adad6-0c09-4c6c-8978-7c12b4ee9577",
+    "material": "塑料",
+    "name": "西柚汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 33.65,
+     "y": 66.73
+    },
+    "weightG": null
+   },
+   {
+    "color": "#B5D515",
+    "dims": {
+     "d": 6.5,
+     "h": 20
+    },
+    "id": "3176f7c2-7057-4100-8aec-af9228ea0b04",
+    "material": "塑料",
+    "name": "青柠汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 54.43,
+     "y": 56.2
+    },
+    "weightG": null
+   },
+   {
+    "color": "#6A0377",
+    "dims": {
+     "d": 7.8,
+     "h": 25.5
+    },
+    "id": "0fb8a269-294c-49a7-8f4b-52e97944fdc5",
+    "material": "塑料",
+    "name": "蔓越莓汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 43.25,
+     "y": 56.74
+    },
+    "weightG": null
+   },
+   {
+    "color": "#D93A97",
+    "dims": {
+     "d": 6,
+     "h": 21
+    },
+    "id": "b1bbd084-fac6-4632-97db-1472f153b016",
+    "material": "塑料",
+    "name": "水蜜桃饮料",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 75.7,
+     "y": 67.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E7E013",
+    "dims": {
+     "d": 6,
+     "h": 13
+    },
+    "id": "a999e300-5891-4e8e-a3ef-7adc4198945f",
+    "material": "塑料",
+    "name": "番茄汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 81.87,
+     "y": 58.35
+    },
+    "weightG": null
+   },
+   {
+    "color": "transparent",
+    "dims": {
+     "d": 6.5,
+     "h": 20
+    },
+    "id": "1cb3329e-35f1-4488-8383-ca0272db45dd",
+    "material": "塑料",
+    "name": "柠檬水",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 115.74,
+     "y": 66.75
+    },
+    "weightG": null
+   },
+   {
+    "color": "#B8D03E",
+    "dims": {
+     "d": 6.5,
+     "h": 21
+    },
+    "id": "0f644b77-4842-4b3a-a6c0-63add457141b",
+    "material": "塑料",
+    "name": "乌龙茶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 26.7,
+     "y": 66.45
+    },
+    "weightG": null
+   },
+   {
+    "color": "transparent",
+    "dims": {
+     "d": 8.8,
+     "h": 9.8
+    },
+    "id": "1d0a2eef-40f0-4b4a-bc04-2776f41d7638",
+    "material": "玻璃",
+    "name": "水杯",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 120.57,
+     "y": 64.57
+    },
+    "weightG": 150.0
+   }
+  ],
+  "scene": "餐桌",
+  "steps": [
+   {
+    "groups": [
+     {
+      "members": [
+       "（可乐）卡片",
+       "（茶水）卡片",
+       "（牛奶）卡片",
+       "（清水）卡片",
+       "（橙汁）卡片",
+       "（葡萄汁）卡片",
+       "（菠萝汁）卡片",
+       "（柠檬汁）卡片",
+       "（蔓越莓汁）卡片",
+       "（番茄汁）卡片",
+       "（西柚汁）卡片",
+       "（水蜜桃饮料）卡片",
+       "（青柠汁）卡片"
+      ],
+      "word": "卡片"
+     }
+    ],
+    "index": 0,
+    "mentions": [],
+    "text": "观察桌子上的卡片"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "可乐",
+       "旺仔牛奶",
+       "橙汁",
+       "葡萄汁",
+       "菠萝汁",
+       "西柚汁",
+       "青柠汁",
+       "蔓越莓汁",
+       "水蜜桃饮料",
+       "番茄汁",
+       "柠檬水",
+       "乌龙茶",
+       "水杯"
+      ],
+      "word": "饮品"
+     },
+     {
+      "members": [
+       "（可乐）卡片",
+       "（茶水）卡片",
+       "（牛奶）卡片",
+       "（清水）卡片",
+       "（橙汁）卡片",
+       "（葡萄汁）卡片",
+       "（菠萝汁）卡片",
+       "（柠檬汁）卡片",
+       "（蔓越莓汁）卡片",
+       "（番茄汁）卡片",
+       "（西柚汁）卡片",
+       "（水蜜桃饮料）卡片",
+       "（青柠汁）卡片"
+      ],
+      "word": "卡片"
+     }
+    ],
+    "index": 1,
+    "mentions": [],
+    "text": "取对应的饮品放到卡片上面"
+   }
+  ],
+  "task": "根据卡片放饮品"
+ },
+ "L3-001-2026-10-27-13-33-02": {
+  "objects": [
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "f7fdee34-6c66-4bae-a0e0-05462446acf8",
+    "material": "纸质",
+    "name": "（可乐）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "bd09288a-416b-4d1d-9514-19fc405ac911",
+    "material": "纸质",
+    "name": "（茶水）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "bb1f229c-6131-409b-885b-6b3e99d67204",
+    "material": "纸质",
+    "name": "（牛奶）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "95b4348d-84b2-423f-8e3c-22903b3e003a",
+    "material": "纸质",
+    "name": "（清水）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "38f4bb82-9825-4614-95e6-04be832ed20b",
+    "material": "纸质",
+    "name": "（橙汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "f3c7254c-8d21-477a-b3a3-42bb2b8ef112",
+    "material": "纸质",
+    "name": "（葡萄汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "c69f641e-d216-433e-9ffe-289ef1388edc",
+    "material": "纸质",
+    "name": "（菠萝汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "a98d3b31-3cc2-4e0d-91ce-a3e9042e5731",
+    "material": "纸质",
+    "name": "（柠檬汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 18.2,
+     "w": 7.3
+    },
+    "id": "fc74c294-6c1a-4d8d-9726-82662647fb4e",
+    "material": "纸质",
+    "name": "（蔓越莓汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "016d3bf1-2f9d-44c8-8b6b-9af1f682022c",
+    "material": "纸质",
+    "name": "（番茄汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "6fd6fe0e-2f8f-4a2b-bacc-4f5b27583cb8",
+    "material": "纸质",
+    "name": "（西柚汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 25,
+     "w": 6.4
+    },
+    "id": "6b96601d-e9bb-49e4-91a6-2d3ff692201b",
+    "material": "纸质",
+    "name": "（水蜜桃饮料）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "8a69aa15-d58c-4b7f-8fd2-952169026153",
+    "material": "纸质",
+    "name": "（青柠汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#000000",
+    "dims": {
+     "d": 5.7,
+     "h": 24
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "可乐",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E60A0A",
+    "dims": {
+     "d": 5.2,
+     "h": 8.7
+    },
+    "id": null,
+    "material": "金属",
+    "name": "旺仔牛奶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E7E013",
+    "dims": {
+     "h": 23,
+     "l": 7.6,
+     "w": 7.9
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "橙汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#9608E2",
+    "dims": {
+     "h": 25.5,
+     "l": 6.5,
+     "w": 6.5
+    },
+    "id": "b4e650be-d659-46e0-977e-d6ef3050f188",
+    "material": "塑料",
+    "name": "葡萄汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 55.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E4C70C",
+    "dims": {
+     "h": 25,
+     "l": 6.5,
+     "w": 6.5
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "菠萝汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#BF0D5A",
+    "dims": {
+     "d": 6.4,
+     "h": 20
+    },
+    "id": "902adad6-0c09-4c6c-8978-7c12b4ee9577",
+    "material": "塑料",
+    "name": "西柚汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 61.16,
+     "y": 50.35
+    },
+    "weightG": null
+   },
+   {
+    "color": "#B5D515",
+    "dims": {
+     "d": 6.5,
+     "h": 20
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "青柠汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#6A0377",
+    "dims": {
+     "d": 7.8,
+     "h": 25.5
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "蔓越莓汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#D93A97",
+    "dims": {
+     "d": 6,
+     "h": 21
+    },
+    "id": "b1bbd084-fac6-4632-97db-1472f153b016",
+    "material": "塑料",
+    "name": "水蜜桃饮料",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 75.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E7E013",
+    "dims": {
+     "d": 6,
+     "h": 13
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "番茄汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "transparent",
+    "dims": {
+     "d": 6.5,
+     "h": 20
+    },
+    "id": "1cb3329e-35f1-4488-8383-ca0272db45dd",
+    "material": "塑料",
+    "name": "柠檬水",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 95.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 16,
+     "l": 18,
+     "w": 10
+    },
+    "id": "fa14d21c-464e-4a1e-8f00-6767092d2645",
+    "material": "塑料",
+    "name": "花",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 74.41,
+     "y": 65.0
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 15,
+     "l": 22,
+     "w": 15
+    },
+    "id": "ed0f9b15-2660-4c34-93e8-a6a53cf3aaf6",
+    "material": "塑料",
+    "name": "花2",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 38.75,
+     "y": 62.5
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#292E39",
+    "dims": {
+     "h": 17.5,
+     "l": 23,
+     "w": 13
+    },
+    "id": "0f97d7eb-192a-4bcf-b62e-0eb360a9dea0",
+    "material": "金属",
+    "name": "水杯架",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 16.5,
+     "y": 63.5
+    },
+    "weightG": 510.0
+   },
+   {
+    "color": "#B8D03E",
+    "dims": {
+     "d": 6.5,
+     "h": 21
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "乌龙茶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "transparent",
+    "dims": {
+     "d": 8.8,
+     "h": 9.8
+    },
+    "id": null,
+    "material": "玻璃",
+    "name": "水杯",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": 150.0
+   }
+  ],
+  "scene": "餐桌",
+  "steps": [
+   {
+    "groups": [
+     {
+      "members": [
+       "可乐",
+       "旺仔牛奶",
+       "橙汁",
+       "葡萄汁",
+       "菠萝汁",
+       "西柚汁",
+       "青柠汁",
+       "蔓越莓汁",
+       "水蜜桃饮料",
+       "番茄汁",
+       "柠檬水",
+       "乌龙茶",
+       "水杯"
+      ],
+      "word": "饮品"
+     }
+    ],
+    "index": 0,
+    "mentions": [],
+    "text": "观察桌子上的饮品"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "可乐",
+       "旺仔牛奶",
+       "橙汁",
+       "葡萄汁",
+       "菠萝汁",
+       "西柚汁",
+       "青柠汁",
+       "蔓越莓汁",
+       "水蜜桃饮料",
+       "番茄汁",
+       "柠檬水",
+       "乌龙茶",
+       "水杯"
+      ],
+      "word": "饮品"
+     },
+     {
+      "members": [
+       "（可乐）卡片",
+       "（茶水）卡片",
+       "（牛奶）卡片",
+       "（清水）卡片",
+       "（橙汁）卡片",
+       "（葡萄汁）卡片",
+       "（菠萝汁）卡片",
+       "（柠檬汁）卡片",
+       "（蔓越莓汁）卡片",
+       "（番茄汁）卡片",
+       "（西柚汁）卡片",
+       "（水蜜桃饮料）卡片",
+       "（青柠汁）卡片"
+      ],
+      "word": "卡片"
+     }
+    ],
+    "index": 1,
+    "mentions": [],
+    "text": "从卡片包中拿出对应的卡片放到饮品边"
+   }
+  ],
+  "task": "根据饮品放卡片"
+ },
+ "L3-001-2026-10-27-13-38-41": {
+  "objects": [
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 16,
+     "l": 18,
+     "w": 10
+    },
+    "id": "fa14d21c-464e-4a1e-8f00-6767092d2645",
+    "material": "塑料",
+    "name": "花",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 54.75,
+     "y": 65.0
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 15,
+     "l": 22,
+     "w": 15
+    },
+    "id": "ed0f9b15-2660-4c34-93e8-a6a53cf3aaf6",
+    "material": "塑料",
+    "name": "花2",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 35.0,
+     "y": 62.5
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#292E39",
+    "dims": {
+     "h": 17.5,
+     "l": 23,
+     "w": 13
+    },
+    "id": "0f97d7eb-192a-4bcf-b62e-0eb360a9dea0",
+    "material": "金属",
+    "name": "水杯架",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 75.25,
+     "y": 63.5
+    },
+    "weightG": 510.0
+   },
+   {
+    "color": "#F2F2F2",
+    "dims": {
+     "d": 2.7,
+     "h": 4.7
+    },
+    "id": "f26f7ca4-b868-40bd-828d-4bc4504e5460",
+    "material": "塑料",
+    "name": "药",
+    "shape": "cyl",
+    "table": {
+     "angle": -49.03,
+     "x": 100.88,
+     "y": 12.34
+    },
+    "weightG": null
+   },
+   {
+    "color": "#F2F2F2",
+    "dims": {
+     "d": 2.9,
+     "h": 5.1
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "药2",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#F2F2F2",
+    "dims": {
+     "d": 3.3,
+     "h": 5.7
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "药3",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#895E35",
+    "dims": {
+     "h": 2.7,
+     "l": 23.3,
+     "w": 13.4
+    },
+    "id": "f43befa1-86de-4896-aa33-9fe555506a52",
+    "material": "塑料",
+    "name": "收纳盒",
+    "shape": "box",
+    "table": {
+     "angle": 269.63,
+     "x": 109.32,
+     "y": 61.5
+    },
+    "weightG": null
+   }
+  ],
+  "scene": "餐桌",
+  "steps": [
+   {
+    "groups": [],
+    "index": 0,
+    "mentions": [
+     "药"
+    ],
+    "text": "根据药的使用说明"
+   },
+   {
+    "groups": [],
+    "index": 1,
+    "mentions": [
+     "收纳盒"
+    ],
+    "text": "往收纳盒里装一天的量"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "药2",
+       "药3"
+      ],
+      "word": "药品"
+     }
+    ],
+    "index": 2,
+    "mentions": [
+     "药"
+    ],
+    "text": "配置好药品，药品位置统一放到左上角"
+   }
+  ],
+  "task": "分装药品"
+ },
+ "L3-001-2026-10-27-13-42-02": {
+  "objects": [
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 16,
+     "l": 18,
+     "w": 10
+    },
+    "id": "fa14d21c-464e-4a1e-8f00-6767092d2645",
+    "material": "塑料",
+    "name": "花",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 55.0,
+     "y": 65.0
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 15,
+     "l": 22,
+     "w": 15
+    },
+    "id": "ed0f9b15-2660-4c34-93e8-a6a53cf3aaf6",
+    "material": "塑料",
+    "name": "花2",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 16.0,
+     "y": 62.5
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#292E39",
+    "dims": {
+     "h": 17.5,
+     "l": 23,
+     "w": 13
+    },
+    "id": "0f97d7eb-192a-4bcf-b62e-0eb360a9dea0",
+    "material": "金属",
+    "name": "水杯架",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 93.56,
+     "y": 63.5
+    },
+    "weightG": 510.0
+   },
+   {
+    "color": "#93A6AF",
+    "dims": {
+     "d": 11.4,
+     "h": 25.1
+    },
+    "id": "06a56d38-8f14-4adf-8007-6cda400e84e5",
+    "material": "塑料",
+    "name": "筷子筒",
+    "shape": "cyl",
+    "table": {
+     "angle": -269.85,
+     "x": 69.32,
+     "y": 40.47
+    },
+    "weightG": 208.0
+   },
+   {
+    "color": "#131112",
+    "dims": {
+     "d": 0.8,
+     "h": 21
+    },
+    "id": "5989f99e-a44e-4f28-a6d2-4c487630c0d8",
+    "material": "塑料",
+    "name": "筷子",
+    "shape": "cyl",
+    "table": {
+     "angle": -269.85,
+     "x": 69.32,
+     "y": 40.47
+    },
+    "weightG": null
+   },
+   {
+    "color": "#ACA082",
+    "dims": {
+     "h": 0.5,
+     "l": 24,
+     "w": 1.1
+    },
+    "id": "469c83c1-c12a-4719-b56a-f43f9f1089ef",
+    "material": "木头",
+    "name": "筷子2",
+    "shape": "box",
+    "table": {
+     "angle": -269.85,
+     "x": 69.32,
+     "y": 40.47
+    },
+    "weightG": null
+   },
+   {
+    "color": "#453122",
+    "dims": {
+     "d": 0.7,
+     "h": 25
+    },
+    "id": "3d76993b-0f7f-47f4-ac54-17b6633cfe1a",
+    "material": "木头",
+    "name": "筷子3",
+    "shape": "cyl",
+    "table": {
+     "angle": -269.85,
+     "x": 69.32,
+     "y": 40.47
+    },
+    "weightG": null
+   },
+   {
+    "color": "#F7F7F7",
+    "dims": {
+     "d": 15,
+     "h": 22
+    },
+    "id": "6b6577de-59a0-44f8-b49a-11cb219f7817",
+    "material": "塑料",
+    "name": "电热水壶",
+    "shape": "cyl",
+    "table": {
+     "angle": 295.05,
+     "x": 115.03,
+     "y": 60.03
+    },
+    "weightG": 766.0
+   }
+  ],
+  "scene": "餐桌",
+  "steps": [
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子",
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 0,
+    "mentions": [
+     "筷子筒"
+    ],
+    "text": "把桌上的筷子筒拿到面前"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 1,
+    "mentions": [
+     "筷子"
+    ],
+    "text": "把筷子拿出来放到桌子上"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 2,
+    "mentions": [
+     "筷子"
+    ],
+    "text": "把筷子都摆放成一个方向"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 3,
+    "mentions": [
+     "筷子筒",
+     "筷子"
+    ],
+    "text": "把筷子放回筷子筒"
+   }
+  ],
+  "task": "把筷子头朝同一个方向摆好"
+ },
+ "L3-001-2026-10-27-13-47-37": {
+  "objects": [
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（可乐）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "bd09288a-416b-4d1d-9514-19fc405ac911",
+    "material": "纸质",
+    "name": "（茶水）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 75.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（牛奶）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（清水）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "38f4bb82-9825-4614-95e6-04be832ed20b",
+    "material": "纸质",
+    "name": "（橙汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 35.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（葡萄汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（菠萝汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（柠檬汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 18.2,
+     "w": 7.3
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（蔓越莓汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（番茄汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（西柚汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 25,
+     "w": 6.4
+    },
+    "id": "6b96601d-e9bb-49e4-91a6-2d3ff692201b",
+    "material": "纸质",
+    "name": "（水蜜桃饮料）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 95.0,
+     "y": 42.58
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": null,
+    "material": "纸质",
+    "name": "（青柠汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#000000",
+    "dims": {
+     "d": 5.7,
+     "h": 24
+    },
+    "id": "34c13286-3081-49b0-8c11-e56fa3591264",
+    "material": "塑料",
+    "name": "可乐",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 27.45,
+     "y": 59.57
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E60A0A",
+    "dims": {
+     "d": 5.2,
+     "h": 8.7
+    },
+    "id": "f5569070-df78-491d-9614-1d995c23c086",
+    "material": "金属",
+    "name": "旺仔牛奶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 72.6,
+     "y": 58.83
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E7E013",
+    "dims": {
+     "h": 23,
+     "l": 7.6,
+     "w": 7.9
+    },
+    "id": "e2ae7b7c-50c0-4e2b-837a-8cdfad24a209",
+    "material": "塑料",
+    "name": "橙汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 54.85,
+     "y": 66.13
+    },
+    "weightG": null
+   },
+   {
+    "color": "#9608E2",
+    "dims": {
+     "h": 25.5,
+     "l": 6.5,
+     "w": 6.5
+    },
+    "id": "b4e650be-d659-46e0-977e-d6ef3050f188",
+    "material": "塑料",
+    "name": "葡萄汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 85.36,
+     "y": 56.48
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E4C70C",
+    "dims": {
+     "h": 25,
+     "l": 6.5,
+     "w": 6.5
+    },
+    "id": "64be33ca-0670-4bd6-b387-a5c32206b230",
+    "material": "纸质",
+    "name": "菠萝汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 64.0,
+     "y": 66.75
+    },
+    "weightG": null
+   },
+   {
+    "color": "#BF0D5A",
+    "dims": {
+     "d": 6.4,
+     "h": 20
+    },
+    "id": "902adad6-0c09-4c6c-8978-7c12b4ee9577",
+    "material": "塑料",
+    "name": "西柚汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 58.77,
+     "y": 58.1
+    },
+    "weightG": null
+   },
+   {
+    "color": "#B5D515",
+    "dims": {
+     "d": 6.5,
+     "h": 20
+    },
+    "id": "3176f7c2-7057-4100-8aec-af9228ea0b04",
+    "material": "塑料",
+    "name": "青柠汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 27.36,
+     "y": 59.13
+    },
+    "weightG": null
+   },
+   {
+    "color": "#6A0377",
+    "dims": {
+     "d": 7.8,
+     "h": 25.5
+    },
+    "id": "0fb8a269-294c-49a7-8f4b-52e97944fdc5",
+    "material": "塑料",
+    "name": "蔓越莓汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 11.22,
+     "y": 66.1
+    },
+    "weightG": null
+   },
+   {
+    "color": "#D93A97",
+    "dims": {
+     "d": 6,
+     "h": 21
+    },
+    "id": "b1bbd084-fac6-4632-97db-1472f153b016",
+    "material": "塑料",
+    "name": "水蜜桃饮料",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 27.9,
+     "y": 66.94
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E7E013",
+    "dims": {
+     "d": 6,
+     "h": 13
+    },
+    "id": "a999e300-5891-4e8e-a3ef-7adc4198945f",
+    "material": "塑料",
+    "name": "番茄汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 65.2,
+     "y": 64.2
+    },
+    "weightG": null
+   },
+   {
+    "color": "transparent",
+    "dims": {
+     "d": 6.5,
+     "h": 20
+    },
+    "id": "1cb3329e-35f1-4488-8383-ca0272db45dd",
+    "material": "塑料",
+    "name": "柠檬水",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 83.53,
+     "y": 58.59
+    },
+    "weightG": null
+   },
+   {
+    "color": "#B8D03E",
+    "dims": {
+     "d": 6.5,
+     "h": 21
+    },
+    "id": "0f644b77-4842-4b3a-a6c0-63add457141b",
+    "material": "塑料",
+    "name": "乌龙茶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 76.92,
+     "y": 59.73
+    },
+    "weightG": null
+   },
+   {
+    "color": "transparent",
+    "dims": {
+     "d": 8.8,
+     "h": 9.8
+    },
+    "id": "1d0a2eef-40f0-4b4a-bc04-2776f41d7638",
+    "material": "玻璃",
+    "name": "水杯",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 120.6,
+     "y": 65.6
+    },
+    "weightG": 150.0
+   }
+  ],
+  "scene": "餐桌",
+  "steps": [
+   {
+    "groups": [
+     {
+      "members": [
+       "（可乐）卡片",
+       "（茶水）卡片",
+       "（牛奶）卡片",
+       "（清水）卡片",
+       "（橙汁）卡片",
+       "（葡萄汁）卡片",
+       "（菠萝汁）卡片",
+       "（柠檬汁）卡片",
+       "（蔓越莓汁）卡片",
+       "（番茄汁）卡片",
+       "（西柚汁）卡片",
+       "（水蜜桃饮料）卡片",
+       "（青柠汁）卡片"
+      ],
+      "word": "卡片"
+     }
+    ],
+    "index": 0,
+    "mentions": [],
+    "text": "观察桌子上的卡片"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "可乐",
+       "旺仔牛奶",
+       "橙汁",
+       "葡萄汁",
+       "菠萝汁",
+       "西柚汁",
+       "青柠汁",
+       "蔓越莓汁",
+       "水蜜桃饮料",
+       "番茄汁",
+       "柠檬水",
+       "乌龙茶",
+       "水杯"
+      ],
+      "word": "饮品"
+     },
+     {
+      "members": [
+       "（可乐）卡片",
+       "（茶水）卡片",
+       "（牛奶）卡片",
+       "（清水）卡片",
+       "（橙汁）卡片",
+       "（葡萄汁）卡片",
+       "（菠萝汁）卡片",
+       "（柠檬汁）卡片",
+       "（蔓越莓汁）卡片",
+       "（番茄汁）卡片",
+       "（西柚汁）卡片",
+       "（水蜜桃饮料）卡片",
+       "（青柠汁）卡片"
+      ],
+      "word": "卡片"
+     }
+    ],
+    "index": 1,
+    "mentions": [],
+    "text": "取对应的饮品放到卡片上面"
+   }
+  ],
+  "task": "根据卡片放饮品"
+ },
+ "L3-001-2026-10-27-13-53-30": {
+  "objects": [
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "f7fdee34-6c66-4bae-a0e0-05462446acf8",
+    "material": "纸质",
+    "name": "（可乐）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "bd09288a-416b-4d1d-9514-19fc405ac911",
+    "material": "纸质",
+    "name": "（茶水）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "bb1f229c-6131-409b-885b-6b3e99d67204",
+    "material": "纸质",
+    "name": "（牛奶）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "95b4348d-84b2-423f-8e3c-22903b3e003a",
+    "material": "纸质",
+    "name": "（清水）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "38f4bb82-9825-4614-95e6-04be832ed20b",
+    "material": "纸质",
+    "name": "（橙汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "f3c7254c-8d21-477a-b3a3-42bb2b8ef112",
+    "material": "纸质",
+    "name": "（葡萄汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "c69f641e-d216-433e-9ffe-289ef1388edc",
+    "material": "纸质",
+    "name": "（菠萝汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "a98d3b31-3cc2-4e0d-91ce-a3e9042e5731",
+    "material": "纸质",
+    "name": "（柠檬汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 18.2,
+     "w": 7.3
+    },
+    "id": "fc74c294-6c1a-4d8d-9726-82662647fb4e",
+    "material": "纸质",
+    "name": "（蔓越莓汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "016d3bf1-2f9d-44c8-8b6b-9af1f682022c",
+    "material": "纸质",
+    "name": "（番茄汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "6fd6fe0e-2f8f-4a2b-bacc-4f5b27583cb8",
+    "material": "纸质",
+    "name": "（西柚汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 25,
+     "w": 6.4
+    },
+    "id": "6b96601d-e9bb-49e4-91a6-2d3ff692201b",
+    "material": "纸质",
+    "name": "（水蜜桃饮料）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#C2C2C1",
+    "dims": {
+     "h": 0.01,
+     "l": 10.5,
+     "w": 15
+    },
+    "id": "8a69aa15-d58c-4b7f-8fd2-952169026153",
+    "material": "纸质",
+    "name": "（青柠汁）卡片",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 115.0,
+     "y": 32.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#000000",
+    "dims": {
+     "d": 5.7,
+     "h": 24
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "可乐",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E60A0A",
+    "dims": {
+     "d": 5.2,
+     "h": 8.7
+    },
+    "id": null,
+    "material": "金属",
+    "name": "旺仔牛奶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E7E013",
+    "dims": {
+     "h": 23,
+     "l": 7.6,
+     "w": 7.9
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "橙汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#9608E2",
+    "dims": {
+     "h": 25.5,
+     "l": 6.5,
+     "w": 6.5
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "葡萄汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E4C70C",
+    "dims": {
+     "h": 25,
+     "l": 6.5,
+     "w": 6.5
+    },
+    "id": "64be33ca-0670-4bd6-b387-a5c32206b230",
+    "material": "纸质",
+    "name": "菠萝汁",
+    "shape": "box",
+    "table": {
+     "angle": 0.0,
+     "x": 55.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#BF0D5A",
+    "dims": {
+     "d": 6.4,
+     "h": 20
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "西柚汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#B5D515",
+    "dims": {
+     "d": 6.5,
+     "h": 20
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "青柠汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#6A0377",
+    "dims": {
+     "d": 7.8,
+     "h": 25.5
+    },
+    "id": "0fb8a269-294c-49a7-8f4b-52e97944fdc5",
+    "material": "塑料",
+    "name": "蔓越莓汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 75.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#D93A97",
+    "dims": {
+     "d": 6,
+     "h": 21
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "水蜜桃饮料",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "#E7E013",
+    "dims": {
+     "d": 6,
+     "h": 13
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "番茄汁",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "transparent",
+    "dims": {
+     "d": 6.5,
+     "h": 20
+    },
+    "id": "1cb3329e-35f1-4488-8383-ca0272db45dd",
+    "material": "塑料",
+    "name": "柠檬水",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 35.0,
+     "y": 47.5
+    },
+    "weightG": null
+   },
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 16,
+     "l": 18,
+     "w": 10
+    },
+    "id": "fa14d21c-464e-4a1e-8f00-6767092d2645",
+    "material": "塑料",
+    "name": "花",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 14.0,
+     "y": 65.0
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 15,
+     "l": 22,
+     "w": 15
+    },
+    "id": "ed0f9b15-2660-4c34-93e8-a6a53cf3aaf6",
+    "material": "塑料",
+    "name": "花2",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 56.79,
+     "y": 62.5
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#292E39",
+    "dims": {
+     "h": 17.5,
+     "l": 23,
+     "w": 13
+    },
+    "id": "0f97d7eb-192a-4bcf-b62e-0eb360a9dea0",
+    "material": "金属",
+    "name": "水杯架",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 34.47,
+     "y": 63.5
+    },
+    "weightG": 510.0
+   },
+   {
+    "color": "#B8D03E",
+    "dims": {
+     "d": 6.5,
+     "h": 21
+    },
+    "id": null,
+    "material": "塑料",
+    "name": "乌龙茶",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": null
+   },
+   {
+    "color": "transparent",
+    "dims": {
+     "d": 8.8,
+     "h": 9.8
+    },
+    "id": null,
+    "material": "玻璃",
+    "name": "水杯",
+    "shape": "cyl",
+    "table": {
+     "angle": 0.0,
+     "x": 0.0,
+     "y": 0.0
+    },
+    "weightG": 150.0
+   }
+  ],
+  "scene": "餐桌",
+  "steps": [
+   {
+    "groups": [
+     {
+      "members": [
+       "可乐",
+       "旺仔牛奶",
+       "橙汁",
+       "葡萄汁",
+       "菠萝汁",
+       "西柚汁",
+       "青柠汁",
+       "蔓越莓汁",
+       "水蜜桃饮料",
+       "番茄汁",
+       "柠檬水",
+       "乌龙茶",
+       "水杯"
+      ],
+      "word": "饮品"
+     }
+    ],
+    "index": 0,
+    "mentions": [],
+    "text": "观察桌子上的饮品"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "可乐",
+       "旺仔牛奶",
+       "橙汁",
+       "葡萄汁",
+       "菠萝汁",
+       "西柚汁",
+       "青柠汁",
+       "蔓越莓汁",
+       "水蜜桃饮料",
+       "番茄汁",
+       "柠檬水",
+       "乌龙茶",
+       "水杯"
+      ],
+      "word": "饮品"
+     },
+     {
+      "members": [
+       "（可乐）卡片",
+       "（茶水）卡片",
+       "（牛奶）卡片",
+       "（清水）卡片",
+       "（橙汁）卡片",
+       "（葡萄汁）卡片",
+       "（菠萝汁）卡片",
+       "（柠檬汁）卡片",
+       "（蔓越莓汁）卡片",
+       "（番茄汁）卡片",
+       "（西柚汁）卡片",
+       "（水蜜桃饮料）卡片",
+       "（青柠汁）卡片"
+      ],
+      "word": "卡片"
+     }
+    ],
+    "index": 1,
+    "mentions": [],
+    "text": "从卡片包中拿出对应的卡片放到饮品边"
+   }
+  ],
+  "task": "根据饮品放卡片"
+ },
+ "L3-001-2026-10-27-13-54-34": {
+  "objects": [
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 16,
+     "l": 18,
+     "w": 10
+    },
+    "id": "fa14d21c-464e-4a1e-8f00-6767092d2645",
+    "material": "塑料",
+    "name": "花",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 55.25,
+     "y": 65.0
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#DCC6A8",
+    "dims": {
+     "h": 15,
+     "l": 22,
+     "w": 15
+    },
+    "id": "ed0f9b15-2660-4c34-93e8-a6a53cf3aaf6",
+    "material": "塑料",
+    "name": "花2",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 96.45,
+     "y": 62.5
+    },
+    "weightG": 430.0
+   },
+   {
+    "color": "#292E39",
+    "dims": {
+     "h": 17.5,
+     "l": 23,
+     "w": 13
+    },
+    "id": "0f97d7eb-192a-4bcf-b62e-0eb360a9dea0",
+    "material": "金属",
+    "name": "水杯架",
+    "shape": "box",
+    "table": {
+     "angle": 90.0,
+     "x": 34.75,
+     "y": 63.5
+    },
+    "weightG": 510.0
+   },
+   {
+    "color": "#93A6AF",
+    "dims": {
+     "d": 11.4,
+     "h": 25.1
+    },
+    "id": "06a56d38-8f14-4adf-8007-6cda400e84e5",
+    "material": "塑料",
+    "name": "筷子筒",
+    "shape": "cyl",
+    "table": {
+     "angle": -143.96,
+     "x": 95.38,
+     "y": 45.61
+    },
+    "weightG": 208.0
+   },
+   {
+    "color": "#131112",
+    "dims": {
+     "d": 0.8,
+     "h": 21
+    },
+    "id": "5989f99e-a44e-4f28-a6d2-4c487630c0d8",
+    "material": "塑料",
+    "name": "筷子",
+    "shape": "cyl",
+    "table": {
+     "angle": -143.96,
+     "x": 95.38,
+     "y": 45.61
+    },
+    "weightG": null
+   },
+   {
+    "color": "#ACA082",
+    "dims": {
+     "h": 0.5,
+     "l": 24,
+     "w": 1.1
+    },
+    "id": "469c83c1-c12a-4719-b56a-f43f9f1089ef",
+    "material": "木头",
+    "name": "筷子2",
+    "shape": "box",
+    "table": {
+     "angle": -143.96,
+     "x": 95.38,
+     "y": 45.61
+    },
+    "weightG": null
+   },
+   {
+    "color": "#453122",
+    "dims": {
+     "d": 0.7,
+     "h": 25
+    },
+    "id": "3d76993b-0f7f-47f4-ac54-17b6633cfe1a",
+    "material": "木头",
+    "name": "筷子3",
+    "shape": "cyl",
+    "table": {
+     "angle": -143.96,
+     "x": 95.38,
+     "y": 45.61
+    },
+    "weightG": null
+   },
+   {
+    "color": "#F7F7F7",
+    "dims": {
+     "d": 15,
+     "h": 22
+    },
+    "id": "6b6577de-59a0-44f8-b49a-11cb219f7817",
+    "material": "塑料",
+    "name": "电热水壶",
+    "shape": "cyl",
+    "table": {
+     "angle": -349.18,
+     "x": 116.22,
+     "y": 61.22
+    },
+    "weightG": 766.0
+   }
+  ],
+  "scene": "餐桌",
+  "steps": [
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子",
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 0,
+    "mentions": [
+     "筷子筒"
+    ],
+    "text": "把桌上的筷子筒拿到面前"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 1,
+    "mentions": [
+     "筷子"
+    ],
+    "text": "把筷子拿出来放到桌子上"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 2,
+    "mentions": [
+     "筷子"
+    ],
+    "text": "把筷子都摆放成一个方向"
+   },
+   {
+    "groups": [
+     {
+      "members": [
+       "筷子2",
+       "筷子3"
+      ],
+      "word": "筷子"
+     }
+    ],
+    "index": 3,
+    "mentions": [
+     "筷子筒",
+     "筷子"
+    ],
+    "text": "把筷子放回筷子筒"
+   }
+  ],
+  "task": "把筷子头朝同一个方向摆好"
+ }
+}

@@ -1,0 +1,9 @@
+{
+  "steps": [
+    "1.根据药的使用说明",
+    "2.往收纳盒里装一天的量",
+    "3.配置好药品，药品位置统一放到左上角"
+  ],
+  "source": "meta/collect_info.jsonl:notes",
+  "timing": null
+}
