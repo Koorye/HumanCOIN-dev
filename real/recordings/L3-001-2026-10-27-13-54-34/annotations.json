@@ -1,0 +1,10 @@
+{
+  "steps": [
+    "1.把桌上的筷子筒拿到面前",
+    "2.把筷子拿出来放到桌子上",
+    "3.把筷子都摆放成一个方向",
+    "4.把筷子放回筷子筒"
+  ],
+  "source": "meta/collect_info.jsonl:notes",
+  "timing": null
+}

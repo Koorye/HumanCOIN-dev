@@ -1,0 +1,53 @@
+{
+  "gaze-task.mp4": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 800,
+        "height": 450,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "24/1",
+        "nb_read_frames": "192"
+      }
+    ],
+    "format": {
+      "duration": "8.000000"
+    }
+  },
+  "emg-task.mp4": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 800,
+        "height": 450,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "24/1",
+        "nb_read_frames": "192"
+      }
+    ],
+    "format": {
+      "duration": "8.000000"
+    }
+  },
+  "eeg-task.mp4": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 800,
+        "height": 450,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "24/1",
+        "nb_read_frames": "192"
+      }
+    ],
+    "format": {
+      "duration": "8.000000"
+    }
+  }
+}

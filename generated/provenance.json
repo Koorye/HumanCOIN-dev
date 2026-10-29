@@ -1,0 +1,10 @@
+{
+  "synthetic": true,
+  "model": "gpt-image-2.5-flare",
+  "purpose": "Conceptual scene and task illustrations, not recorded HumanCOIN data",
+  "prompt": "Create a premium academic dataset research visual: a perfectly aligned 3 columns by 2 rows photographic contact sheet, six distinct equal panels, no text, no letters, no borders, no collage overlaps. All images are first person egocentric point of view looking down at realistic adult human hands performing tasks. Upper left: hands organize pens and paper on a clean light wood desk in a neuroscience laboratory; upper middle: hands slice vegetables in a bright home kitchen; upper right: hands choose packaged goods at a supermarket shelf. Lower left: hands manipulate small mechanical components and a key on a dark blue research workbench, subtle visible forearm sensor; lower middle: hands fold laundry beside a washing machine in a tidy utility room; lower right: hands prepare pour-over coffee at a cafe counter. Natural photographic lighting, accurate anatomy with two hands per scene, editorial scientific photography, restrained neutral palette with teal and slate blue accents, realistic diverse environments. Images illustrate a future embodied manipulation dataset, not diagrams or sci-fi. Do not include faces. Grid must be exactly 3 columns and 2 rows, each panel 1:1 square.",
+  "size": [
+    1536,
+    1024
+  ]
+}
