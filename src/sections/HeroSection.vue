@@ -341,9 +341,9 @@ onMounted(() => {
 .strip {
   position: relative;
   margin-top: clamp(1.75rem, 1.3rem + 2vw, 2.75rem);
-  border-top: 1px solid rgba(255, 255, 255, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.28);
+  border-top: 1px solid rgba(23, 42, 58, 0.11);
+  border-bottom: 1px solid rgba(23, 42, 58, 0.07);
+  background: transparent;
 }
 .strip__inner {
   display: grid;
@@ -352,12 +352,12 @@ onMounted(() => {
 @media (max-width: 820px) { .strip__inner { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .metric {
   padding: clamp(0.6rem, 0.5rem + 0.4vw, 0.85rem) clamp(0.6rem, 0.5rem + 0.4vw, 0.9rem);
-  border-left: 1px solid rgba(255, 255, 255, 0.8);
+  border-left: 1px solid rgba(23, 42, 58, 0.09);
   min-width: 0;
 }
 .metric:first-child { border-left: 0; }
 @media (max-width: 820px) {
-  .metric:nth-child(3), .metric:nth-child(4) { border-top: 1px solid rgba(255, 255, 255, 0.8); }
+  .metric:nth-child(3), .metric:nth-child(4) { border-top: 1px solid rgba(23, 42, 58, 0.09); }
   .metric:nth-child(3) { border-left: 0; }
 }
 .metric__value {
@@ -371,6 +371,9 @@ onMounted(() => {
   color: var(--ink);
   margin: 0;
   font-variant-numeric: tabular-nums;
+  text-shadow:
+    0 12px 24px rgba(43, 92, 133, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.55);
 }
 .metric__eq { font-size: 0.55em; color: var(--c-teal); margin-right: 0.1em; }
 .metric__suffix { font-size: var(--fs-small); font-weight: 500; color: var(--ink-mute); margin-left: 0.15em; }
