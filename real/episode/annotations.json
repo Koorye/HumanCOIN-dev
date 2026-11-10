@@ -1,0 +1,35 @@
+{
+ "steps": [
+  "approach the table",
+  "reach down to pick up candies candy wrappers",
+  "sort and group candies by color candy wrappers",
+  "continue sorting candies candy wrappers",
+  "final placement of sorted candies candy wrappers"
+ ],
+ "source": "annotation/episode_000000_structured.json#subtask",
+ "timing": {
+  "segments": [
+   {
+    "start": 9.97,
+    "end": 10.5
+   },
+   {
+    "start": 10.5,
+    "end": 12.0
+   },
+   {
+    "start": 12.0,
+    "end": 14.0
+   },
+   {
+    "start": 14.0,
+    "end": 16.0
+   },
+   {
+    "start": 16.0,
+    "end": 17.53
+   }
+  ],
+  "source": "annotator"
+ }
+}

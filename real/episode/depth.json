@@ -1,0 +1,15 @@
+{
+ "nearM": 0.18,
+ "farM": 0.8,
+ "invalid": 0,
+ "intrinsics": {
+  "fx": 793.8082633621543,
+  "fy": 793.8082633621543,
+  "cx": 931.0771331787109,
+  "cy": 599.3062973022461,
+  "width": 1920,
+  "height": 1184
+ },
+ "video": "episode/main-depth-gray.mp4",
+ "source": "annotation/.../lerobot_depth.json: scale 0.5, unit mm"
+}
