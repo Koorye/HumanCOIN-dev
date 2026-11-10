@@ -145,6 +145,15 @@ onMounted(() => {
   if (reduced.value) auto.value = false
   document.addEventListener('visibilitychange', onVisibility)
   schedule()
+
+  // Warm the whole set before the timer can reach it. A swap then never waits
+  // on a decode, which is what made the old image disappear before the new one
+  // had painted.
+  for (const scene of ORDER) {
+    const image = new Image()
+    image.src = scene.image
+    image.decode?.().catch(() => { /* the <img> will decode on demand */ })
+  }
 })
 
 onBeforeUnmount(() => {
@@ -248,7 +257,7 @@ const rowLabel = (s: SceneClass) =>
 
       <aside class="carousel-side">
         <div class="carousel-media" @pointerenter="holdOn" @pointerleave="releaseHold">
-          <Transition name="scene" mode="out-in">
+          <Transition name="scene">
             <img
               :key="active.key"
               :src="active.image"
@@ -535,11 +544,21 @@ const rowLabel = (s: SceneClass) =>
   height: 100%;
   object-fit: cover;
   filter: saturate(0.92) contrast(1.02);
+  will-change: opacity, transform;
 }
-.scene-enter-active { transition: opacity 360ms var(--ease), transform 700ms var(--ease-out); }
-.scene-leave-active { transition: opacity 180ms var(--ease); }
-.scene-enter-from { opacity: 0; transform: scale(1.012); }
-.scene-leave-to { opacity: 0; }
+/* The new frame fades in over the old, which stays fully opaque underneath
+   until the new one has painted. A crossfade of two translucent layers lets
+   the paper show through at the midpoint; this overlay does not. */
+.scene-enter-active {
+  z-index: 1;
+  transition: opacity 900ms var(--ease-io), transform 1400ms var(--ease-out);
+}
+.scene-leave-active {
+  z-index: 0;
+  transition: opacity 1000ms linear;
+}
+.scene-enter-from { opacity: 0; transform: scale(1.018); }
+.scene-leave-to { opacity: 1; }
 
 .stage__arrow {
   position: absolute;
