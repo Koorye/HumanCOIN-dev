@@ -57,17 +57,17 @@
   --night-3: #1d2f3f;
 
   /* ---- Modality accents (each ≥4.5:1 as text on white) ---- */
-  --c-blue: #1f5f96;      /* L1 / vision      — 7.4:1 */
-  --c-teal: #24707c;      /* L2 / gaze        — 5.9:1 */
-  --c-violet: #3c5c9e;    /* L3 / neural      — 6.8:1 */
+  --c-blue: #1f5f96;      /* L1 / vision      — 6.7:1 */
+  --c-teal: #0f6f68;      /* L2 / gaze        — 6.0:1 */
+  --c-violet: #6a4c9c;    /* L3 / neural      — 6.7:1 */
   --c-amber: #8a6136;     /* EMG              — 5.6:1 */
   --c-rose: #99505b;      /* events / errors  — 6.2:1 */
   --c-slate: #4f6272;     /* neutral data     — 6.4:1 */
 
   /* Tint fills (non-text use only) */
-  --t-blue: #e9f1f8;
-  --t-teal: #e6f0f3;
-  --t-violet: #eaeef8;
+  --t-blue: #dfeaf6;
+  --t-teal: #d9eee9;
+  --t-violet: #e8e0f3;
   --t-rose: #f6eaec;
   --t-amber: #f5efe4;
 

@@ -231,7 +231,27 @@ function metaOf(id: Tier['devices'][number]['id']) {
 .tabs button.tab--teal.active { border-bottom-color: var(--c-teal); }
 .tabs button.tab--violet.active { border-bottom-color: var(--c-violet); }
 .tab__row { display: flex; align-items: baseline; gap: 0.45rem; }
-.tab__id { font-size: var(--fs-micro); color: var(--ink-mute); }
+.tab__id {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--fs-micro);
+  color: var(--ink-mute);
+}
+.tab__id::before {
+  content: '';
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.tab--blue .tab__id { color: var(--c-blue); }
+.tab--teal .tab__id { color: var(--c-teal); }
+.tab--violet .tab__id { color: var(--c-violet); }
+.tabs button.active { background: var(--t-blue); }
+.tabs button.tab--teal.active { background: var(--t-teal); }
+.tabs button.tab--violet.active { background: var(--t-violet); }
 .tab__name { font-size: var(--fs-small); font-weight: 600; color: var(--ink); }
 .tab__hours { margin-left: auto; font-size: var(--fs-micro); color: var(--ink-soft); }
 .tab__share { font-size: var(--fs-micro); color: var(--ink-mute); }
@@ -288,6 +308,9 @@ function metaOf(id: Tier['devices'][number]['id']) {
 .band--blue .band__top { stroke: var(--c-blue); }
 .band--teal .band__top { stroke: var(--c-teal); }
 .band--violet .band__top { stroke: var(--c-violet); }
+.band--blue .band__id { fill: var(--c-blue); }
+.band--teal .band__id { fill: var(--c-teal); }
+.band--violet .band__id { fill: var(--c-violet); }
 .band:focus-visible { outline: none; }
 .band:focus-visible .band__face { stroke: var(--c-blue); stroke-width: 2; }
 
