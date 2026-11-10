@@ -276,7 +276,8 @@ const layerLabels: Record<(typeof layerKeys)[number], Bi> = {
 
 .ev {
   margin: 0.5rem 0 0;
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-md);
   background: var(--paper);
   overflow: hidden;
@@ -334,7 +335,8 @@ const layerLabels: Record<(typeof layerKeys)[number], Bi> = {
   position: absolute; top: 0.7rem; left: 50%; transform: translateX(-50%);
   display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.8rem;
   padding: 0.35rem 0.6rem; border-radius: var(--r-sm);
-  background: rgba(255, 255, 255, 0.93); border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.93); border: 0;
+  border-top: 1px solid var(--line);
 }
 .ev__toggle { display: inline-flex; align-items: center; gap: 0.3rem; min-height: 22px; font-size: var(--fs-micro); color: var(--ink-soft); cursor: pointer; }
 .ev__toggle input { accent-color: var(--accent); width: 0.8rem; height: 0.8rem; margin: 0; }

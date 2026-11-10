@@ -19,12 +19,23 @@ const { t, list, isZh } = useI18n()
 </template>
 
 <style scoped>
-.abstract-sec { border-top: 1px solid var(--line); padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem); }
+.abstract-sec { border-top: 1px solid var(--line); padding-block: clamp(1.6rem, 1.2rem + 1.6vw, 2.6rem); }
 
 .abstract__title { margin: 0; }
-/* The abstract is the release's own statement, so it is set as one full-width
-   measure rather than a narrow column: the section carries nothing else. */
-.abstract__body { max-width: none; }
-.abstract__body p { font-size: var(--fs-lead); line-height: 1.68; color: var(--ink-body); }
-.abstract__body p + p { margin-top: 0.9em; }
+/* Two reading columns rather than one 150-character line: the abstract fills
+   the shell the way a paper's front matter does, and the measure stays short. */
+.abstract__body {
+  max-width: none;
+  column-count: 2;
+  column-gap: clamp(1.75rem, 2.4vw, 3.25rem);
+}
+@media (max-width: 820px) { .abstract__body { column-count: 1; } }
+.abstract__body p {
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  color: var(--ink-body);
+  orphans: 2;
+  widows: 2;
+}
+.abstract__body p + p { margin-top: 0.7em; }
 </style>

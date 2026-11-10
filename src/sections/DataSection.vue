@@ -1,250 +1,155 @@
 <script setup lang="ts">
 /**
- * Data composition.
+ * §03 — data distribution.
  *
- * Ordered as a results section would be: the headline allocation first (how the
- * hours divide), then the tier coverage profile, then the two figures that
- * describe the distribution rather than its total (violin and ECDF, which are
- * checks on each other), then the raw bin shares, then the scene breakdown,
- * then the table underneath it, then the scenes themselves.
+ * The section follows Fig. 2 of the report, panel for panel: the three tiers
+ * and their two settings, the eighteen scene classes, the eighty-verb tail and
+ * the six hundred object entries. Each figure is a live plate rather than a
+ * screenshot: the pointer reads values, a replay re-runs the entrance, and the
+ * data behind every bar sits behind a disclosure.
  *
- * Each figure is wrapped in the shared journal frame, so the reader always sees
- * a number, a title and a note stating what the figure does and does not claim.
+ * The strip above the figures states the four numbers a reader should carry
+ * into them; the argument sits beside the title, where it can be read before
+ * the first chart starts to draw.
  */
-import { ref, computed } from 'vue'
 import { DATA } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import SectionHead from '@/components/SectionHead.vue'
 import FigFrame from '@/components/FigFrame.vue'
-import DonutChart from '@/components/DonutChart.vue'
-import DurationStack from '@/components/DurationStack.vue'
-import SceneBars from '@/components/SceneBars.vue'
-import TaskProfile from '@/components/TaskProfile.vue'
-import { SCENE_ALLOCATION, TOTAL_HOURS } from '@/data/stats'
-import { TASK_ROWS, TASK_TOTALS } from '@/data/tasks'
+import TierDepthFigure from '@/components/TierDepthFigure.vue'
+import SceneCarousel from '@/components/SceneCarousel.vue'
+import VerbTail from '@/components/VerbTail.vue'
+import ObjectTail from '@/components/ObjectTail.vue'
+import { OBJECT_TOTALS, SCENES, TOTAL_HOURS } from '@/data/fig2'
 
-const { t, list, isZh } = useI18n()
-
-/** Entries at one station, read off the protocol rows so the note cannot drift. */
-const taskCount = (key: string) => TASK_ROWS.find((row) => row.key === key)?.tasks.length ?? 0
-
-/** The splits the figure note quotes, derived rather than typed twice. */
-const OFF_SITE = ['market', 'kitchen-ext', 'pharmacy', 'salon', 'cafe'].reduce(
-  (n, key) => n + taskCount(key),
-  0,
-)
-const ON_SITE = TASK_TOTALS.L2 - OFF_SITE
-const STATIONS = TASK_ROWS.length
-
-const tierColors: Record<string, string> = {
-  L1: 'var(--c-blue)',
-  L2: 'var(--c-teal)',
-  L3: 'var(--c-violet)',
-}
-
-interface TierRow {
-  id: 'L1' | 'L2' | 'L3'
-  title: { en: string; zh: string }
-  hours: number
-  share: number
-  scenes: { en: string; zh: string }[]
-  entries: number
-  color: string
-}
-
-const sceneCount: Record<TierRow['id'], number> = {
-  L1: SCENE_ALLOCATION.L1.length,
-  L2: SCENE_ALLOCATION.L2.length,
-  L3: SCENE_ALLOCATION.L3.length,
-}
-
-const tiers: TierRow[] = [
-  { id: 'L1', title: { en: 'Open scene', zh: '开放场景' }, hours: 10000, share: 80, entries: 0, scenes: [DATA.scenes[0], DATA.scenes[4], DATA.scenes[3]], color: tierColors.L1 },
-  { id: 'L2', title: { en: 'Enhanced modality', zh: '增强模态' }, hours: 2000, share: 16, entries: TASK_TOTALS.L2, scenes: [DATA.scenes[1], DATA.scenes[5], DATA.scenes[2]], color: tierColors.L2 },
-  { id: 'L3', title: { en: 'Perceptual construction', zh: '知觉建构' }, hours: 500, share: 4, entries: TASK_TOTALS.L3, scenes: [DATA.scenes[0], DATA.scenes[2], DATA.scenes[5]], color: tierColors.L3 },
-]
-
-const activeTier = ref<TierRow['id']>('L2')
-const activeRow = computed(() => tiers.find((x) => x.id === activeTier.value) ?? tiers[0])
-const sceneEntries = sceneCount.L1 + sceneCount.L2 + sceneCount.L3
+const { t, list } = useI18n()
+const fmt = (n: number) => n.toLocaleString('en-US')
 </script>
 
 <template>
   <section id="data" class="section section--tinted">
     <div class="shell">
-      <SectionHead :num="DATA.num" :kicker="DATA.kicker" :title="DATA.title" />
+      <SectionHead :num="DATA.num" :kicker="DATA.kicker" :title="DATA.title" aside-wide>
+        <template #aside>
+          <div class="data-lead">
+            <p v-for="(p, i) in list(DATA.body)" :key="i">{{ p }}</p>
+          </div>
+        </template>
+      </SectionHead>
 
-      <div class="data-intro prose">
-        <p v-for="(p, i) in list(DATA.body)" :key="i" :class="{ lead: i === 0 }">{{ p }}</p>
-      </div>
+      <ul class="dstats">
+        <li>
+          <p class="dstats__v">{{ fmt(TOTAL_HOURS) }}<span>h</span></p>
+          <p class="dstats__l">{{ t({ en: 'Recording volume', zh: '采集规模' }) }}</p>
+        </li>
+        <li>
+          <p class="dstats__v">{{ SCENES.length }}</p>
+          <p class="dstats__l">{{ t({ en: 'Scene classes', zh: '场景类别' }) }}</p>
+        </li>
+        <li>
+          <p class="dstats__v">500<span>+</span></p>
+          <p class="dstats__l">{{ t({ en: 'Task entries', zh: '任务条目' }) }}</p>
+        </li>
+        <li>
+          <p class="dstats__v">{{ OBJECT_TOTALS.entries }}</p>
+          <p class="dstats__l">{{ t({ en: 'Object entries', zh: '物体条目' }) }}</p>
+        </li>
+      </ul>
 
-      <!-- The two figures that cut one corpus two ways: by tier, and by length.
-           They share a viewBox, so the row has one height and no panel is
-           stretched to match the other. -->
       <div class="figures">
-        <FigFrame n="3" :title="DATA.hoursChart" :aside="{ en: 'tier total', zh: '三层合计' }">
-          <DonutChart />
-          <template #note>
-            {{ isZh
-              ? `三层合计 ${TOTAL_HOURS.toLocaleString('en-US')} 规划小时：L1 / L2 / L3 = 10,000 / 2,000 / 500 小时，即 80% / 16% / 4%。环形按份额自正上方起连续绘制，段间留固定间隙以区分相邻层；中心数字为三层合计，右侧列出每层的份额与小时数。`
-              : `Three tiers total ${TOTAL_HOURS.toLocaleString('en-US')} planned hours: L1 / L2 / L3 = 10,000 / 2,000 / 500 h, i.e. 80% / 16% / 4%. Arcs are drawn end to end from the top of the ring in share order, with a fixed gap separating adjacent shares. The centre carries the tier total; the right column gives each tier's share and hours.` }}
-          </template>
-        </FigFrame>
-
         <FigFrame
-          n="4"
-          :title="DATA.durationChart"
-          :aside="{ en: '10 s bins · stacked', zh: '10 秒分箱 · 堆叠' }"
+          n="3"
+          :title="DATA.depthTitle"
+          :aside="DATA.depthAside"
+          :note="DATA.depthNote"
         >
-          <DurationStack />
-          <template #note>
-            {{ isZh
-              ? `把上面同一个 ${TOTAL_HOURS.toLocaleString('en-US')} 小时按时长重新切分：每根柱为一个 10 秒分箱，L1/L2/L3 自下而上堆在同一条内，柱高合计 100% 的规划小时，每层在各柱中的份额合计回该层的 80% / 16% / 4%。已发布的分箱宽度为 30 秒，10 秒分箱只是把同一组占比读得更密，并未新增测量；跨分箱不做任何平滑连接。轴下三个标记为该层中位时长落点。`
-              : `The same ${TOTAL_HOURS.toLocaleString('en-US')} hours re-cut by length: each bar is a 10 s bin, with L1/L2/L3 stacked bottom to top, bar heights summing to 100% of planned hours, and each tier's column of shares summing back to its 80% / 16% / 4% of the corpus. The published bin width is 30 s, so 10 s bins read the same shares at higher drawing resolution and add no measurement; nothing is smoothed across a bin edge. The three ticks below the axis mark where each tier's median falls.` }}
-          </template>
+          <TierDepthFigure />
         </FigFrame>
-      </div>
 
-      <FigFrame
-        n="5"
-        class="fig--wide"
-        :title="DATA.taskChart"
-        :aside="{ en: `${TASK_TOTALS.total} entries · ${STATIONS} stations`, zh: `${TASK_TOTALS.total} 条目 · ${STATIONS} 个工位` }"
-      >
-        <TaskProfile />
-        <template #note>
-          {{ isZh
-            ? `左：协议表中每个情境工位的任务条目数，按条目降序，一柱一工位——少数重工位加一条长尾（书桌 ${taskCount('desk-hc')} 条与货架 ${taskCount('shelving')} 条为最重，卧室、餐桌、床铺各 1–2 条）。L3 ${TASK_TOTALS.L3} 条全在固定工位；L2 ${TASK_TOTALS.L2} 条中院内 ${ON_SITE} 条、便携外采 ${OFF_SITE} 条。L1 以自然流被动采集，不枚举条目，故不在图中。右：按同一顺序逐条轮播任务，给出任务名与其认知负载点（高思维表）或任务说明（通用表）。配图为六张 AI 概念示意图中最近场景的裁切，非任务实拍。`
-            : `Left: task entries per scenario station, taken row by row from the protocol tables and sorted descending — one bar per station, a few heavy ones and a long tail (desk ${taskCount('desk-hc')} and shelving ${taskCount('shelving')} are the heaviest; bedroom, dining table and bed carry one or two each). All ${TASK_TOTALS.L3} L3 entries sit at fixed workstations; of L2's ${TASK_TOTALS.L2}, ${ON_SITE} are on-site and ${OFF_SITE} portable off-site. L1 is recorded as a passive natural stream and enumerates no entries, so it is absent. Right: the same stations walked one task at a time, each with the plan's cognitive-load point (high-cognitive tables) or one-line description (general table). The picture is a crop of the nearest of six AI concept illustrations, not a photograph of that task.` }}
-        </template>
-      </FigFrame>
+        <FigFrame n="4" :title="DATA.sceneTitle" :aside="DATA.sceneAside">
+          <SceneCarousel :note="DATA.sceneNote" />
+        </FigFrame>
 
-      <FigFrame
-        n="6"
-        class="fig--wide"
-        :title="DATA.sceneChart"
-        :aside="{ en: 'within-tier share', zh: '层内占比' }"
-      >
-        <SceneBars />
-        <template #note>
-          {{ isZh
-            ? `每层独立归一至 100%；条带宽度为该层内的规划时长占比，悬浮或聚焦分段可查看场景名、份额与该层对应小时数。三层共 ${sceneEntries} 个场景条目。`
-            : `Each tier normalises to 100% independently. Segment width is the within-tier share of planned hours; hover or focus a segment for its scene, share and tier hours. The three tiers hold ${sceneEntries} scene entries in total.` }}
-        </template>
-      </FigFrame>
+        <FigFrame n="5" :title="DATA.verbTitle" :aside="DATA.verbAside">
+          <VerbTail :note="DATA.verbNote" />
+        </FigFrame>
 
-      <div class="tier-table">
-        <table class="tbl">
-          <caption>{{ isZh ? '各层汇总' : 'Tier summary' }}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{{ t(DATA.tierCol) }}</th>
-              <th scope="col">{{ t(DATA.hoursCol) }}</th>
-              <th scope="col">{{ t(DATA.shareCol) }}</th>
-              <th scope="col">{{ isZh ? '场景条目' : 'Scene entries' }}</th>
-              <th scope="col">{{ isZh ? '任务条目' : 'Task entries' }}</th>
-              <th scope="col">{{ t(DATA.scenesCol) }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="row in tiers"
-              :key="row.id"
-              :class="{ 'row--active': row.id === activeTier }"
-              @mouseenter="activeTier = row.id"
-              @focusin="activeTier = row.id"
-            >
-              <th scope="row" class="tier-cell">
-                <span class="tier-cell__id mono" :style="{ color: row.color }">{{ row.id }}</span>
-                <span class="tier-cell__name">{{ isZh ? row.title.zh : row.title.en }}</span>
-              </th>
-              <td class="mono">{{ row.hours.toLocaleString('en-US') }} h</td>
-              <td class="mono">{{ row.share }}%</td>
-              <td class="mono">{{ sceneCount[row.id] }}</td>
-              <td class="mono">{{ row.entries === 0 ? '—' : row.entries }}</td>
-              <td class="scenes-cell">
-                <span v-for="s in row.scenes" :key="s.en" class="scene-pill">{{ isZh ? s.zh : s.en }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="caption">
-          {{ isZh
-            ? `小时为规划量，非已采集量。场景条目为该层展开的情境数；任务条目为协议表中该层工位对应的任务条数（L1 无枚举条目）。当前示例层级 ${activeRow.id}。`
-            : `Hours are planned, not collected. Scene entries are the scenes expanded within each tier; task entries are the protocol rows assigned to that tier's stations (L1 enumerates none). Active tier shown: ${activeRow.id}.` }}
-        </p>
-      </div>
-
-      <div class="scenes">
-        <figure v-for="(s, i) in DATA.scenes" :key="s.en" class="scene">
-          <img
-            :src="`generated/${['kitchen', 'workbench', 'desk', 'laundry', 'market', 'coffee'][i]}.jpg`"
-            :alt="isZh ? s.zh : s.en"
-            loading="lazy"
-            decoding="async"
-          />
-          <figcaption>{{ isZh ? s.zh : s.en }}</figcaption>
-        </figure>
+        <FigFrame n="6" :title="DATA.objectTitle" :aside="DATA.objectAside">
+          <ObjectTail :note="DATA.objectNote" />
+        </FigFrame>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.mono { font-family: var(--ff-mono); }
+/* The chapter is a plate of four dense figures: tighten its own rhythm rather
+   than the page's global section spacing. */
+#data { padding-block: clamp(2rem, 1.6rem + 1.2vw, 2.7rem); }
+#data :deep(.section__head) { margin-bottom: clamp(0.9rem, 0.75rem + 0.4vw, 1.15rem); }
+#data :deep(.fig) { padding-top: 0.6rem; padding-bottom: 0.65rem; }
+#data :deep(.fig__head) { padding-bottom: 0.45rem; margin-bottom: 0.65rem; }
+#data :deep(.fig__note) { margin-top: 0.6rem; padding-top: 0.5rem; max-width: 100%; }
 
-.data-intro { margin-bottom: clamp(1.75rem, 1.4rem + 2vw, 2.75rem); }
-.data-intro p { max-width: 68ch; }
-
-.figures {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--gap);
-  margin-bottom: var(--gap);
+.data-lead {
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+  color: var(--ink-soft);
 }
-@media (max-width: 900px) { .figures { grid-template-columns: minmax(0, 1fr); } }
+.data-lead p { margin-bottom: 0.4em; }
+.data-lead p:last-child { margin-bottom: 0; }
+@media (max-width: 900px) { .data-lead { font-size: var(--fs-micro); } }
 
-/* The frame carries the panel chrome; this only controls the rhythm between
-   figures, so the section reads as a plate of figures rather than a stack. */
-.fig--wide { margin-bottom: var(--gap); }
-.figures .fig--wide { margin-bottom: 0; }
-
-/* ---- tier table ---- */
-.tier-table { overflow-x: auto; margin-bottom: clamp(1.75rem, 1.4rem + 2vw, 2.5rem); }
-.tier-cell { display: flex; align-items: baseline; gap: 0.5rem; }
-.tier-cell__id { font-size: var(--fs-micro); font-weight: 600; }
-.tier-cell__name { font-size: var(--fs-small); color: var(--ink); font-weight: 550; }
-.row--active { background: var(--surface); }
-.scenes-cell { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-.scene-pill {
+/* One strip of four numbers, ruled like a table rather than boxed like cards. */
+.dstats {
+  list-style: none;
+  margin: 0 0 0.9rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 700px) {
+  .dstats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.dstats li {
+  padding: 0.55rem 0.9rem 0.5rem;
+  border-left: 1px solid var(--line);
+}
+.dstats li:first-child { border-left: 0; padding-left: 0; }
+@media (max-width: 700px) {
+  .dstats li:nth-child(3) { border-left: 0; padding-left: 0; }
+  .dstats li:nth-child(3), .dstats li:nth-child(4) { border-top: 1px solid var(--line); }
+}
+.dstats__v {
+  margin: 0;
+  font-family: var(--ff-display);
+  font-size: clamp(1.4rem, 1.15rem + 0.9vw, 1.85rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.dstats__v span {
+  font-family: var(--ff-mono);
+  font-size: 0.42em;
+  font-weight: 400;
+  color: var(--ink-mute);
+  margin-left: 0.18em;
+  letter-spacing: 0;
+}
+.dstats__l {
+  margin: 0.25rem 0 0;
   font-size: var(--fs-micro);
   color: var(--ink-soft);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: var(--r-pill);
-  padding: 0.1rem 0.5rem;
 }
 
-/* ---- scene strip ---- */
-.scenes {
+/* The figures share the page's figure chrome; only the spacing between them is
+   decided here, so the section reads as a sequence of plates. */
+.figures {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 0.6rem;
-}
-@media (max-width: 760px) { .scenes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.scene { margin: 0; }
-.scene img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--line);
-  background: var(--surface-2);
-}
-.scene figcaption {
-  margin-top: 0.35rem;
-  font-size: var(--fs-micro);
-  color: var(--ink-mute);
-  text-align: center;
+  gap: clamp(0.7rem, 0.55rem + 0.35vw, 1rem);
 }
 </style>

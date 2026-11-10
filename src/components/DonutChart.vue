@@ -17,11 +17,10 @@ import { computed } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 import { useInView } from '@/composables/useReveal'
 import { TIER_HOURS, TOTAL_HOURS, SCENE_ALLOCATION } from '@/data/stats'
-import { TASK_TOTALS } from '@/data/tasks'
 
 const { isZh } = useI18n()
 
-const sceneEntries = Object.values(SCENE_ALLOCATION).reduce((n, list) => n + list.length, 0)
+const sceneEntries = new Set(Object.values(SCENE_ALLOCATION).flat().map((s) => s.key)).size
 
 /* Same box as the stacked duration figure beside it. */
 const W = 560
@@ -104,7 +103,7 @@ const { el: donutEl, shown: donutIn } = useInView<SVGSVGElement>({ margin: '0px 
       <!-- centre: the total the ring divides -->
       <text class="donut__value" :x="CX" :y="CY + 2" text-anchor="middle">12,500</text>
       <text class="donut__unit" :x="CX" :y="CY + 26" text-anchor="middle">
-        {{ isZh ? '规划小时' : 'PLANNED HOURS' }}
+        {{ isZh ? '小时' : 'HOURS' }}
       </text>
       <text class="donut__scale" :x="CX" :y="CY + 48" text-anchor="middle">
         {{ isZh ? '三层合计' : 'ALL TIERS' }}
@@ -121,8 +120,8 @@ const { el: donutEl, shown: donutIn } = useInView<SVGSVGElement>({ margin: '0px 
 
       <!-- the two figures this ring feeds, so the section reads as one set -->
       <text class="donut__foot" :x="330" y="300">
-        {{ isZh ? '场景条目' : 'SCENE ENTRIES' }} {{ sceneEntries }} ·
-        {{ isZh ? '任务条目' : 'TASK ENTRIES' }} {{ TASK_TOTALS.total }}
+        {{ isZh ? '场景类别' : 'SCENE CLASSES' }} {{ sceneEntries }} ·
+        {{ isZh ? '任务条目' : 'TASK ENTRIES' }} 500+
       </text>
     </svg>
   </div>

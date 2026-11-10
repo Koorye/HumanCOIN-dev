@@ -78,7 +78,7 @@ const view = computed(() => {
   if (!Number.isFinite(x0)) return '0 0 1 1'
   const w = Math.max(1e-6, x1 - x0)
   const h = Math.max(1e-6, y1 - y0)
-  const side = Math.max(w, h) * 1.24
+  const side = Math.max(w, h) * 1.34
   const cx = (x0 + x1) / 2
   const cy = (y0 + y1) / 2
   return `${cx - side / 2} ${cy - side / 2} ${side} ${side}`
@@ -157,10 +157,13 @@ const hands = computed<Hand[]>(() =>
           v-for="([x, y], i) in h.joints"
           :key="`j-${i}`"
           class="gl__joint"
-          :class="{ 'gl__joint--root': i === 0 }"
+          :class="{
+            'gl__joint--root': i === 0,
+            'gl__joint--tip': [4, 9, 14, 19, 24].includes(i),
+          }"
           :cx="x"
           :cy="y"
-          r="0.004"
+          :r="[4, 9, 14, 19, 24].includes(i) ? 0.0048 : 0.0022"
           vector-effect="non-scaling-stroke"
         />
       </svg>
@@ -175,39 +178,54 @@ const hands = computed<Hand[]>(() =>
 <style scoped>
 .mono { font-family: var(--ff-mono); }
 
-.gl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+.gl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  /* The window row's height is set by the gaze box beside this plot; both hands
+     then stretch to that height instead of leaving the window short. */
+  flex: 1;
+  min-height: 0;
+}
 
-.gl__hand { margin: 0; display: grid; gap: 0.15rem; min-width: 0; }
+.gl__hand { margin: 0; display: flex; flex-direction: column; min-width: 0; }
 .gl__hand svg {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-xs);
+  height: auto;
+  flex: 1;
+  min-height: 6.6rem;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
 }
 
 .gl__trail {
   fill: none;
-  stroke: var(--c-violet);
-  stroke-width: 0.8;
-  opacity: 0.28;
+  stroke: var(--c-amber);
+  stroke-width: 0.9;
+  opacity: 0.34;
+  vector-effect: non-scaling-stroke;
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.gl__palm { fill: var(--t-violet); stroke: var(--c-violet); stroke-width: 1; opacity: 0.55; }
+.gl__palm { fill: var(--t-blue); stroke: var(--c-blue); stroke-width: 1; opacity: 0.9; vector-effect: non-scaling-stroke; }
 .gl__bone {
   fill: none;
-  stroke: var(--c-violet);
-  stroke-width: 1.3;
+  stroke: var(--c-blue);
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
-.gl__joint { fill: var(--paper); stroke: var(--c-violet); stroke-width: 0.9; }
-.gl__joint--root { fill: var(--c-violet); }
+.gl__joint { fill: var(--paper); stroke: var(--c-blue); stroke-width: 1; }
+.gl__joint--tip { fill: var(--c-blue); }
+.gl__joint--root { fill: var(--c-teal); }
 
-.gl__cap { display: flex; align-items: baseline; justify-content: space-between; gap: 0.4rem; }
+.gl__cap { flex: none; margin-top: 0.15rem; display: flex; align-items: baseline; justify-content: space-between; gap: 0.4rem; }
 .gl__name {
   font-size: var(--fs-mark);
   letter-spacing: 0.04em;

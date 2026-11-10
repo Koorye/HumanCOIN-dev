@@ -204,39 +204,3 @@ export const MF_MODES: MfModeDef[] = [
     example: { en: 'high-rate IMU, EEG, EMG', zh: '高速的 IMU、脑电、肌电' },
   },
 ]
-
-/** The write call shown beside the figure. One line per feature. */
-export const WRITE_CALLS: string[] = [
-  'ds.add_frame("observation.imu", imu_sample)      # 1000 Hz, own counter',
-  'ds.add_frame("observation.eeg", eeg_sample)      # 256 Hz',
-  'ds.add_frame("task", "reach_target")             # ← frame boundary',
-  'ds.add_frame("observation.state", joint_state)   # 30 Hz',
-  'ds.add_frame("observation.images.head_rgb", image)',
-  'ds.save_episode()  # flush: one parquet per feature',
-]
-
-/** Drop-in usage: same import shape as LeRobot, same dict out. */
-export const COMPAT_CODE: string[] = [
-  'from mf_lerobot import MultiFrequencyLeRobotDataset',
-  '',
-  'dataset = MultiFrequencyLeRobotDataset(repo_id="HumanCOIN/egocentric")',
-  'sample = next(iter(dataset))',
-  'print(sample)',
-]
-
-/** What that print produces. */
-export const COMPAT_RESULT: string[] = [
-  '{',
-  '  "timestamp":       tensor(0.3333),',
-  '  "frame_index":     tensor(10),',
-  '  "episode_index":   tensor(0),',
-  '  "index":           tensor(10),',
-  '  "task_index":      tensor(0),',
-  '  "task":            "reach_target",',
-  '  "observation.state":  tensor([7])             # nearest',
-  '  "observation.imu":    tensor([33, 6])         # window (-0.033, 0]',
-  '  "observation.imu_timestamps": tensor([33])',
-  '  "observation.eeg":    tensor([8, 8])          # window (-0.033, 0]',
-  '  "observation.images.head_rgb": tensor([3, 480, 640])',
-  '}',
-]

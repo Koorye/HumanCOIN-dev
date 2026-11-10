@@ -145,6 +145,7 @@ onMounted(async () => {
 
       <div class="cli">
         <div class="cli__head">
+          <span class="cli__dots" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="cli__title mono">terminal · bash</span>
           <div class="cli__actions">
             <button
@@ -220,7 +221,8 @@ onMounted(async () => {
   position: relative;
   display: grid;
   grid-template-rows: auto 1fr;
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-md);
   background: var(--paper);
   overflow: hidden;
@@ -260,33 +262,56 @@ onMounted(async () => {
   padding: 0.05rem 0.4rem;
 }
 
+/* The same macOS Terminal object the closing band uses: dark body, title bar
+   with traffic lights, green prompt. */
 .cli {
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
-  background: var(--paper);
+  border: 1px solid #2b3038;
+  border-radius: 10px;
+  background: #16191e;
+  box-shadow: 0 18px 44px rgba(18, 27, 36, 0.16);
   overflow: hidden;
   max-width: 52rem;
 }
 .cli__head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.6rem 0.9rem;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
+  gap: 0.7rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #2f343c;
+  background: #23272e;
 }
-.cli__title { font-size: var(--fs-micro); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mute); }
-.cli__actions { display: flex; gap: 0.4rem; }
-.cli__btn { padding: 0.3rem 0.6rem; font-size: var(--fs-micro); }
+.cli__dots { display: flex; gap: 0.38rem; }
+.cli__dots i {
+  width: 0.56rem;
+  height: 0.56rem;
+  border-radius: 50%;
+}
+.cli__dots i:nth-child(1) { background: #ff5f57; }
+.cli__dots i:nth-child(2) { background: #febc2e; }
+.cli__dots i:nth-child(3) { background: #28c840; }
+.cli__title {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8d949e;
+}
+.cli__actions { display: flex; gap: 0.4rem; margin-left: auto; }
+.cli__btn {
+  padding: 0.24rem 0.55rem;
+  font-size: var(--fs-micro);
+  background: transparent;
+  border: 1px solid #3a4048;
+  color: #9aa1ab;
+}
+.cli__btn:hover { background: #2a2f37; border-color: #6b737d; color: #e6edf3; }
 .cli__code {
   margin: 0;
-  padding: 1rem 1.1rem;
+  padding: 0.9rem 1rem;
   font-size: var(--fs-micro);
-  line-height: 1.75;
-  color: var(--ink);
+  line-height: 1.7;
+  color: #e9eff7;
   overflow-x: auto;
 }
-.c { color: var(--ink-mute); }
-.p { color: var(--c-teal); font-weight: 600; }
+.c { color: #7d848e; }
+.p { color: #7fd88f; font-weight: 600; }
 </style>

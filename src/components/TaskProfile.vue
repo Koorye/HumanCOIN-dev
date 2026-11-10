@@ -139,10 +139,10 @@ watch(slides, tick)
     <section class="tf__tail">
       <header class="tf__thead">
         <h5 class="tf__ttitle">
-          {{ isZh ? '每工位任务条目数' : 'Task entries per station' }}
+          {{ isZh ? '每工位协议条目数（采集计划）' : 'Protocol entries per station (plan)' }}
         </h5>
         <span class="tf__tsub mono">
-          {{ TASK_TOTALS.total }} {{ isZh ? '条目 / 20 工位' : 'entries / 20 stations' }}
+          {{ TASK_TOTALS.total }} {{ isZh ? '协议条目 / 20 工位' : 'protocol entries / 20 stations' }}
         </span>
       </header>
 
@@ -164,10 +164,10 @@ watch(slides, tick)
 
       <p class="tf__legend">
         <span class="tf__lg" style="--c: var(--c-violet)">
-          <i />{{ isZh ? 'L3 · 知觉建构' : 'L3 · perceptual construction' }}
+          <i />{{ isZh ? 'L3 · 认知' : 'L3 · cognition' }}
         </span>
         <span class="tf__lg" style="--c: var(--c-teal)">
-          <i />{{ isZh ? 'L2 · 增强模态' : 'L2 · enhanced modality' }}
+          <i />{{ isZh ? 'L2 · 动作' : 'L2 · action' }}
         </span>
         <span class="tf__lg tf__lg--none">
           {{ isZh ? 'L1 不枚举条目，故不在图中' : 'L1 enumerates no entries, so it is absent here' }}
@@ -350,7 +350,8 @@ watch(slides, tick)
   display: grid;
   gap: 0.7rem;
   outline: none;
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: linear-gradient(180deg, var(--paper) 0%, var(--surface) 100%);
   padding: 0.7rem;

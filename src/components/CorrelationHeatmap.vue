@@ -33,11 +33,15 @@ const n = matrix.length
 /** Row and column of the target selected in the section's metric picker. */
 const focusIdx = computed(() => METRIC_SHORT.indexOf(props.highlight))
 
-const SEL = 40
+/* The grid fills the height of the box, and the box is the same 620 × 330 as
+   the scatter beside it, so the two figures align; the width the square grid
+   leaves over carries the key in a right-hand column. */
+const SEL = 46
 const PAD_L = 34
-const PAD_T = 26
-const W = PAD_L + n * SEL + 8
-const H = PAD_T + n * SEL + 46
+const PAD_T = 30
+const W = 620
+const H = 330
+const LEG_X = PAD_L + n * SEL + 40
 
 const hovered = ref<{ r: number; c: number } | null>(null)
 
@@ -69,6 +73,16 @@ const SHORT: Record<string, string> = {
   fde: 'FDE',
   future: 'FUT',
 }
+
+/** The same ramp the cells use, sampled at its two poles and at zero, so the
+    key cannot drift away from `fill()` when the shading is retuned. */
+const KEY_RAMP: { fill: string }[] = [
+  { fill: fill(1) },
+  { fill: fill(0.45) },
+  { fill: fill(0) },
+  { fill: fill(-0.45) },
+  { fill: fill(-1) },
+]
 </script>
 
 <template>
@@ -138,24 +152,31 @@ const SHORT: Record<string, string> = {
       </text>
     </g>
 
-    <!-- colour key -->
-    <g :transform="`translate(${PAD_L}, ${H - 22})`">
-      <rect class="corr__key" x="0" y="0" width="14" height="9" fill="rgba(91, 69, 168, 0.88)" />
-      <rect class="corr__key" x="14" y="0" width="14" height="9" fill="rgba(91, 69, 168, 0.3)" />
-      <rect class="corr__key" x="28" y="0" width="14" height="9" fill="var(--paper)" />
-      <rect class="corr__key" x="42" y="0" width="14" height="9" fill="rgba(15, 107, 99, 0.3)" />
-      <rect class="corr__key" x="56" y="0" width="14" height="9" fill="rgba(15, 107, 99, 0.88)" />
-      <text class="corr__key-label" x="-6" y="8" text-anchor="end">−1</text>
-      <text class="corr__key-label" x="76" y="8">+1</text>
-      <text class="corr__key-label" x="96" y="8">
-        {{ isZh ? '斯皮尔曼 ρ（符号已归一）' : 'Spearman ρ, sign-normalised' }}
+    <!-- colour key, in the right-hand column the wider box opens up -->
+    <g :transform="`translate(${LEG_X}, ${PAD_T + 8})`">
+      <text class="corr__key-label" x="0" y="0">Spearman ρ</text>
+      <text class="corr__key-sub" x="0" y="16">
+        {{ isZh ? '符号已归一' : 'sign-normalised' }}
       </text>
+      <rect
+        v-for="(s, i) in KEY_RAMP"
+        :key="`k${i}`"
+        class="corr__key"
+        x="0"
+        :y="34 + i * 20"
+        width="16"
+        height="20"
+        :fill="s.fill"
+      />
+      <text class="corr__key-label" x="26" y="48">{{ isZh ? '+1  同向更好' : '+1  better together' }}</text>
+      <text class="corr__key-label" x="26" y="88">{{ isZh ? '0   秩上无关' : '0   no rank relation' }}</text>
+      <text class="corr__key-label" x="26" y="128">{{ isZh ? '−1  反向' : '−1  inverted' }}</text>
     </g>
   </svg>
 </template>
 
 <style scoped>
-.corr { width: 100%; max-width: 30rem; height: auto; display: block; }
+.corr { width: 100%; height: auto; display: block; }
 
 .corr__cell {
   stroke: var(--paper);
@@ -202,6 +223,11 @@ const SHORT: Record<string, string> = {
 }
 .corr__key { stroke: var(--line); stroke-width: 1; }
 .corr__key-label {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-tick);
+  fill: var(--ink-mute);
+}
+.corr__key-sub {
   font-family: var(--ff-mono);
   font-size: var(--fs-tick);
   fill: var(--ink-mute);

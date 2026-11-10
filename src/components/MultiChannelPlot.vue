@@ -7,10 +7,14 @@ const props = withDefaults(
     channels: number[][]
     labels: string[]
     color: string
+    /** Per-lane stroke; falls back to `color` where not given. */
+    colors?: string[]
     label: string
     sublabel?: string
     /** Lane height in px. */
     laneHeight?: number
+    /** Vertical gap between lanes in px. */
+    laneGap?: number
     textHeight?: number
     /** 0..1 position of the playhead. */
     playhead?: number
@@ -35,7 +39,7 @@ const props = withDefaults(
      */
     marks?: number[]
   }>(),
-  { laneHeight: 26, textHeight: 66, playhead: 0, totalSeconds: 16, tickSeconds: 4 },
+  { laneHeight: 26, laneGap: 6, textHeight: 66, playhead: 0, totalSeconds: 16, tickSeconds: 4 },
 )
 
 const W = 1000
@@ -64,7 +68,7 @@ const bandTag = computed(() => Math.min(97, Math.max(3, head.value * 100)))
  * small gap to keep neighbouring traces from reading as one signal.
  */
 const lanes = computed(() => {
-  const gap = 6
+  const gap = props.laneGap
   const h = props.laneHeight
   return props.channels.map((series, i) => {
     let lo = Infinity
@@ -103,7 +107,9 @@ const lanes = computed(() => {
   })
 })
 
-const viewH = computed(() => Math.max(1, lanes.value.length * (props.laneHeight + 6) - 6))
+const viewH = computed(() =>
+  Math.max(1, lanes.value.length * (props.laneHeight + props.laneGap) - props.laneGap),
+)
 
 const ticks = computed(() => {
   const out: { x: number; label: string; edge: 'start' | 'end' | '' }[] = []
@@ -144,7 +150,7 @@ const ticks = computed(() => {
             :y1="ln.zero"
             :y2="ln.zero"
           />
-          <path class="mc__trace" :d="ln.d" :stroke="color" />
+          <path class="mc__trace" :d="ln.d" :stroke="colors?.[i] ?? color" />
         </template>
         <line
           class="mc__playhead"
@@ -206,7 +212,8 @@ const ticks = computed(() => {
 .mc__sub { font-size: var(--fs-micro); color: var(--ink-mute); }
 .mc__plot {
   position: relative;
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--surface);
   overflow: hidden;

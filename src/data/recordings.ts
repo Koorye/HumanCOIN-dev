@@ -20,7 +20,15 @@ export interface ReleasedRecording {
   poster: string
   sample: string
   annotations: string
-  views: Record<'left' | 'right' | 'bleft' | 'bright', string>
+  /** Eye camera for the gaze window, and the depth pair for the point cloud. */
+  eye?: string
+  depthGray?: string
+  depthMeta?: string
+  /** Rectified RGB aligned with the depth pair, used to colour the cloud. */
+  cloudRgb?: string
+  /** The four headband views are always present; wrist, third-person and depth are optional. */
+  views: Record<'left' | 'right' | 'bleft' | 'bright', string> &
+    Partial<Record<'wleft' | 'wright' | 'third' | 'depth', string>>
 }
 
 export interface SampleFrame {
@@ -74,7 +82,8 @@ export interface RecordingSample {
 export interface RecordingSteps {
   steps: string[]
   source?: string
-  timing?: unknown
+  /** Annotator-supplied per-step windows, when the release carries them. */
+  timing?: { segments?: { start: number; end: number }[] } | null
 }
 
 /** One object as the capture's own metadata records it. */
@@ -129,6 +138,17 @@ export function asset(path: string): string {
 
 export function loadRecordings(): Promise<ReleasedRecording[]> {
   return getJson<ReleasedRecording[]>('data/recordings.json')
+}
+
+export interface DepthMeta {
+  nearM: number
+  farM: number
+  intrinsics: { fx: number; fy: number; cx: number; cy: number; width: number; height: number }
+}
+
+export function loadDepthMeta(rec: ReleasedRecording): Promise<DepthMeta | null> {
+  if (!rec.depthMeta) return Promise.resolve(null)
+  return getJson<DepthMeta>(asset(rec.depthMeta)).catch(() => null)
 }
 
 export function loadSample(rec: ReleasedRecording): Promise<RecordingSample> {

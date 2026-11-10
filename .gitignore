@@ -31,3 +31,10 @@ vscode
 *.sw?
 package-lock.json
 yarn.lock
+
+# Image-generation state kept beside the generator script
+scripts/.fig2-gen-state.json
+
+# Local comparison scratch and Python caches
+.tmp-*/
+__pycache__/

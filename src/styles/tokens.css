@@ -13,117 +13,118 @@
   --fs-micro: 0.8125rem;  /* 13px — captions, footnotes, table heads */
   --fs-small: 0.875rem;   /* 14px — captions, table body          */
   --fs-body: 1rem;        /* 16px — body copy                     */
-  --fs-lead: 1.125rem;    /* 18px — lead paragraphs               */
-  --fs-h4: 1.25rem;       /* 20px */
-  --fs-h3: clamp(1.5rem, 1.2rem + 0.9vw, 1.875rem);   /* 24 → 30px */
-  --fs-h2: clamp(1.875rem, 1.4rem + 1.6vw, 2.75rem);  /* 30 → 44px */
-  --fs-h1: clamp(2.75rem, 1.8rem + 4vw, 5rem);        /* 44 → 80px */
-  --fs-stat: clamp(2rem, 1.5rem + 2vw, 3rem);
+  --fs-lead: 1.0625rem;   /* 17px — lead paragraphs               */
+  --fs-h4: 1.0625rem;     /* 17px */
+  --fs-h3: clamp(1.2rem, 1rem + 0.6vw, 1.5rem);       /* 19 → 24px */
+  --fs-h2: clamp(1.5rem, 1.25rem + 1vw, 2.1rem);      /* 24 → 34px */
+  --fs-h1: clamp(2rem, 1.6rem + 2.2vw, 3.2rem);       /* 32 → 51px */
+  --fs-stat: clamp(1.75rem, 1.4rem + 1.4vw, 2.4rem);
   /* Cover masthead: the journal-cover title. Slightly smaller than h1 because
      it is set in the display serif, which runs optically larger at equal size. */
-  --fs-cover: clamp(2.5rem, 1.5rem + 4.6vw, 5.5rem);
+  --fs-cover: clamp(1.8rem, 1.45rem + 1.1vw, 2.35rem);
   --fs-fig-num: 0.6875rem;
 
   /* ---- Line heights ---- */
   --lh-tight: 1.08;
   --lh-heading: 1.2;
-  --lh-body: 1.65;
-  --lh-loose: 1.8;
+  --lh-body: 1.58;
+  --lh-loose: 1.68;
 
   /* ---- Families ----
-     The display serif carries the cover and the figure-numbered headings;
-     everything else stays in the sans, so the two roles never compete. */
-  --ff-sans: 'Inter var', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+     One neutral grotesque carries the whole page, display sizes included. The
+     editorial reading comes from scale, tracking and whitespace, not from a
+     second family or from heavy weights. */
+  --ff-sans: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  --ff-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Source Serif 4',
-    Georgia, 'Songti SC', 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --ff-display: 'Montserrat', 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --ff-mono: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas,
     'Liberation Mono', monospace;
 
   /* ---- Neutrals (AA-checked against --paper) ---- */
   --paper: #ffffff;
-  --surface: #f7f9fa;
-  --surface-2: #eef3f5;
-  --line: #dbe3e8;
-  --line-strong: #b9c6ce;
-  --ink: #16212a;         /* 14.9:1 — headings */
-  --ink-body: #2c3a44;    /* 11.6:1 — body */
-  --ink-soft: #4a5a66;    /*  7.6:1 — secondary */
-  --ink-mute: #61727d;    /*  5.2:1 — captions (AA for 13px+) */
-  /* Deep ground for the cover band and the viewer stage. */
-  --night: #0a1016;
-  --night-2: #101c26;
-  --night-3: #172634;
+  --surface: #ffffff;
+  --surface-2: #f5f9fc;
+  --line: #e9eff5;
+  --line-strong: #cad8e3;
+  --ink: #14202b;         /* 15.1:1 — headings */
+  --ink-body: #2b3a47;    /* 11.3:1 — body */
+  --ink-soft: #55666f;    /*  7.0:1 — secondary */
+  --ink-mute: #6d7f8c;    /*  5.0:1 — captions (AA for 13px+) */
+  /* Deep cool ground for the viewer stage and video frames only. */
+  --night: #0e1822;
+  --night-2: #14212d;
+  --night-3: #1d2f3f;
 
   /* ---- Modality accents (each ≥4.5:1 as text on white) ---- */
-  --c-blue: #1c5f8c;      /* L1 / vision      — 6.4:1 */
-  --c-teal: #0f6b63;      /* L2 / gaze        — 6.1:1 */
-  --c-violet: #5b45a8;    /* L3 / neural      — 7.4:1 */
-  --c-amber: #8a5a08;     /* EMG              — 5.9:1 */
-  --c-rose: #9c2f52;      /* events / errors  — 6.8:1 */
-  --c-slate: #43535f;     /* neutral data     — 8.1:1 */
+  --c-blue: #1f5f96;      /* L1 / vision      — 7.4:1 */
+  --c-teal: #24707c;      /* L2 / gaze        — 5.9:1 */
+  --c-violet: #3c5c9e;    /* L3 / neural      — 6.8:1 */
+  --c-amber: #8a6136;     /* EMG              — 5.6:1 */
+  --c-rose: #99505b;      /* events / errors  — 6.2:1 */
+  --c-slate: #4f6272;     /* neutral data     — 6.4:1 */
 
   /* Tint fills (non-text use only) */
-  --t-blue: #eaf2f8;
-  --t-teal: #e7f2f1;
-  --t-violet: #efecf8;
-  --t-rose: #fbeef2;
-  --t-amber: #f9f1e2;
+  --t-blue: #e9f1f8;
+  --t-teal: #e6f0f3;
+  --t-violet: #eaeef8;
+  --t-rose: #f6eaec;
+  --t-amber: #f5efe4;
 
   /* ---- Figure palette ----
      Categorical scale for charts that need more series than the six modality
      accents provide. Ordered so the first four stay distinguishable in
      greyscale, and so adjacent entries never read as one hue. */
-  --p-1: #1c5f8c;
-  --p-2: #0f6b63;
-  --p-3: #5b45a8;
-  --p-4: #8a5a08;
-  --p-5: #9c2f52;
-  --p-6: #2f7d9e;
-  --p-7: #6b7f2a;
-  --p-8: #43535f;
+  --p-1: #1f5f96;
+  --p-2: #24707c;
+  --p-3: #5b8bb5;
+  --p-4: #8a6136;
+  --p-5: #99505b;
+  --p-6: #4f6272;
+  --p-7: #7c93a6;
+  --p-8: #a8b8c4;
 
   /* Sequential ramp for heatmaps and density, low → high. */
-  --seq-0: #f2f6f8;
-  --seq-1: #dceaf0;
-  --seq-2: #b6d3e0;
-  --seq-3: #86b4c9;
-  --seq-4: #4e8aa8;
-  --seq-5: #24637f;
-  --seq-6: #123f56;
+  --seq-0: #f3f7fa;
+  --seq-1: #e2ecf4;
+  --seq-2: #c6daea;
+  --seq-3: #9dbfd9;
+  --seq-4: #6b9dc4;
+  --seq-5: #3f77a4;
+  --seq-6: #1f4d73;
 
   /* Diverging pair, for signed gains around a zero baseline. */
-  --div-neg: #5b45a8;
-  --div-pos: #0f6b63;
+  --div-neg: #99505b;
+  --div-pos: #1f5f96;
 
   /* Bright variants that hold up on the dark cover / stage ground. */
-  --k-blue: #6fb3d8;
-  --k-teal: #5fc7bb;
-  --k-violet: #a48ce0;
-  --k-amber: #e0b25c;
-  --k-rose: #e8879f;
+  --k-blue: #9cc3e2;
+  --k-teal: #9fd0d6;
+  --k-violet: #a9b8e0;
+  --k-amber: #d9b58c;
+  --k-rose: #d8a2a8;
 
   /* ---- Layout ---- */
   --shell-max: 1240px;
   --shell-wide: 1440px;
   --prose-max: 68ch;
-  --gap: clamp(1.25rem, 0.9rem + 1.4vw, 2.5rem);
-  --gap-sm: clamp(0.75rem, 0.6rem + 0.6vw, 1.25rem);
-  --section-y: clamp(3.5rem, 2.4rem + 4vw, 7rem);
-  --nav-h: 60px;
+  --gap: clamp(0.9rem, 0.7rem + 0.9vw, 1.6rem);
+  --gap-sm: clamp(0.55rem, 0.45rem + 0.4vw, 0.9rem);
+  --section-y: clamp(2.1rem, 1.6rem + 2.2vw, 3.6rem);
+  --nav-h: 56px;
 
   /* ---- Radii ---- */
   --r-xs: 3px;
   --r-sm: 5px;
-  --r-md: 8px;
-  --r-lg: 14px;
+  --r-md: 10px;
+  --r-lg: 18px;
   --r-pill: 999px;
 
   /* ---- Elevation (3 levels) ---- */
-  --e-1: 0 1px 2px rgba(22, 33, 42, 0.06), 0 1px 3px rgba(22, 33, 42, 0.04);
-  --e-2: 0 2px 6px rgba(22, 33, 42, 0.07), 0 8px 24px rgba(22, 33, 42, 0.06);
-  --e-3: 0 4px 12px rgba(22, 33, 42, 0.09), 0 18px 48px rgba(22, 33, 42, 0.1);
-  --e-night: 0 18px 60px rgba(6, 14, 20, 0.5);
+  --e-1: 0 1px 2px rgba(20, 32, 43, 0.05), 0 1px 3px rgba(20, 32, 43, 0.04);
+  --e-2: 0 2px 6px rgba(20, 32, 43, 0.05), 0 10px 28px rgba(20, 32, 43, 0.06);
+  --e-3: 0 6px 16px rgba(20, 32, 43, 0.07), 0 24px 60px rgba(20, 32, 43, 0.09);
+  --e-night: 0 18px 60px rgba(10, 16, 12, 0.5);
 
   /* ---- Motion ----
      Four steps, used by role rather than by taste:
@@ -148,14 +149,29 @@
   --focus-offset: 2px;
 }
 
-/* Font loading: self-hosted for privacy + speed, with a system fallback
-   that is visually close so there is no layout shift penalty. */
+/* Fonts, self-hosted: Jost carries the body, Montserrat the display sizes —
+   the pair the reference page sets its research reading in. Both are variable
+   files, Latin subset only; Chinese text falls through to the system CJK face,
+   which is why the CJK families stay in both stacks. */
 @font-face {
-  font-family: 'Inter var';
+  font-family: 'Jost';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: local('Inter');
+  src: url('../assets/fonts/jost-var-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/montserrat-var-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @media (prefers-reduced-motion: reduce) {

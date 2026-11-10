@@ -13,7 +13,7 @@ const year = new Date().getFullYear()
  * hangs under the field indent: one unwrapped line would be far wider than any
  * column and would hide most of the list behind a horizontal scrollbar.
  */
-const FIELD_W = 7
+const FIELD_W = 11
 const authorPrefix = `  ${'author'.padEnd(FIELD_W)} = {`
 const authorHang = ' '.repeat(authorPrefix.length)
 
@@ -38,7 +38,10 @@ const bibtex = [
   `@${CITATION.type}{${CITATION.key},`,
   ...authorLines(AUTHORS),
   `  ${'title'.padEnd(FIELD_W)} = {${CITATION.title}},`,
+  `  ${'institution'.padEnd(FIELD_W)} = {${CITATION.institution}},`,
+  `  ${'type'.padEnd(FIELD_W)} = {${CITATION.reportType}},`,
   `  ${'year'.padEnd(FIELD_W)} = {${CITATION.year}},`,
+  `  ${'url'.padEnd(FIELD_W)} = {${CITATION.url}},`,
   `  ${'license'.padEnd(FIELD_W)} = {${CITATION.license}},`,
   '}',
 ].join('\n')
@@ -206,7 +209,8 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
   margin: 0;
   padding: 0.8rem 0.9rem;
   background: var(--paper);
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-sm);
   font-size: var(--fs-micro);
   line-height: 1.7;

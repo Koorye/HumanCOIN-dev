@@ -26,7 +26,10 @@ body {
   font-family: var(--ff-sans);
   font-size: var(--fs-body);
   line-height: var(--lh-body);
+  letter-spacing: -0.01em;
   color: var(--ink-body);
+  /* One white sheet for the whole document. Sections are separated by rules and
+     whitespace, never by a change of ground. */
   background: var(--paper);
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
@@ -39,26 +42,24 @@ img, video { height: auto; }
 h1, h2, h3, h4, h5 {
   margin: 0;
   color: var(--ink);
-  font-weight: 640;
+  font-weight: 500;
   line-height: var(--lh-heading);
-  letter-spacing: -0.018em;
+  letter-spacing: -0.022em;
   text-wrap: balance;
 }
 
-h1 { font-size: var(--fs-h1); line-height: var(--lh-tight); letter-spacing: -0.032em; }
+h1 { font-size: var(--fs-h1); line-height: 1.06; letter-spacing: -0.032em; }
 h2 { font-size: var(--fs-h2); }
 h3 { font-size: var(--fs-h3); }
-h4 { font-size: var(--fs-h4); font-weight: 600; letter-spacing: -0.01em; }
+h4 { font-size: var(--fs-h4); font-weight: 500; letter-spacing: -0.012em; }
 
-/* The display serif is reserved for two roles and nothing else: the cover
-   masthead, and the section titles. A serif at heading size is what carries
-   the journal-cover reading; applied to body copy or controls it would read
-   as decoration rather than as structure. */
+/* One grotesque at display scale, tracked tight: the editorial reading comes
+   from size, weight and whitespace rather than from a second family. */
 .section__title,
 .hero__title {
   font-family: var(--ff-display);
   font-weight: 500;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.025em;
 }
 
 p { margin: 0 0 1em; }
@@ -123,16 +124,26 @@ strong, b { font-weight: 640; color: var(--ink); }
   padding-block: var(--section-y);
   border-top: 1px solid var(--line);
 }
-.section--tinted { background: var(--surface); }
+.section--tinted { background: var(--paper); }
 
 .section__head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
   gap: var(--gap);
   align-items: end;
-  margin-bottom: clamp(1.75rem, 1.2rem + 1.8vw, 3rem);
+  margin-bottom: clamp(1.1rem, 0.8rem + 1vw, 1.8rem);
 }
 .section__head--single { grid-template-columns: minmax(0, 1fr); }
+/* A head whose aside carries the section's argument rather than a standfirst:
+   a wider column and top alignment, so the paragraph sits beside the title
+   instead of pushing the figures down a band. */
+.section__head--aside-wide {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 32rem);
+  align-items: start;
+}
+@media (max-width: 1080px) {
+  .section__head--aside-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); }
+}
 @media (max-width: 900px) {
   .section__head { grid-template-columns: minmax(0, 1fr); }
 }
@@ -140,24 +151,25 @@ strong, b { font-weight: 640; color: var(--ink); }
 .section-num {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  font-family: var(--ff-mono);
+  gap: 0.5rem;
+  font-family: var(--ff-sans);
   font-size: var(--fs-micro);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--ink-mute);
-  margin-bottom: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.8rem;
 }
 .section-num::before {
   content: '';
-  width: 1.75rem;
-  height: 1px;
-  background: var(--line-strong);
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--c-blue);
   flex: none;
 }
-.section-num b { color: var(--c-blue); font-weight: 600; }
+.section-num b { color: var(--ink-mute); font-weight: 600; margin-right: 0.15em; }
 
-.section__title { max-width: 30ch; }
+.section__title { max-width: 38ch; }
 .section__aside {
   font-size: var(--fs-small);
   color: var(--ink-soft);
@@ -167,11 +179,11 @@ strong, b { font-weight: 640; color: var(--ink); }
 
 /* ---- Generic card / figure ---- */
 .panel {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
 }
-.section--tinted .panel { background: var(--paper); }
 
 figure { margin: 0; }
 
@@ -179,7 +191,7 @@ figure { margin: 0; }
   font-size: var(--fs-small);
   line-height: 1.7;
   color: var(--ink-mute);
-  margin-top: 0.7rem;
+  margin-top: 0.45rem;
   max-width: var(--prose-max);
 }
 
@@ -232,11 +244,11 @@ figure { margin: 0; }
 }
 .btn:hover { background: var(--surface-2); border-color: var(--ink-mute); }
 .btn--primary {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: #fff;
+  background: transparent;
+  border-color: var(--c-blue);
+  color: var(--c-blue);
 }
-.btn--primary:hover { background: var(--c-blue); border-color: var(--c-blue); }
+.btn--primary:hover { background: var(--t-blue); border-color: var(--c-blue); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn:disabled:hover { background: var(--paper); border-color: var(--line-strong); }
 
@@ -289,11 +301,11 @@ figure { margin: 0; }
    ============================================================ */
 .fig {
   margin: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
-  background: var(--paper);
-  padding: clamp(0.9rem, 0.7rem + 0.7vw, 1.25rem) clamp(0.95rem, 0.75rem + 0.8vw, 1.4rem)
-    clamp(1rem, 0.8rem + 0.8vw, 1.4rem);
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  padding: clamp(0.7rem, 0.55rem + 0.5vw, 1rem) 0 clamp(0.75rem, 0.6rem + 0.5vw, 1.1rem);
 }
 
 .fig__head {
@@ -319,7 +331,7 @@ figure { margin: 0; }
   font-size: var(--fs-small);
   font-weight: 620;
   color: var(--ink);
-  letter-spacing: -0.005em;
+  letter-spacing: -0.01em;
 }
 .fig__aside {
   margin-left: auto;
@@ -374,6 +386,220 @@ figure { margin: 0; }
 /* Data marks grow in from the axis rather than appearing whole. */
 .ch-draw { transition: stroke-dashoffset var(--dur-4) var(--ease-out); }
 .ch-rise { transition: transform var(--dur-4) var(--ease-out); }
+
+/* ============================================================
+   Chart chrome and motion
+   The figures borrowed from the report's web companion: a quiet toolbar,
+   a readout that answers the pointer, a data table behind a disclosure, and
+   marks that grow in from their own baseline. Everything is decoration on a
+   chart that is complete at rest — the stage is only hidden while its
+   entrance is waiting to run.
+   ============================================================ */
+.chart-stage { transition: opacity 220ms var(--ease); }
+.chart-stage:not(.is-play) { opacity: 0; }
+@media print { .chart-stage:not(.is-play) { opacity: 1; } }
+
+.chart-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin-bottom: 0.55rem;
+}
+.chart-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+.chart-tabs button {
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-mute);
+  font: inherit;
+  font-size: var(--fs-micro);
+  padding: 0.25rem 0 0.35rem;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.chart-tabs button:hover { color: var(--ink); }
+.chart-tabs button[aria-pressed='true'] {
+  color: var(--c-blue);
+  border-bottom-color: var(--c-blue);
+}
+.chart-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  background: transparent;
+  padding: 0.25rem 0;
+  color: var(--ink-mute);
+  font: inherit;
+  font-size: var(--fs-micro);
+  cursor: pointer;
+  transition: color var(--dur) var(--ease);
+}
+.chart-replay:hover { color: var(--ink); }
+.chart-replay svg { width: 0.9em; height: 0.9em; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+.chart-readout {
+  min-height: 2.3em;
+  margin: 0.45rem 0 0;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.chart-readout b { color: var(--ink); font-weight: 560; }
+.chart-readout .mono { font-family: var(--ff-mono); font-size: 0.94em; }
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+  align-items: center;
+  font-size: var(--fs-micro);
+  color: var(--ink-soft);
+}
+.chart-legend > span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.chart-legend i {
+  width: 0.55rem;
+  height: 0.55rem;
+  display: inline-block;
+  background: var(--swatch);
+  flex: none;
+}
+
+.chart-data {
+  margin-top: 0.6rem;
+  border-top: 1px solid var(--line);
+}
+.chart-data summary {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0;
+  list-style: none;
+  cursor: pointer;
+  font-size: var(--fs-micro);
+  color: var(--ink-mute);
+}
+.chart-data summary::-webkit-details-marker { display: none; }
+.chart-data summary::before { content: '+'; color: var(--ink-soft); font-size: 1.1em; line-height: 1; }
+.chart-data[open] summary::before { content: '−'; }
+.chart-data summary:hover { color: var(--ink); }
+.chart-data__scroll { overflow-x: auto; }
+.chart-data__scroll table { width: max-content; min-width: 100%; }
+.chart-data table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-micro);
+  font-variant-numeric: tabular-nums;
+}
+.chart-data th,
+.chart-data td {
+  padding: 0.35rem 0.5rem 0.35rem 0;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.chart-data th {
+  color: var(--ink-mute);
+  font-weight: 500;
+  font-size: var(--fs-tick);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.chart-data td:first-child { color: var(--ink); }
+.chart-data td:last-child { text-align: right; padding-right: 0; }
+.chart-data th:last-child { text-align: right; padding-right: 0; }
+.chart-data .num { font-family: var(--ff-mono); }
+.chart-data .wrap td { white-space: normal; }
+@media (max-width: 640px) {
+  .chart-data table.data-table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 0;
+  }
+  .chart-data .data-table th,
+  .chart-data .data-table td {
+    white-space: normal;
+    padding: 0.3rem 0.2rem 0.3rem 0;
+    overflow-wrap: anywhere;
+  }
+  .chart-data .data-table th { font-size: 9px; letter-spacing: 0.02em; }
+  .chart-data .data-table td { font-size: 10px; }
+  .data-table--scene th:nth-child(1) { width: 28%; }
+  .data-table--scene th:nth-child(2) { width: 22%; }
+  .data-table--scene th:nth-child(3),
+  .data-table--scene th:nth-child(4),
+  .data-table--scene th:nth-child(5) { width: 12%; }
+  .data-table--scene th:nth-child(6) { width: 14%; }
+  .data-table--object th:nth-child(1) { width: 9%; }
+  .data-table--object th:nth-child(2) { width: 31%; }
+  .data-table--object th:nth-child(3),
+  .data-table--object th:nth-child(4),
+  .data-table--object th:nth-child(5) { width: 12%; }
+  .data-table--object th:nth-child(6) { width: 24%; }
+  .data-table--verb th:nth-child(1) { width: 32%; }
+  .data-table--verb th:nth-child(2),
+  .data-table--verb th:nth-child(3),
+  .data-table--verb th:nth-child(4),
+  .data-table--verb th:nth-child(5) { width: 17%; }
+}
+
+/* Marks grow from their own baseline. `--i` staggers a series. */
+@keyframes ch-grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes ch-grow-y {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes ch-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes ch-rise {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes ch-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: none; }
+}
+.is-play .chart-grow-x {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: ch-grow-x 900ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 12ms);
+}
+.is-play .chart-grow-y {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: ch-grow-y 850ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 9ms);
+}
+.is-play .chart-wipe { animation: ch-wipe 1100ms var(--ease-out) both; }
+.is-play .chart-rise {
+  animation: ch-rise 620ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 32ms);
+}
+.is-play .chart-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ch-pop 420ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 30ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-stage:not(.is-play) { opacity: 1; }
+  .is-play [class*='chart-'] { animation: none !important; }
+}
 
 /* ============================================================
    Reveal on scroll

@@ -20,7 +20,7 @@
  * timing of its own; that derivation is stated rather than hidden.
  */
 import { computed } from 'vue'
-import { ANNOTATION, DIM_LABELS, actionLabel, materialLabel, objectLabel, shapeLabel, type Bi } from '@/content'
+import { ANNOTATION, DIM_LABELS, actionLabel, materialLabel, objectLabel, shapeLabel } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import type {
   AnnotatedStep,
@@ -28,7 +28,7 @@ import type {
   SampleFrame,
   SceneObject,
 } from '@/data/recordings'
-import { readHand, readStreams, resolveObjects, type StreamCoverage } from '@/data/moment'
+import { readHand, resolveObjects } from '@/data/moment'
 
 const props = defineProps<{
   step: AnnotatedStep | null
@@ -70,25 +70,6 @@ const handTravel = computed(() =>
 
 const action = computed(() => (props.step ? actionLabel(props.step.text, lang.value) : null))
 const resolved = computed(() => resolveObjects(props.step, props.objects))
-
-/**
- * The six streams over this window. Derived from the loaded sample, so the
- * counts are what the release actually delivers in this window rather than an
- * assumed grid.
- */
-const streams = computed(() =>
-  props.sample ? readStreams(props.sample, props.start, props.end) : [],
-)
-
-/** Stream id → the two content labels naming it and the quantity it holds. */
-const STREAM_LABELS: Record<StreamCoverage['id'], { name: Bi; quantity: Bi }> = {
-  rgb: { name: ANNOTATION.modRgb, quantity: ANNOTATION.modRgbQuantity },
-  gaze: { name: ANNOTATION.modGaze, quantity: ANNOTATION.modGazeQuantity },
-  pose: { name: ANNOTATION.modPose, quantity: ANNOTATION.modPoseQuantity },
-  glove: { name: ANNOTATION.modGlove, quantity: ANNOTATION.modGloveQuantity },
-  emg: { name: ANNOTATION.modEmg, quantity: ANNOTATION.modEmgQuantity },
-  eeg: { name: ANNOTATION.modEeg, quantity: ANNOTATION.modEegQuantity },
-}
 
 /** Natural dimension order per primitive, so a cylinder does not read ⌀ after h. */
 const DIM_ORDER: Record<string, string[]> = {
@@ -177,6 +158,8 @@ const isEmptyObject = computed(() => !resolved.value.mentioned.length && !resolv
       <p class="moment__note">{{ t(ANNOTATION.handNote) }}</p>
     </template>
 
+    </div>
+
     <div class="moment__objects">
       <p class="moment__label">
         {{ t(ANNOTATION.attrObject) }}
@@ -244,43 +227,7 @@ const isEmptyObject = computed(() => !resolved.value.mentioned.length && !resolv
         </ul>
       </details>
     </div>
-    </div>
 
-    <!-- Coverage, reduced to what the window counts hold and how fast. -->
-    <div class="moment__split">
-      <p class="moment__label moment__label--ann">{{ t(ANNOTATION.modTitle) }}</p>
-      <table class="tbl mods">
-        <thead>
-          <tr>
-            <th>{{ t(ANNOTATION.modCarries) }}</th>
-            <th class="mods__num">{{ t(ANNOTATION.modRate) }}</th>
-            <th class="mods__num">{{ t(ANNOTATION.modHere) }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="s in streams" :key="s.id">
-            <td>
-              <span class="mods__name">{{ t(STREAM_LABELS[s.id].name) }}</span>
-              <span class="mods__q">
-                <span v-if="s.units" class="mods__units">{{ s.units }}</span>{{ t(STREAM_LABELS[s.id].quantity) }}
-              </span>
-            </td>
-            <td class="mods__num mono">
-              {{ s.rate.toFixed(s.rateUnit === 'fps' ? 0 : 1) }} {{ s.rateUnit }}
-              <span v-if="s.native" class="mods__native">
-                {{ t(ANNOTATION.modCaptured) }} {{ s.native.toFixed(0) }} Hz
-              </span>
-            </td>
-            <td class="mods__num mono">
-              {{ s.count }}
-              <span class="mods__unit">{{ t(s.countUnit === 'frames' ? ANNOTATION.modFrames : ANNOTATION.modSamples) }}</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="moment__note">{{ t(ANNOTATION.modNote) }}</p>
-      <p class="moment__foot">{{ t(ANNOTATION.weightNote) }}</p>
-    </div>
   </section>
 </template>
 
@@ -291,21 +238,21 @@ const isEmptyObject = computed(() => !resolved.value.mentioned.length && !resolv
 .moment {
   margin-top: 1rem;
   padding: 0.75rem 0.9rem 0.85rem;
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-md);
   background: var(--surface);
-  /* Annotation and coverage side by side: the annotation is what is being read,
-     the coverage is the evidence behind it, and both fit on one screen. */
+  /* Action on the left, objects on the right; the count tables are gone. */
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.15rem 1.4rem;
   align-items: start;
 }
 @media (max-width: 900px) { .moment { grid-template-columns: minmax(0, 1fr); } }
 .moment__ann { grid-column: 1; min-width: 0; }
-.moment__split { grid-column: 2; min-width: 0; }
+.moment__objects { grid-column: 2; min-width: 0; }
 @media (max-width: 900px) {
-  .moment__ann, .moment__split { grid-column: 1; }
+  .moment__ann, .moment__objects { grid-column: 1; }
 }
 
 .moment__head {
@@ -400,7 +347,8 @@ const isEmptyObject = computed(() => !resolved.value.mentioned.length && !resolv
 .objs { list-style: none; margin: 0 0 0.6rem; padding: 0; display: grid; gap: 0.5rem; }
 .obj {
   padding: 0.6rem 0.7rem 0.65rem;
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--paper);
 }
@@ -465,13 +413,4 @@ const isEmptyObject = computed(() => !resolved.value.mentioned.length && !resolv
 .grp__list li { display: flex; align-items: center; gap: 0.45rem; font-size: var(--fs-micro); }
 .grp__name { color: var(--ink); white-space: nowrap; }
 .grp__spec { color: var(--ink-mute); font-size: var(--fs-tick); margin-left: auto; text-align: right; }
-
-.moment__foot {
-  margin: 0.9rem 0 0;
-  padding-top: 0.65rem;
-  border-top: 1px solid var(--line);
-  font-size: var(--fs-tick);
-  color: var(--ink-mute);
-  line-height: 1.6;
-}
 </style>

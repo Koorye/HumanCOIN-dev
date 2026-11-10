@@ -121,22 +121,10 @@ const xTicks = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300]
         {{ isZh ? '片段时长（秒）' : 'EPISODE LENGTH (S)' }}
       </text>
 
-      <!-- where each tier's median lands: the legend numbers get a position -->
-      <g v-for="t in TIERS" :key="`med-${t.id}`" class="mix__median">
-        <line
-          :x1="xOf(DURATION_MEDIANS[t.id])"
-          :x2="xOf(DURATION_MEDIANS[t.id])"
-          :y1="yOf(0) + 42"
-          :y2="yOf(0) + 50"
-          :stroke="t.color"
-        />
-        <text :x="xOf(DURATION_MEDIANS[t.id])" :y="yOf(0) + 65" text-anchor="middle" :fill="t.color">
-          {{ t.id }} · {{ DURATION_MEDIANS[t.id] }}s
-        </text>
-      </g>
-
-      <!-- legend: the volume each tier contributes to the whole -->
-      <g v-for="(t, i) in TIERS" :key="`leg-${t.id}`" :transform="`translate(${PAD.l + i * 172} ${H - 16})`">
+      <!-- legend: the volume each tier contributes, and where its median lands.
+           The median is printed here rather than marked on the axis below, so
+           the two rows cannot crowd each other at the foot of the plot. -->
+      <g v-for="(t, i) in TIERS" :key="`leg-${t.id}`" :transform="`translate(${PAD.l + i * 172} ${H - 10})`">
         <rect x="0" y="-9" width="9" height="9" rx="1.5" :fill="t.color" />
         <text class="mix__legtext" :x="14" y="0" :fill="t.color">{{ t.id }}</text>
         <text class="mix__legtext mix__legtext--dim" :x="36" y="0">
@@ -165,11 +153,6 @@ const xTicks = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300]
   font-size: var(--fs-tick);
   letter-spacing: 0.08em;
   fill: var(--ink-mute);
-}
-.mix__median text {
-  font-family: var(--ff-mono);
-  font-size: var(--fs-tick);
-  font-weight: 600;
 }
 .mix__legtext {
   font-family: var(--ff-mono);

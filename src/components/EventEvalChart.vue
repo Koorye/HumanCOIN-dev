@@ -99,7 +99,10 @@ const rows = computed<Row[]>(() =>
 
 const W = 760
 const ROW_H = 52
-const PAD = { l: 176, r: 118, t: 30, b: 62 }
+/* The bottom pad carries two stacked text blocks — the axis title and, below it,
+   the mark legend — so it is sized to keep a clear gap between them rather than
+   letting the legend crowd the axis label. */
+const PAD = { l: 176, r: 118, t: 30, b: 96 }
 const H = PAD.t + rows.value.length * ROW_H + PAD.b
 const PLOT_W = W - PAD.l - PAD.r
 

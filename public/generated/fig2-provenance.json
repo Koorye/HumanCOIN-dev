@@ -1,0 +1,197 @@
+{
+  "synthetic": true,
+  "model": "gpt-image-2.5-flare",
+  "purpose": "Illustrative scene, acquisition-setting and object photographs for §03. They describe the classes and the settings; they are not frames from the corpus.",
+  "art_direction": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay.",
+  "entries": {
+    "cafe": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: A barista's hands tamp ground coffee into a portafilter at a cafe counter; a ceramic cup, a grinder, a warm timber counter and blurred cafe interior.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 15.8
+    },
+    "bedroom": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: A person folds a linen shirt on a neatly made bed in a calm bedroom; white duvet, blue-grey pillows, a wooden bedside table and a window with morning light.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 16.0
+    },
+    "dining": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands set a ceramic plate and cutlery on a wooden dining table in a dining room; a linen napkin, two chairs, a pendant lamp above, late-afternoon light.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 19.2
+    },
+    "supermarket": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: A hand reaches for a packaged item on a stocked supermarket shelf; a deep aisle of shelves in soft focus, a shopping basket held in the other hand.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 22.2
+    },
+    "kitchen": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands slice fresh vegetables on a wooden cutting board beside a sink in a bright home kitchen; a bowl of tomatoes, herbs in a pot, pale stone counter.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 28.0
+    },
+    "pharmacy": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands take a medicine box from a white pharmacy shelf; neatly arranged boxes and bottles, a clean counter, clinical daylight.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 16.2
+    },
+    "fitness": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands adjust a weight plate on a dumbbell rack in a gym; rubber flooring, dark metal, tall windows with daylight, a water bottle nearby.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 15.5
+    },
+    "retail": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands arrange folded knitwear on a display table in a small clothing boutique; stacked sweaters in muted colours, a wooden hanger rail behind.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 16.2
+    },
+    "books": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands pull a hardback book from a tall bookshelf in a quiet bookshop; rows of anonymous cloth spines with no legible lettering, warm wood, soft window light.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 23.4
+    },
+    "hotel": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands place a folded white towel and small amenity bottles on a hotel room desk; crisp white linen, a luggage rack and a soft lamp in the background.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 20.3
+    },
+    "workbench": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands assemble a small mechanical part with a screwdriver on a workbench; a pegboard of tools behind, metal components and a tray of screws on the bench.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 23.5
+    },
+    "park": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands prune a low hedge with secateurs in a public park; green foliage, a gravel path, benches and trees in soft morning light.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 27.0
+    },
+    "office": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands sort paper documents into folders on an office desk; a keyboard, a monitor showing a neutral document out of focus, a cup of tea.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 24.4
+    },
+    "warehouse": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands scan a cardboard box with a handheld barcode scanner beside stacked pallets in a warehouse aisle; concrete floor, steel shelving, high ceiling.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 25.4
+    },
+    "medical": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Gloved hands arrange stainless-steel instruments on a tray in a clinic; sterile blue drapes, an examination light, a clean counter.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 17.5
+    },
+    "classroom": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands arrange coloured wooden blocks and books on a classroom table; a blurred chalkboard and small chairs behind, bright school daylight.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 14.7
+    },
+    "lab": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Gloved hands pipette liquid into glass test tubes on a laboratory bench; a rack of tubes, a beaker, cool white light, stainless surfaces.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 13.2
+    },
+    "agriculture": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Scene: Hands transplant a small seedling into dark soil in a greenhouse; rows of young plants, terracotta pots, diffused warm light through glass.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 20.0
+    },
+    "controlled": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Behind-the-shoulder view of a seated research participant at an instrumented desk, wearing a black EEG cap with electrodes, a slim four-lens headband across the forehead, black forearm bands and small motion-tracking markers on the wrists; cables run to a recording cart, a third-person camera on a tripod frames the desk from the side, small objects are laid out on the table. A calm laboratory room, pale walls, mixed daylight. No face, no text, no logos.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 25.0
+    },
+    "open": {
+      "prompt": "Editorial documentary photograph for an egocentric manipulation dataset. Over-the-shoulder view, only the subject's adult hands and forearms in frame, no face, no reflection of a face. Soft natural daylight, muted cool palette, fine 35mm grain, shallow depth of field, realistic and understated. No text, no lettering, no logos, no watermark, no UI overlay. Behind-the-shoulder view of a shopper in a supermarket aisle, wearing a slim black four-lens headband and two small forearm bands, reaching for a product on the shelf; a shopping basket in the other hand, stocked shelves, clean daylight. Candid and unobtrusive, everyday clothing. No face, no text, no logos.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 24.3
+    },
+    "cup": {
+      "prompt": "A single white glazed ceramic cup, straight tapered sides, on a seamless very pale warm-white background, three-quarter view, soft studio light from the upper left, gentle contact shadow, product photography, centered, no handle visible, no text, no logos.",
+      "model": "gpt-image-2.5-flare",
+      "size": [
+        1536,
+        1024
+      ],
+      "seconds": 24.9
+    }
+  }
+}

@@ -19,11 +19,9 @@ import {
   FPS,
   FRAME_MS,
   MF_LANES,
-  MF_MODES,
   QUERY_FRAME,
   SPAN_MS,
   WINDOW_FROM,
-  WRITE_CALLS,
   laneRows,
   laneSamples,
   laneShape,
@@ -34,16 +32,13 @@ import {
 const { t, isZh } = useI18n()
 
 /* ---- geometry, in SVG user units ---- */
-const W = 720
-const H = 254
-const X0 = 106
-const X1 = 512
-const BOX_X = 526
-const BOX_W = 190
-const BOX_H = 30
-const RAIL_Y = 44
-const LANE_Y0 = 84
-const LANE_GAP = 41
+const W = 600
+const H = 268
+const X0 = 100
+const X1 = 588
+const RAIL_Y = 42
+const LANE_Y0 = 80
+const LANE_GAP = 42
 
 const span = X1 - X0
 const xOf = (ms: number) => X0 + (ms / SPAN_MS) * span
@@ -92,8 +87,6 @@ const canAnimate = computed(() => !reduced.value)
 
 /** Sweep position of the write animation, 0..1 across the drawn span. */
 const writeFrac = computed(() => (phase.value === 'write' ? progress.value / AT_WRITE : 1))
-/** Whether the buffers have been flushed to parquet. */
-const saved = computed(() => phase.value !== 'write')
 /** Resolution of the read phase, 0..1. */
 const readFrac = computed(() => {
   if (side.value === 'write') return 0
@@ -188,8 +181,8 @@ void inView
 
 <template>
   <figure ref="root" class="mf">
-    <!-- step rail + transport -->
-    <div class="mf__bar">
+    <!-- process rail: one control, one story -->
+    <aside class="mf__side">
       <ol class="mf__steps">
         <li
           v-for="(s, i) in steps"
@@ -211,174 +204,170 @@ void inView
         <span aria-hidden="true">{{ playing ? '❚❚' : '▶' }}</span>
         <span>{{ playing ? t(FORMAT.pause) : phase === 'aligned' ? t(FORMAT.replay) : t(FORMAT.playback) }}</span>
       </button>
-    </div>
+    </aside>
 
-    <svg class="mf__svg" :viewBox="`0 0 ${W} ${H}`" role="img" :aria-label="t(FORMAT.figRead)">
-      <!-- master clock rail -->
-      <text class="mf__rail-label" x="0" :y="RAIL_Y + 4">{{ isZh ? '主时钟' : 'master clock' }}</text>
-      <text class="mf__rail-sub mono" x="0" :y="RAIL_Y + 17">{{ FPS }} fps</text>
-      <line class="mf__rail" :x1="X0" :x2="X1" :y1="RAIL_Y" :y2="RAIL_Y" />
-      <g v-for="f in frames" :key="f.ms">
-        <line
-          class="mf__tick"
-          :class="{ 'is-past': frameOn(f.ms) }"
-          :x1="f.x"
-          :x2="f.x"
-          :y1="RAIL_Y - 7"
-          :y2="H - 18"
-        />
-        <circle class="mf__tick-dot" :class="{ 'is-past': frameOn(f.ms) }" :cx="f.x" :cy="RAIL_Y" r="3.2" />
-      </g>
-
-      <!-- the read window -->
-      <rect
-        class="mf__band"
-        :class="{ 'is-on': queryOn }"
-        :x="windowFromX"
-        :y="RAIL_Y - 7"
-        :width="X1 - windowFromX"
-        :height="H - 18 - (RAIL_Y - 7)"
-      />
-
-      <!-- feature lanes -->
-      <g v-for="l in lanes" :key="l.lane.id">
-        <text class="mf__name" x="0" :y="l.y + 4">{{ t(l.lane.label) }}</text>
-        <text class="mf__hz mono" x="0" :y="l.y + 17">{{ l.lane.rateLabel }}</text>
-        <line class="mf__axis" :x1="X0" :x2="X1" :y1="l.y" :y2="l.y" />
-
-        <circle
-          v-for="(d, j) in l.dots"
-          :key="j"
-          class="mf__dot"
-          :class="{ 'is-in': queryOn && d.inWindow && rowOn(l.i) }"
-          :cx="d.x"
-          :cy="l.y"
-          :r="l.lane.dotRadius"
-          :fill="l.lane.color"
-          :opacity="dotOn(d.ms) ? 1 : 0.12"
-        />
-
-        <!-- the single reading a nearest-mode lookup lands on -->
-        <circle
-          v-if="queryOn && l.lane.mode === 'nearest' && rowOn(l.i)"
-          class="mf__pick"
-          :cx="l.nearX"
-          :cy="l.y"
-          :r="l.lane.dotRadius + 4.5"
-          :stroke="l.lane.color"
-        />
-
-        <!-- this feature's own parquet -->
-        <g class="mf__file" :class="{ 'is-on': saved }">
-          <rect :x="BOX_X" :y="l.y - BOX_H / 2" :width="BOX_W" :height="BOX_H" rx="4" />
-          <rect class="mf__file-bar" :x="BOX_X" :y="l.y - BOX_H / 2" width="3.5" :height="BOX_H" :fill="l.lane.color" />
-          <text class="mf__file-k mono" :x="BOX_X + 11" :y="l.y - 2">{{ l.file }}</text>
-          <text class="mf__file-v mono" :x="BOX_X + 11" :y="l.y + 11">
-            <tspan>{{ saved ? `${l.written.toLocaleString('en-US')} ${t(FORMAT.rowsWord)}` : t(FORMAT.buffering) }}</tspan>
-            <tspan v-if="queryOn && rowOn(l.i)" class="mf__file-r">  →  {{ l.shape }}</tspan>
-          </text>
+    <!-- the timeline itself: clocks, samples, window. Nothing else. -->
+    <div class="mf__stage">
+      <svg class="mf__svg" :viewBox="`0 0 ${W} ${H}`" role="img" :aria-label="t(FORMAT.figRead)">
+        <!-- master clock rail -->
+        <text class="mf__rail-label" x="0" :y="RAIL_Y + 4">{{ isZh ? '主时钟' : 'master clock' }}</text>
+        <text class="mf__rail-sub mono" x="0" :y="RAIL_Y + 17">{{ FPS }} fps</text>
+        <line class="mf__rail" :x1="X0" :x2="X1" :y1="RAIL_Y" :y2="RAIL_Y" />
+        <g v-for="f in frames" :key="f.ms">
+          <line
+            class="mf__tick"
+            :class="{ 'is-past': frameOn(f.ms) }"
+            :x1="f.x"
+            :x2="f.x"
+            :y1="RAIL_Y - 7"
+            :y2="H - 18"
+          />
+          <circle class="mf__tick-dot" :class="{ 'is-past': frameOn(f.ms) }" :cx="f.x" :cy="RAIL_Y" r="3.2" />
         </g>
-      </g>
 
-      <!-- query cursor -->
-      <g class="mf__query" :class="{ 'is-on': queryOn }">
-        <line :x1="X1" :x2="X1" :y1="RAIL_Y - 7" :y2="H - 18" />
-        <text :x="X1 - 3" :y="RAIL_Y - 12" text-anchor="end">{{ t(FORMAT.queryLabel) }}</text>
-      </g>
-      <text
-        v-if="queryOn"
-        class="mf__band-label mono"
-        :x="(windowFromX + X1) / 2"
-        :y="H - 4"
-        text-anchor="middle"
-      >
-        {{ t(FORMAT.windowBand) }}
-      </text>
-    </svg>
+        <!-- the read window -->
+        <rect
+          class="mf__band"
+          :class="{ 'is-on': queryOn }"
+          :x="windowFromX"
+          :y="RAIL_Y - 7"
+          :width="X1 - windowFromX"
+          :height="H - 18 - (RAIL_Y - 7)"
+        />
 
-    <p class="mf__hint">{{ side === 'write' ? t(FORMAT.writeHint) : t(FORMAT.readHint) }}</p>
-    <p class="mf__hint mf__hint--cap">{{ t(FORMAT.episodeNote) }}</p>
+        <!-- feature lanes: name, native rate, samples -->
+        <g v-for="l in lanes" :key="l.lane.id">
+          <text class="mf__name" x="0" :y="l.y + 4">{{ t(l.lane.label) }}</text>
+          <text class="mf__hz mono" x="0" :y="l.y + 17">{{ l.lane.rateLabel }}</text>
+          <line class="mf__axis" :x1="X0" :x2="X1" :y1="l.y" :y2="l.y" />
 
-    <!-- what one master frame resolves to -->
-    <div class="mf__out" :class="{ 'is-on': queryOn }">
-      <table class="mf__tbl">
-        <caption class="mf__cap">
-          {{ t(FORMAT.perFeature) }}
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">{{ isZh ? '特征' : 'feature' }}</th>
-            <th scope="col" class="mf__num">{{ t(FORMAT.rowsCol) }}</th>
-            <th scope="col">{{ t(FORMAT.modeCol) }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="l in lanes" :key="l.lane.id" :class="{ 'is-on': rowOn(l.i) }">
-            <th scope="row" class="mono">{{ l.lane.key }}</th>
-            <td class="mf__num mono">{{ rowOn(l.i) ? l.shape : '·' }}</td>
-            <td>
-              <code class="mf__mode" :style="{ '--mode': l.lane.color }">{{ l.lane.mode }}</code>
-              <span class="mf__note">{{ t(l.lane.note) }}</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+          <circle
+            v-for="(d, j) in l.dots"
+            :key="j"
+            class="mf__dot"
+            :class="{ 'is-in': queryOn && d.inWindow && rowOn(l.i) }"
+            :cx="d.x"
+            :cy="l.y"
+            :r="l.lane.dotRadius"
+            :fill="l.lane.color"
+            :opacity="dotOn(d.ms) ? 1 : 0.12"
+          />
+
+          <circle
+            v-if="queryOn && l.lane.mode === 'nearest' && rowOn(l.i)"
+            class="mf__pick"
+            :cx="l.nearX"
+            :cy="l.y"
+            :r="l.lane.dotRadius + 4.5"
+            :stroke="l.lane.color"
+          />
+        </g>
+
+        <!-- query cursor -->
+        <g class="mf__query" :class="{ 'is-on': queryOn }">
+          <line :x1="X1" :x2="X1" :y1="RAIL_Y - 7" :y2="H - 18" />
+          <text :x="X1 - 3" :y="RAIL_Y - 12" text-anchor="end">{{ t(FORMAT.queryLabel) }}</text>
+        </g>
+        <text
+          v-if="queryOn"
+          class="mf__band-label mono"
+          :x="(windowFromX + X1) / 2"
+          :y="H - 4"
+          text-anchor="middle"
+        >
+          {{ t(FORMAT.windowBand) }}
+        </text>
+      </svg>
+
+      <p class="mf__hint">{{ side === 'write' ? t(FORMAT.writeHint) : t(FORMAT.readHint) }}</p>
+      <p class="mf__hint mf__hint--cap">{{ t(FORMAT.episodeNote) }}</p>
     </div>
 
-    <!-- the three modes -->
-    <div class="mf__modes">
-      <p class="mf__subhead mono">{{ t(FORMAT.modeTitle) }}</p>
-      <ul class="mf__modelist">
-        <li v-for="m in MF_MODES" :key="m.id">
-          <code class="mono">{{ m.id }}</code>
-          <span class="mf__modeshape mono">{{ m.shape }}</span>
-          <span class="mf__modeex">{{ t(m.example) }}</span>
+    <!-- everything that is not a timestamp: shapes, rows, files, modes -->
+    <aside class="mf__data">
+      <p class="mf__subhead mono">{{ t(FORMAT.perFeature) }}</p>
+      <ul class="feat">
+        <li v-for="l in lanes" :key="l.lane.id" :class="{ 'is-on': rowOn(l.i) }">
+          <div class="feat__top">
+            <span class="mono feat__key">{{ l.lane.key }}</span>
+            <code class="mf__mode" :style="{ '--mode': l.lane.color }">{{ l.lane.mode }}</code>
+          </div>
+          <p class="feat__meta mono">
+            <span>{{ l.shape }}</span>
+            <span>{{ l.rows }} {{ l.rows === 1 ? t({ en: 'row', zh: '行' }) : t(FORMAT.rowsWord) }} / frame</span>
+          </p>
+          <p class="feat__file mono">{{ l.file }} · {{ l.written.toLocaleString('en-US') }} {{ t(FORMAT.rowsWord) }}</p>
         </li>
       </ul>
-      <p class="mf__rule">{{ t(FORMAT.modeNote) }}</p>
-    </div>
-
-    <!-- the write call, line for line -->
-    <div class="mf__write">
-      <p class="mf__subhead mono">{{ t(FORMAT.figWrite) }}</p>
-      <pre class="mf__code">{{ WRITE_CALLS.join('\n') }}</pre>
-      <p class="mf__rule">{{ t(FORMAT.timingRule) }}</p>
-    </div>
+    </aside>
   </figure>
 </template>
 
 <style scoped>
 .mono { font-family: var(--ff-mono); }
 
-.mf { margin: 0; }
+.mf {
+  margin: 0;
+  /* Three zones: process on the left, the bare timeline in the middle, and
+     everything that is data rather than time on the right. */
+  display: grid;
+  grid-template-columns: minmax(0, 176px) minmax(0, 1fr) minmax(0, 330px);
+  gap: clamp(1rem, 0.55rem + 1.5vw, 2rem);
+  align-items: start;
+}
+.mf__stage { min-width: 0; }
+.mf__data {
+  min-width: 0;
+  padding-left: clamp(0.9rem, 0.5rem + 1vw, 1.4rem);
+  border-left: 1px solid var(--line);
+}
 
-/* ---- step rail ---- */
-.mf__bar {
+/* ---- process rail ---- */
+.mf__side {
+  position: sticky;
+  top: calc(var(--nav-h) + 1.2rem);
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding-bottom: 0.8rem;
-  margin-bottom: 0.95rem;
-  border-bottom: 1px solid var(--line);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.9rem;
 }
-.mf__steps { display: flex; flex-wrap: wrap; gap: 0.3rem; list-style: none; margin: 0; padding: 0; }
+.mf__steps {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0.95rem;
+  border-left: 1px solid var(--line);
+}
 .mf__step {
-  display: inline-flex;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.55rem minmax(0, 1fr);
+  gap: 0.45rem;
   align-items: baseline;
-  gap: 0.4rem;
-  padding: 0.28rem 0.62rem;
-  border: 1px solid var(--line);
-  border-radius: var(--r-pill);
-  font-size: var(--fs-tick);
+  padding: 0.5rem 0;
   color: var(--ink-mute);
-  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+  font-size: var(--fs-small);
+  line-height: 1.32;
 }
-.mf__step-i { font-size: var(--fs-mark); opacity: 0.75; }
-.mf__step.is-done { color: var(--ink-soft); border-color: var(--line-strong); }
-.mf__step.is-on { color: var(--ink); border-color: var(--c-blue); background: var(--t-blue); font-weight: 600; }
+.mf__step::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 0.86rem;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.mf__step-i { font-size: var(--fs-tick); opacity: 0.8; }
+.mf__step.is-done { color: var(--ink-soft); }
+.mf__step.is-done::before { background: var(--c-blue); opacity: 0.55; }
+.mf__step.is-on { color: var(--ink); font-weight: 600; }
+.mf__step.is-on::before { background: var(--c-blue); box-shadow: 0 0 0 3px var(--t-blue); }
 .mf__play {
+  align-self: flex-start;
   display: inline-flex;
   align-items: center;
   gap: 0.42rem;
@@ -393,6 +382,40 @@ void inView
   transition: background var(--dur) var(--ease);
 }
 .mf__play:hover { background: var(--surface-2); }
+
+/* ---- data panel: shapes, rows, files ---- */
+.feat { list-style: none; margin: 0 0 1.2rem; padding: 0; }
+.feat li { padding: 0.55rem 0; border-bottom: 1px solid var(--line); break-inside: avoid; }
+.feat__top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.feat__key { font-size: var(--fs-tick); color: var(--ink); }
+.feat__meta { display: flex; flex-wrap: wrap; gap: 0.15rem 0.8rem; margin: 0.15rem 0 0; font-size: var(--fs-micro); color: var(--ink-soft); }
+.feat__file { margin: 0.12rem 0 0; font-size: var(--fs-micro); color: var(--ink-mute); }
+.feat li.is-on { background: var(--t-blue); }
+.feat li.is-on .feat__meta { color: var(--ink); }
+
+
+
+@media (max-width: 1180px) {
+  .mf { grid-template-columns: minmax(0, 170px) minmax(0, 1fr); }
+  .mf__data {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding-left: 0;
+    padding-top: 0.9rem;
+  }
+  .feat { columns: 2; column-gap: 1.6rem; }
+}
+
+@media (max-width: 860px) {
+  .mf { grid-template-columns: minmax(0, 1fr); }
+  .mf__data { grid-column: auto; }
+  .feat { columns: 1; }
+  .mf__side { position: static; }
+  .mf__steps { flex-direction: row; flex-wrap: wrap; gap: 0.3rem; padding-left: 0; border-left: 0; }
+  .mf__step { grid-template-columns: auto auto; gap: 0.35rem; padding: 0.28rem 0.6rem; border: 1px solid var(--line); border-radius: var(--r-pill); }
+  .mf__step::before { display: none; }
+}
 
 /* ---- svg ---- */
 .mf__svg { width: 100%; height: auto; display: block; }
@@ -423,6 +446,13 @@ void inView
 .mf__file-v { font-size: var(--fs-mark); fill: var(--ink-mute); }
 .mf__file-r { fill: var(--ink); font-weight: 600; }
 
+.mf__reveal { opacity: 0; transition: opacity 360ms var(--ease); }
+.mf__reveal.is-on { opacity: 1; }
+.mf__lead { fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; }
+.mf__card rect { fill: var(--paper); stroke: var(--line-strong); }
+.mf__card image { border-radius: 3px; }
+.mf__card-k { font-size: var(--fs-mark); fill: var(--ink-soft); }
+.mf__spark { fill: none; stroke: var(--c-violet); stroke-width: 1; opacity: 0.8; }
 .mf__query { opacity: 0; transition: opacity 320ms var(--ease); }
 .mf__query.is-on { opacity: 1; }
 .mf__query line { stroke: var(--ink); stroke-width: 1.3; stroke-dasharray: 4 4; }
@@ -435,7 +465,8 @@ void inView
 /* ---- returned item ---- */
 .mf__out {
   margin-top: 1.15rem;
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-md);
   padding: 0.9rem 1rem 1rem;
   background: var(--surface);
@@ -469,6 +500,15 @@ void inView
 }
 .mf__tbl tbody th { font-weight: 500; color: var(--ink); font-size: var(--fs-tick); }
 .mf__num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.mf__note { display: block; margin-top: 0.32rem; color: var(--ink-mute); line-height: 1.5; }
+
+.mf__subhead {
+  font-size: var(--fs-tick);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin: 0 0 0.55rem;
+}
 .mf__mode {
   display: inline-block;
   font-family: var(--ff-mono);
@@ -478,52 +518,6 @@ void inView
   border-left: 3px solid var(--mode);
   border-radius: var(--r-xs);
   padding: 0.1rem 0.4rem;
-}
-.mf__note { display: block; margin-top: 0.32rem; color: var(--ink-mute); line-height: 1.5; }
-
-/* ---- modes + write call ---- */
-.mf__modes, .mf__write { margin-top: 1.25rem; }
-.mf__subhead {
-  font-size: var(--fs-tick);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-  margin: 0 0 0.55rem;
-}
-.mf__modelist { display: grid; gap: 0.4rem; list-style: none; margin: 0; padding: 0; }
-.mf__modelist li {
-  display: grid;
-  grid-template-columns: 7.5rem 4rem minmax(0, 1fr);
-  gap: 0.6rem;
-  align-items: baseline;
-  font-size: var(--fs-micro);
-}
-.mf__modelist code {
-  font-size: var(--fs-tick);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: var(--r-xs);
-  padding: 0.1rem 0.4rem;
-  justify-self: start;
-}
-.mf__modeshape { color: var(--ink-soft); font-size: var(--fs-tick); }
-.mf__modeex { color: var(--ink-mute); }
-.mf__code {
-  margin: 0;
-  padding: 0.8rem 0.9rem;
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-  font-size: var(--fs-tick);
-  line-height: 1.8;
-  color: var(--ink-body);
-  overflow-x: auto;
-}
-.mf__rule { margin: 0.6rem 0 0; font-size: var(--fs-micro); color: var(--ink-mute); line-height: 1.6; }
-
-@media (max-width: 560px) {
-  .mf__modelist li { grid-template-columns: 6.5rem minmax(0, 1fr); }
-  .mf__modeex { grid-column: 2; }
 }
 
 @media (prefers-reduced-motion: reduce) {

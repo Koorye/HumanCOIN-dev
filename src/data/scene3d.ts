@@ -40,6 +40,18 @@ export interface SceneAnchor {
   onScreen: boolean
 }
 
+export interface DepthSource {
+  el: HTMLVideoElement
+  near: number
+  far: number
+  fx: number
+  fy: number
+  cx: number
+  cy: number
+  width: number
+  height: number
+}
+
 export interface SceneApi {
   dispose: () => void
   update: (
@@ -47,6 +59,8 @@ export interface SceneApi {
     time: number,
     layers: SceneLayers,
     video?: HTMLVideoElement | null,
+    depth?: DepthSource | null,
+    colorVideo?: HTMLVideoElement | null,
   ) => void
   resetView: () => void
   resize: () => void
@@ -114,6 +128,19 @@ function makeGrid(size: number): THREE.GridHelper {
   mat.transparent = true
   mat.opacity = 0.45
   return g
+}
+
+/** A short turbo-like ramp: the same order the depth view is drawn in. */
+function turbo(t: number): [number, number, number] {
+  const stops: [number, number, number][] = [
+    [48, 18, 59], [41, 84, 252], [24, 167, 200], [122, 209, 81], [250, 193, 39], [180, 4, 38],
+  ]
+  const x = Math.min(0.999, Math.max(0, t)) * (stops.length - 1)
+  const i = Math.floor(x)
+  const f = x - i
+  const a = stops[i]
+  const b = stops[Math.min(stops.length - 1, i + 1)]
+  return [(a[0] + (b[0] - a[0]) * f) / 255, (a[1] + (b[1] - a[1]) * f) / 255, (a[2] + (b[2] - a[2]) * f) / 255]
 }
 
 /** Deterministic 0..1 hash, so the cloud's point culling is stable per frame. */
@@ -249,6 +276,23 @@ export function createScene(
   })
 
   /* ---------------- RGB-derived point cloud ---------------- */
+
+  /* A second grid-sized canvas samples the depth video; depth replaces the
+     plane cast whenever a frame is available. */
+  const depthCanvas = document.createElement('canvas')
+  depthCanvas.width = CLOUD_GX
+  depthCanvas.height = CLOUD_GY
+  const depthCtx = depthCanvas.getContext('2d', { willReadFrequently: true })
+  let lastDepthTime = -1
+  let lastDepthPixels: Uint8ClampedArray | null = null
+  /* The rectified RGB the depth was computed against: colour comes from the
+     very pixel each point was unprojected from. */
+  const colorCanvas = document.createElement('canvas')
+  colorCanvas.width = CLOUD_GX
+  colorCanvas.height = CLOUD_GY
+  const colorCtx = colorCanvas.getContext('2d', { willReadFrequently: true })
+  let lastColorTime = -1
+  let lastColorPixels: Uint8ClampedArray | null = null
 
   const cloudGeom = new THREE.BufferGeometry()
   cloudGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(CLOUD_MAX * 3), 3))
@@ -438,7 +482,7 @@ export function createScene(
       ? [[Math.min(...xs), Math.max(...xs)], [Math.min(...ys), Math.max(...ys)]]
       : [[0, 1920], [0, 1080]]
 
-    controls.setHome(new THREE.Vector3(0, 0, 0), extent * 2.6)
+    controls.setHome(new THREE.Vector3(0, 0, 0), extent * 2.3)
     lastTime = -1
     lastCloudTime = -1
     seedHandTrails(frames[0])
@@ -479,23 +523,102 @@ export function createScene(
    * only depth the cloud can honestly have — the point *distribution* over that
    * plane is what the camera actually saw.
    */
-  function updateCloud(frame: SampleFrame, time: number, video: HTMLVideoElement | null) {
+  /**
+   * The scene's point cloud. When the release ships a depth stream the cloud is
+   * the depth frame unprojected through the rectified pinhole intrinsics, in the
+   * same head-mounted frame the trackers use — every point has a measured Z.
+   * Without depth it falls back to the old RGB-on-a-plane cast, which invents
+   * the depth from the work surface.
+   */
+  function updateCloud(
+    frame: SampleFrame,
+    time: number,
+    video: HTMLVideoElement | null,
+    depth: DepthSource | null,
+    colorVideo: HTMLVideoElement | null,
+  ) {
     const head = posePosition(frame, 'head')
     const euler = poseEuler(frame, 'head')
-    // `lastPixels` must NOT gate entry here: it is only ever written further
-    // down, so requiring it up front would make the first grab unreachable and
-    // the cloud permanently invisible.
-    if (!head || !euler || !video || !sampleCtx || video.readyState < 2) {
+    if (!head || !euler) {
+      cloud.visible = false
+      return
+    }
+    const R = headCameraRotation(euler)
+    const pos = cloudGeom.getAttribute('position') as THREE.BufferAttribute
+    const col = cloudGeom.getAttribute('color') as THREE.BufferAttribute
+    let n = 0
+
+    /* ---- measured depth ---- */
+    const el = depth?.el
+    if (depth && depthCtx && el && el.readyState >= 2) {
+      if (Math.abs(time - lastDepthTime) > 0.001 || !lastDepthPixels) {
+        try {
+          depthCtx.clearRect(0, 0, CLOUD_GX, CLOUD_GY)
+          depthCtx.drawImage(el, 0, 0, CLOUD_GX, CLOUD_GY)
+          const probe = depthCtx.getImageData(0, 0, CLOUD_GX, CLOUD_GY).data
+          let opaque = 0
+          for (let i = 3; i < probe.length; i += 4) {
+            if (probe[i] !== 0) { opaque++; if (opaque > 8) break }
+          }
+          if (opaque > 8) { lastDepthPixels = probe; lastDepthTime = time }
+        } catch {
+          /* keep the previous grab */
+        }
+      }
+      const px = lastDepthPixels
+      if (px) {
+        let colorPx: Uint8ClampedArray | null = null
+        if (colorCtx && colorVideo && colorVideo.readyState >= 2) {
+          if (Math.abs(time - lastColorTime) > 0.001 || !lastColorPixels) {
+            try {
+              colorCtx.clearRect(0, 0, CLOUD_GX, CLOUD_GY)
+              colorCtx.drawImage(colorVideo, 0, 0, CLOUD_GX, CLOUD_GY)
+              const probe = colorCtx.getImageData(0, 0, CLOUD_GX, CLOUD_GY).data
+              let opaque = 0
+              for (let i = 3; i < probe.length; i += 4) {
+                if (probe[i] !== 0) { opaque++; if (opaque > 8) break }
+              }
+              if (opaque > 8) { lastColorPixels = probe; lastColorTime = time }
+            } catch { /* keep previous */ }
+          }
+          colorPx = lastColorPixels
+        }
+        const { near, far, fx, fy, cx, cy, width, height } = depth
+        for (let gy = 0; gy < CLOUD_GY; gy++) {
+          for (let gx = 0; gx < CLOUD_GX; gx++) {
+            const g = px[(gy * CLOUD_GX + gx) * 4]
+            if (g < 3) continue
+            if (hash2(gx, gy) > 0.7) continue
+            const z = near + (g / 255) * (far - near)
+            const u = ((gx + 0.5) / CLOUD_GX) * width
+            const v = ((gy + 0.5) / CLOUD_GY) * height
+            const d = mulMatVec(R, [(u - cx) / fx, (v - cy) / fy, 1])
+            const p = view([head[0] + d[0] * z, head[1] + d[1] * z, head[2] + d[2] * z])
+            pos.setXYZ(n, p.x, p.y, p.z)
+            if (colorPx) {
+              const o = (gy * CLOUD_GX + gx) * 4
+              col.setXYZ(n, (colorPx[o] / 255) ** 1.15, (colorPx[o + 1] / 255) ** 1.15, (colorPx[o + 2] / 255) ** 1.15)
+            } else {
+              const c = turbo(g / 255)
+              col.setXYZ(n, c[0], c[1], c[2])
+            }
+            n++
+          }
+        }
+        pos.needsUpdate = true
+        col.needsUpdate = true
+        cloudGeom.setDrawRange(0, n)
+        cloudGeom.computeBoundingSphere()
+        cloud.visible = n > 0
+        return
+      }
+    }
+
+    /* ---- fallback: RGB cast onto the work plane ---- */
+    if (!video || !sampleCtx || video.readyState < 2) {
       if (!lastPixels) cloud.visible = false
       return
     }
-    // Re-sample only when the clip time has actually moved, or when no usable
-    // grab exists yet. A paused video whose target frame is not decoded yet makes
-    // `drawImage` a silent no-op, so the canvas is cleared first and the result
-    // checked for content: an empty grab means "no frame yet", and the last good
-    // grab is reused rather than blanking the cloud. Retrying on `!lastPixels`
-    // matters because a seek is asynchronous — the render that lands while the
-    // decoder is still working sees readyState 1 and must be able to try again.
     if (Math.abs(time - lastCloudTime) > 0.001 || !lastPixels) {
       lastCloudTime = time
       try {
@@ -504,10 +627,7 @@ export function createScene(
         const probe = sampleCtx.getImageData(0, 0, CLOUD_GX, CLOUD_GY).data
         let opaque = 0
         for (let i = 3; i < probe.length; i += 4) {
-          if (probe[i] !== 0) {
-            opaque++
-            if (opaque > 8) break
-          }
+          if (probe[i] !== 0) { opaque++; if (opaque > 8) break }
         }
         if (opaque > 8) lastPixels = probe
       } catch {
@@ -519,11 +639,6 @@ export function createScene(
       cloud.visible = false
       return
     }
-
-    const R = headCameraRotation(euler)
-    const pos = cloudGeom.getAttribute('position') as THREE.BufferAttribute
-    const col = cloudGeom.getAttribute('color') as THREE.BufferAttribute
-    let n = 0
     for (let gy = 0; gy < CLOUD_GY; gy++) {
       for (let gx = 0; gx < CLOUD_GX; gx++) {
         const o = (gy * CLOUD_GX + gx) * 4
@@ -531,25 +646,15 @@ export function createScene(
         const g = px[o + 1]
         const b = px[o + 2]
         const luma = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-        // Drop only genuinely unlit pixels (shadow, lens edge, the vignetted
-        // rim of the fisheye). Everything above it is real surface.
         if (luma < 0.1) continue
-        // Deterministic sparse mask, weighted so the near-white table contributes
-        // fewer returns than the object and the hands on it. Uniform sampling of a
-        // mostly-white field is what made the layer read as a flat grey wash; the
-        // cloud should follow the surface's detail, not its brightness.
         if (hash2(gx, gy) > 0.62 - luma * 0.35) continue
         const u = ((gx + 0.5) / CLOUD_GX) * CAM_W
         const v = ((gy + 0.5) / CLOUD_GY) * CAM_H
         const ray = pixelToRay(u, v)
-        // Rays that graze the plane land metres away and only smear the cloud,
-        // so the cast is capped at the working distance.
         const hit = rayToPlane(R, ray, head, planeY, CLOUD_RANGE)
         if (!hit) continue
         const p = view(hit)
         pos.setXYZ(n, p.x, p.y, p.z)
-        // Mild gamma deepens the mid-tones, so the object and the hands keep
-        // their colour against the near-white table instead of washing out.
         col.setXYZ(n, (r / 255) ** 1.35, (g / 255) ** 1.35, (b / 255) ** 1.35)
         n++
       }
@@ -574,6 +679,8 @@ export function createScene(
     time: number,
     layers: SceneLayers,
     video: HTMLVideoElement | null = null,
+    depth: DepthSource | null = null,
+    colorVideo: HTMLVideoElement | null = null,
   ) {
     if (sample !== current) {
       if (sample) adopt(sample)
@@ -700,7 +807,7 @@ export function createScene(
     }
 
     /* ---- RGB point cloud on the work surface ---- */
-    if (layers.cloud) updateCloud(frame, time, video)
+    if (layers.cloud) updateCloud(frame, time, video, depth, colorVideo)
     else cloud.visible = false
 
     /* ---- gaze, frustum and signal sites all hang off the measured head pose ---- */
@@ -827,7 +934,7 @@ export function createScene(
 
   function resetView() {
     fit()
-    controls.setHome(new THREE.Vector3(0, 0, 0), extent * 2.6)
+    controls.setHome(new THREE.Vector3(0, 0, 0), extent * 2.3)
     controls.reset()
     renderer.render(scene, camera)
   }
@@ -847,7 +954,7 @@ export function createScene(
 
   fit()
   grid.position.set(0, -extent * 0.55, 0)
-  controls.setHome(new THREE.Vector3(0, 0, 0), extent * 2.6)
+  controls.setHome(new THREE.Vector3(0, 0, 0), extent * 2.3)
   controls.reset()
   renderer.render(scene, camera)
   controls.onChange(() => {
@@ -862,7 +969,7 @@ export function createScene(
 /** Minimal orbit control: drag to rotate, wheel to zoom, right-drag to pan. */
 class OrbitLite {
   private theta = Math.PI * 0.3
-  private phi = Math.PI * 0.36
+  private phi = Math.PI * 0.41
   private radius = 1
   private target = new THREE.Vector3()
   private dragging = 0

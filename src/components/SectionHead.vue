@@ -2,12 +2,23 @@
 import type { Bi } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 
-defineProps<{ num: string; kicker: Bi; title: Bi; aside?: Bi; single?: boolean }>()
+defineProps<{
+  num: string
+  kicker: Bi
+  title: Bi
+  aside?: Bi
+  single?: boolean
+  /** Widen the aside column, for sections whose aside carries the argument. */
+  asideWide?: boolean
+}>()
 const { t } = useI18n()
 </script>
 
 <template>
-  <header class="section__head" :class="{ 'section__head--single': single }">
+  <header
+    class="section__head"
+    :class="{ 'section__head--single': single, 'section__head--aside-wide': asideWide }"
+  >
     <div>
       <p class="section-num"><b>{{ num }}</b> {{ t(kicker) }}</p>
       <h2 class="section__title">{{ t(title) }}</h2>

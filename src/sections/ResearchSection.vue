@@ -4,9 +4,10 @@
  *
  * Each RQ is answered by a group of figures, not a single one, because each
  * question has a different shape: RQ 01 is a comparison against a baseline
- * (forest plot, with the full matrix kept underneath so the numbers stay
- * checkable), and its companion question of whether an extra signal buys an
- * extra unit is a trend (scatter plus OLS). RQ 02 is a mechanism question, so it
+ * (ablation bars, then a forest plot of the change from it), and its companion
+ * question of whether an extra signal buys an extra unit is a trend (scatter
+ * plus OLS, with the correlation matrix of the targets beside it). RQ 02 is a
+ * mechanism question, so it
  * opens with the paired 3D event demo — and then, because a mechanism shown on
  * one authored pair is not yet an experiment, closes with the same question put
  * to a set of controls: a change-from-baseline plot over the table it is
@@ -22,7 +23,6 @@ import { useI18n } from '@/composables/useI18n'
 import SectionHead from '@/components/SectionHead.vue'
 import FigFrame from '@/components/FigFrame.vue'
 import AblationChart from '@/components/AblationChart.vue'
-import AblationMatrix from '@/components/AblationMatrix.vue'
 import ForestPlot from '@/components/ForestPlot.vue'
 import ScatterFit from '@/components/ScatterFit.vue'
 import CorrelationHeatmap from '@/components/CorrelationHeatmap.vue'
@@ -40,7 +40,15 @@ const metric = computed(() => ABLATION.find((m) => m.id === metricId.value) ?? A
 <template>
   <section id="research" class="section">
     <div class="shell">
-      <SectionHead :num="RESEARCH.num" :kicker="RESEARCH.kicker" :title="RESEARCH.title" />
+      <SectionHead :num="RESEARCH.num" :kicker="RESEARCH.kicker" :title="RESEARCH.title" aside-wide>
+        <template #aside>
+          <!-- The section's claim belongs beside its title: the two questions
+               below are the argument, and this is the sentence they argue. -->
+          <div class="rq__lead">
+            <p>{{ t(RESEARCH.lead) }}</p>
+          </div>
+        </template>
+      </SectionHead>
 
       <!-- RQ 01 -->
       <article class="rq">
@@ -113,25 +121,11 @@ const metric = computed(() => ABLATION.find((m) => m.id === metricId.value) ?? A
             <CorrelationHeatmap :highlight="metricId" />
             <template #note>
               {{ isZh
-                ? '由消融表本身算出，而非另行撰写：只有读者能在下方表格中复算，这张矩阵所支持的主张——各指标同向变化、因此不能只看其中一项——才有意义。先对符号归一，故正格恒表示"同向更好"。用秩相关而非积矩相关：六个指标量纲不同，其中 FDE 重尾，积矩相关会被跨度最大的那一列主导。'
-                : 'Computed from the ablation table itself rather than authored, because the claim it supports — that the metrics move together, so no single one can stand for “better” — is only meaningful if a reader can recompute it from the table below. Signs are normalised first, so a positive cell always means “better together”. Rank rather than product-moment correlation: the six metrics are on four different scales and FDE is heavy-tailed, so a raw correlation would be dominated by the widest-ranging column.' }}
+                ? '由箱内各柱所依据的逐组合均值算出，而非另行撰写：只有这些数字可被独立复算，这张矩阵所支持的主张——各指标同向变化、因此不能只看其中一项——才有意义。先对符号归一，故正格恒表示"同向更好"。用秩相关而非积矩相关：六个指标量纲不同，其中 FDE 重尾，积矩相关会被跨度最大的那一列主导。'
+                : 'Computed from the same per-combination means the bars are drawn from rather than authored, because the claim it supports — that the metrics move together, so no single one can stand for “better” — is only meaningful if those numbers can be recomputed independently. Signs are normalised first, so a positive cell always means “better together”. Rank rather than product-moment correlation: the six metrics are on four different scales and FDE is heavy-tailed, so a raw correlation would be dominated by the widest-ranging column.' }}
             </template>
           </FigFrame>
         </div>
-
-        <FigFrame
-          n="11"
-          class="fig--full"
-          :title="{ en: 'Full ablation matrix', zh: '完整消融矩阵' }"
-          :aside="{ en: 'all six targets', zh: '全部六个指标' }"
-        >
-          <AblationMatrix />
-          <template #note>
-            {{ isZh
-              ? '上列各图所依据的原始表。每格为对应组合在该指标上的均值，加粗为该列最优，箭头表示该指标的方向（↑ 越高越好，↓ 越低越好）。'
-              : 'The underlying table for the figures above. Each cell is the mean for that combination on that target; bold marks the best in the column, and the arrow gives the metric’s direction (↑ higher better, ↓ lower better).' }}
-          </template>
-        </FigFrame>
       </article>
 
       <!-- RQ 02 -->
@@ -179,6 +173,12 @@ const metric = computed(() => ABLATION.find((m) => m.id === metricId.value) ?? A
 
 <style scoped>
 .mono { font-family: var(--ff-mono); }
+
+/* Set beside the title, at the size of the running prose rather than the
+   headline, so the head reads as one band and the questions start where the
+   eye expects them. */
+.rq__lead { font-size: var(--fs-tick); line-height: 1.5; color: var(--ink-soft); }
+@media (max-width: 900px) { .rq__lead { font-size: var(--fs-micro); } }
 
 .rq { border-top: 1px solid var(--line); padding-top: clamp(1.5rem, 1.2rem + 2vw, 2.5rem); }
 .rq + .rq { margin-top: clamp(2rem, 1.5rem + 2.5vw, 3.5rem); }

@@ -6,11 +6,19 @@
  * serif — a cover carries the title, and the claim and the standfirst belong to
  * the abstract, where there is room to argue them.
  *
- * The figure is the acquisition itself: four real camera views from the
- * released L3 headband, shown as a 2 × 2 grid, and beside them the structure of
- * the non-visual channels. The channels are read from the same stream list the
- * viewer uses, so the cover cannot describe a different sensor set than the
- * release.
+ * The figure is the release, shown three ways at once. A carousel carries one
+ * marquee row per acquisition tier — L3, L2, L1 — and choosing a take opens the
+ * moment beside it: the four headband views as footage, the non-visual channels
+ * drawn from that take's own samples, and the annotation of the moment the
+ * playhead sits on. All three bands read one clock, so "one moment" is a mark
+ * rather than a claim.
+ *
+ * Each row is built from its own tier's captures, reduced by
+ * `scripts/build_cover_tiers.py`: L3 carries every channel, L2 carries the wrist
+ * bands' EMG, and L1 carries no physiological channel at all. What each row
+ * measures is stated per tier in `TIER_PROVENANCE` and is stamped on every cell,
+ * so a channel a tier does not carry is drawn as a labelled gap rather than as
+ * a curve the capture never measured.
  */
 
 import type { Bi } from '@/content'
@@ -29,10 +37,28 @@ export const COVER = {
   },
   figureLabel: { en: 'Cover figure', zh: '封面图' },
   figureNote: {
-    en: 'Four synchronised views from the released L3 headband, with the non-visual channels read beside them. One recorded moment, one clock.',
-    zh: '已发布 L3 头环的四路同步视角，旁边是同一瞬间的非视觉通道。同一个被记录的时刻，共用一个时钟。',
+    en: 'One take, read three ways at once: the tier’s own synchronised views, the non-visual channels its capture ships, and the annotation of the moment the playhead sits on. Every band reads one clock.',
+    zh: '同一段录制，同时给出三种读法：该层级自身的同步视角、该次采集实际提供的非视觉通道、以及播放头所在时刻的标注。三条带共用同一个时钟。',
   },
   scroll: { en: 'Read the release', zh: '开始阅读' },
+  /**
+   * The cover's actions.
+   *
+   * None of the release's destinations are published yet, so `href` is a
+   * placeholder and the row renders inert. The list is the shape the links will
+   * take: the primary one is the dataset itself, and the rest are the report and
+   * the code that accompany it.
+   */
+  actions: [
+    { id: 'seek', label: { en: 'Seek & Download', zh: '检索与下载' }, href: '#install', primary: true },
+    {
+      id: 'report',
+      label: { en: 'Technical Report', zh: '技术报告' },
+      href: 'humancoin.pdf',
+      primary: false,
+    },
+    { id: 'code', label: { en: 'Code', zh: '代码' }, href: '#', primary: false },
+  ] as { id: string; label: Bi; href: string; primary: boolean }[],
   /* Metric strip under the cover. */
   metrics: [
     {
@@ -73,37 +99,223 @@ export const COVER = {
 } as const
 
 /**
- * The cover's figure metadata: the four real camera views and the structure of
- * the channels that have no image of their own.
+ * The carousel of takes.
+ *
+ * Three marquee rows, one per tier. L3 and L1 travel left; L2 travels right, so
+ * two adjacent rows never read as one long strip and a reader can tell at a
+ * glance which row a card belongs to. Motion is a single continuous translation
+ * rather than a step per card, and it stops while a card is hovered, so a take
+ * can be read without chasing it.
  */
-export const COVER_FIGURE = {
-  /* The RGB view is the video grid itself; these are the streams that are not
-     the camera, so `modality` counts them rather than repeating the camera. */
-  modality: { en: 'Other streams · one instant', zh: '其余信号 · 同一瞬间' },
-  camsLabel: { en: 'Headband views', zh: '头环视角' },
-  plateLabel: { en: 'Recorded episodes', zh: '已录制片段' },
-  signalsLabel: { en: 'Non-visual channels', zh: '非视觉通道' },
-  signalsNote: {
-    en: 'One representative window per channel, drawn at its own native rate; all windows and the four views are aligned to the same instant.',
-    zh: '每通道一段代表性窗口，按各自原生采样率绘制；所有窗口与四路视角对齐到同一瞬间。',
+export const COVER_CAROUSEL = {
+  label: { en: 'Takes, by acquisition tier', zh: '按采集层级浏览片段' },
+  hint: {
+    en: 'Hover a take to open its moment; click to keep it open.',
+    zh: '悬浮查看该片段的时刻；点击可固定。',
   },
-  cameras: [
-    { id: 'L', file: 'real/main-headband-left.mp4', poster: 'real/poster-left.jpg', label: { en: 'Left', zh: '左目' } },
-    { id: 'R', file: 'real/main-headband-right.mp4', poster: 'real/poster-right.jpg', label: { en: 'Right', zh: '右目' } },
-    { id: 'BL', file: 'real/main-headband-bleft.mp4', poster: 'real/poster-bleft.jpg', label: { en: 'Left · wide', zh: '左广角' } },
-    { id: 'BR', file: 'real/main-headband-bright.mp4', poster: 'real/poster-bright.jpg', label: { en: 'Right · wide', zh: '右广角' } },
-  ] as { id: string; file: string; poster: string; label: Bi }[],
-  /* Twelve released L3 takes, as a plate under the live views. */
-  plate: [
-    'thumb-01', 'thumb-02', 'thumb-03', 'thumb-04', 'thumb-05', 'thumb-06',
-    'thumb-07', 'thumb-08', 'thumb-09', 'thumb-10', 'thumb-11', 'thumb-12',
-  ],
-  /* One entry per non-visual channel: identity, colour token, native rate. */
-  streams: [
-    { id: 'gaze', label: { en: 'Gaze', zh: '注视' }, color: 'var(--k-teal)', rate: '120 Hz' },
-    { id: 'pose', label: { en: 'Pose', zh: '位姿' }, color: 'var(--k-violet)', rate: '60 Hz' },
-    { id: 'glove', label: { en: 'Glove', zh: '手套' }, color: 'var(--k-amber)', rate: '60 Hz' },
-    { id: 'emg', label: { en: 'EMG', zh: '肌电' }, color: 'var(--k-amber)', rate: '1000 Hz' },
-    { id: 'eeg', label: { en: 'EEG', zh: '脑电' }, color: 'var(--k-violet)', rate: '500 Hz' },
-  ] as { id: string; label: Bi; color: string; rate: string }[],
+  close: { en: 'Close', zh: '收起' },
+  pinned: { en: 'Pinned', zh: '已固定' },
+} as const
+
+/**
+ * What each tier actually measures, and how the stand-in reads.
+ *
+ * `state` is per stream: `measured` where the tier's own instruments record it,
+ * `estimated` where the tier only infers it, and `absent` where the tier does
+ * not carry it. The note says plainly that the moving panel is an L3 capture
+ * standing in, so a reader is never shown estimated channels as if they were
+ * recorded at that tier.
+ */
+export type StreamState = 'measured' | 'estimated' | 'absent'
+
+export interface TierProvenance {
+  id: 'L3' | 'L2' | 'L1'
+  name: Bi
+  hours: Bi
+  note: Bi
+  streams: Record<'rgb' | 'gaze' | 'pose' | 'glove' | 'emg' | 'eeg', StreamState>
+  /**
+   * Whether the tier's rig carries the two near-hand wrist cameras. L3 and the
+   * action tier do; L1 is head-mounted only, so its row shows the headband
+   * views alone rather than a wrist view the tier never records.
+   */
+  wrist: boolean
+}
+
+export const TIER_PROVENANCE: TierProvenance[] = [
+  {
+    id: 'L3',
+    name: { en: 'Cognition', zh: '认知' },
+    hours: { en: '500 h planned', zh: '规划 500 小时' },
+    note: {
+      en: 'The layer that sees the brain. Four headband views, two wrist views, gaze, head and wrist pose, glove skeleton, 16 EMG lanes, 8 EEG lanes and the capture’s own step notes are recorded on each take; every channel in the panel below is measured, not inferred.',
+      zh: '看见大脑的一层。每段录制同时记录四路头环视角、两路腕部视角、注视、头与腕部位姿、手套骨架、16 路肌电、8 路脑电与采集自带的步骤标注；下方面板中的每一路都是实测，而非推断。',
+    },
+    wrist: true,
+    streams: {
+      rgb: 'measured',
+      gaze: 'measured',
+      pose: 'measured',
+      glove: 'measured',
+      emg: 'measured',
+      eeg: 'measured',
+    },
+  },
+  {
+    id: 'L2',
+    name: { en: 'Effort', zh: '发力' },
+    hours: { en: '2,000 h planned', zh: '规划 2,000 小时' },
+    note: {
+      en: 'The layer that sees the muscles move. Four synchronised wide views, two wrist views and the two wrist bands’ 16 EMG lanes are recorded; EEG belongs to the tier above. Gaze, head/wrist pose and finger kinematics are predicted from the video (EgoM2P for gaze, HaMeR for hands) and ship with the data — this viewer draws measured streams only.',
+      zh: '看见肌肉发力的一层。记录四路同步广角视角、两路腕部视角与两条腕带的 16 路肌电；脑电属于上一层。注视、头/腕位姿与手指运动学由视频预测（注视用 EgoM2P，手部用 HaMeR），随数据一并发布——本查看器只绘制实测流。',
+    },
+    wrist: true,
+    streams: {
+      rgb: 'measured',
+      gaze: 'estimated',
+      pose: 'estimated',
+      glove: 'estimated',
+      emg: 'measured',
+      eeg: 'absent',
+    },
+  },
+  {
+    id: 'L1',
+    name: { en: 'Perception', zh: '感知' },
+    hours: { en: '10,000 h planned', zh: '规划 10,000 小时' },
+    note: {
+      en: 'Heterogeneous everyday environments from varied head-mounted rigs. The capture is head-mounted views only; gaze, head/wrist pose and finger kinematics are predicted from those views and ship with the data, while no muscle or cortical channel exists at this tier. This viewer draws measured streams only.',
+      zh: '来自多种头戴设备的异构日常环境。采集本身只有头戴视角；注视、头/腕位姿与手指运动学由这些视角预测，随数据一并发布；该层级不含肌肉与脑电通道。本查看器只绘制实测流。',
+    },
+    wrist: false,
+    streams: {
+      rgb: 'measured',
+      gaze: 'estimated',
+      pose: 'estimated',
+      glove: 'estimated',
+      emg: 'absent',
+      eeg: 'absent',
+    },
+  },
+]
+
+/**
+ * The moment panel: the three bands that read one clock.
+ *
+ * A band is a row, because the three are read across rather than down — the
+ * views are what happened, the channels are what the body did, and the
+ * annotation is what the release says it was. All three carry the same
+ * playhead mark, so the "same instant" is drawn rather than asserted.
+ */
+export const COVER_MOMENT = {
+  viewsBand: { en: 'Views · one clock', zh: '视角 · 同一时钟' },
+  channelsBand: { en: 'Channels · same samples', zh: '通道 · 同一段样本' },
+  annotationBand: { en: 'Annotation · this moment', zh: '标注 · 此刻' },
+  play: { en: 'Play', zh: '播放' },
+  pause: { en: 'Pause', zh: '暂停' },
+  pinned: { en: 'Pinned', zh: '已固定' },
+  timeline: { en: 'Timeline', zh: '时间轴' },
+  loading: { en: 'Loading take…', zh: '正在载入…' },
+  loadError: { en: 'This take’s signals could not be loaded.', zh: '无法载入该片段的信号。' },
+  selectPrompt: {
+    en: 'Hover a take to open its moment.',
+    zh: '悬浮一段片段以展开其时刻。',
+  },
+  stepOf: { en: 'step', zh: '步骤' },
+  hand: { en: 'Hand in use', zh: '所用手' },
+  handLeft: { en: 'Left', zh: '左' },
+  handRight: { en: 'Right', zh: '右' },
+  handBoth: { en: 'Both', zh: '双手' },
+  handNone: { en: 'Not determined', zh: '未判定' },
+  handNote: {
+    en: 'Measured from wrist-tracker travel inside the step; the recording carries no hand label.',
+    zh: '由步骤内腕部跟踪器位移测得；采集数据无显式手别标注。',
+  },
+  objects: { en: 'Objects', zh: '物体' },
+  objectNone: { en: 'No object named in this step.', zh: '该步骤未指名物体。' },
+  groupOf: { en: 'group', zh: '集合' },
+  colour: { en: 'Colour', zh: '颜色' },
+  shape: { en: 'Shape', zh: '形状' },
+  size: { en: 'Size', zh: '尺寸' },
+  material: { en: 'Material', zh: '材质' },
+  weight: { en: 'Weight', zh: '重量' },
+  notRecorded: { en: 'not recorded', zh: '未记录' },
+  estimatedGap: { en: 'estimated from video · not drawn here', zh: '由视频估计 · 此处不绘制' },
+  stepsAll: { en: 'All steps', zh: '全部步骤' },
+  noSteps: {
+    en: 'This tier’s captures ship no step annotation.',
+    zh: '该层级的采集不含步骤标注。',
+  },
+  /* Per-channel labels and provenance words. */
+  streams: {
+    rgb: { en: 'RGB', zh: 'RGB' },
+    gaze: { en: 'Gaze', zh: '注视' },
+    pose: { en: 'Pose', zh: '位姿' },
+    glove: { en: 'Finger', zh: '手指' },
+    emg: { en: 'EMG', zh: '肌电' },
+    eeg: { en: 'EEG', zh: '脑电' },
+  } as Record<'rgb' | 'gaze' | 'pose' | 'glove' | 'emg' | 'eeg', Bi>,
+  state: {
+    measured: { en: 'measured', zh: '实测' },
+    estimated: { en: 'estimated', zh: '估计' },
+    absent: { en: 'not at this tier', zh: '该层级无' },
+  } as Record<StreamState, Bi>,
+  views: {
+    left: { en: 'Left', zh: '左目' },
+    right: { en: 'Right', zh: '右目' },
+    bleft: { en: 'Left · wide', zh: '左广角' },
+    bright: { en: 'Right · wide', zh: '右广角' },
+    wleft: { en: 'Left wrist', zh: '左腕' },
+    wright: { en: 'Right wrist', zh: '右腕' },
+  } as Record<'left' | 'right' | 'bleft' | 'bright' | 'wleft' | 'wright', Bi>,
+} as const
+
+/**
+ * The five non-visual streams, one sentence each: what the stream measures and
+ * what the release does not claim about it. Read by `CoverSignals.vue`, the
+ * standalone signals plate, which is retained as a detail view of the same five
+ * channels; the cover figure itself is `CoverMoment.vue`, which draws them
+ * beside the footage and the annotation on one clock.
+ */
+export const COVER_STREAMS = {
+  gaze: {
+    label: { en: 'Gaze', zh: '注视' },
+    color: 'var(--k-teal)',
+    note: {
+      en: 'The eye camera’s x and y over the clip, and a 22 × 22 map of where the gaze dwelt. Both lanes share one scale because both coordinates are eye-camera pixels, and the rule across the map marks the frame the whole strip is read at.',
+      zh: '整段眼动相机的 x 与 y，以及一张 22 × 22 的注视停留分布图。两行共用同一尺度，因为两个坐标都是眼动相机像素；分布图上的横向细线标出整条信号带所读的那一帧。',
+    },
+  },
+  pose: {
+    label: { en: 'Pose', zh: '位姿' },
+    color: 'var(--k-teal)',
+    note: {
+      en: 'Three 6-DoF trackers — head and both wrists — over the clip, drawn in one horizontal plane at one scale on both axes, so reach is comparable between rigs. The figure under each name is how far that rig travelled, in the capture’s own undocumented position units, not in metres.',
+      zh: '三个 6 自由度追踪器（头部与双腕）在整段中的轨迹，画在同一个水平面内、两轴同尺度，因此各刚体的行程可直接比较。名称下方的数字是该刚体的行程，单位是采集本身未说明的原始单位，不是米。',
+    },
+  },
+  glove: {
+    label: { en: 'Glove', zh: '手套' },
+    color: 'var(--k-amber)',
+    note: {
+      en: 'Both 25-node blocks at one frame, in the glove’s own coordinates, with each fingertip’s last stretch drawn behind it. Links follow node index order: the release declares no finger topology, so the chains are a drawing convention rather than a claim about which node is which finger.',
+      zh: '两个 25 节点数据块在同一帧的姿态，用手套自身坐标系绘制，指尖后为其最近一段轨迹。连线按节点序号连接：发布数据未声明手指拓扑，因此连线属于绘图约定，并不主张哪个节点对应哪根手指。',
+    },
+  },
+  emg: {
+    label: { en: 'EMG', zh: '肌电' },
+    color: 'var(--k-rose)',
+    note: {
+      en: 'Both wrist bands, every channel, one lane each, with the left band’s lanes above the rule and the right band’s below. All sixteen lanes share one scale, so the ratio beside the name — hardest-swinging channel against the quietest — is visible as height rather than only stated. The capture documents no amplifier gain, so that spread is a property of this recording and not a calibrated muscle amplitude.',
+      zh: '两条腕带逐通道各占一行，横线上方为左腕的通道、下方为右腕的通道。十六条通道共用同一尺度，因此名称旁的倍数（摆幅最大通道与最小通道之比）在高度上直接可见，而不只是一个数字。采集未标注放大器增益，因此该差异属于本段记录自身的特征，不能作为标定过的肌肉幅度解读。',
+    },
+  },
+  eeg: {
+    label: { en: 'EEG', zh: '脑电' },
+    color: 'var(--k-violet)',
+    note: {
+      en: 'All eight scalp electrodes, one lane each, on one shared scale. The electrodes keep the names the capture gives them, and the spread between the loudest and quietest electrode is read off this clip rather than assumed — with no amplifier gain documented, it is a property of the recording and not a calibrated scalp voltage.',
+      zh: '八个头皮电极逐通道各一行，共用同一尺度。电极沿用采集给出的命名，最响与最静电极之间的差异直接由本片段读出而非假定——由于未标注放大器增益，这属于记录自身的特征，不是标定过的头皮电压。',
+    },
+  },
 } as const

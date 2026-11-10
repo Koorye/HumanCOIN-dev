@@ -93,7 +93,8 @@ const ticks = computed(() => {
 .wf__sub { font-size: var(--fs-micro); color: var(--ink-mute); }
 .wf__plot {
   position: relative;
-  border: 1px solid var(--line);
+  border: 0;
+  border-top: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--surface);
   overflow: hidden;

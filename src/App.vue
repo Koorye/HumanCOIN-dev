@@ -13,11 +13,14 @@ const { t } = useI18n()
 const AbstractSection = defineAsyncComponent(() => import('@/sections/AbstractSection.vue'))
 const AcquisitionSection = defineAsyncComponent(() => import('@/sections/AcquisitionSection.vue'))
 const DataSection = defineAsyncComponent(() => import('@/sections/DataSection.vue'))
-const ResearchSection = defineAsyncComponent(() => import('@/sections/ResearchSection.vue'))
+// Research section is parked for now: the component stays in the tree, the
+// page does not render it. Reinstate this line and the <ResearchSection /> tag
+// below to bring it back; the numbers in `content.ts` are the live order.
+// const ResearchSection = defineAsyncComponent(() => import('@/sections/ResearchSection.vue'))
 const FormatSection = defineAsyncComponent(() => import('@/sections/FormatSection.vue'))
 const PipelineSection = defineAsyncComponent(() => import('@/sections/PipelineSection.vue'))
-const AccessSection = defineAsyncComponent(() => import('@/sections/AccessSection.vue'))
-const ReleaseSection = defineAsyncComponent(() => import('@/sections/ReleaseSection.vue'))
+const CommunitySection = defineAsyncComponent(() => import('@/sections/CommunitySection.vue'))
+const InstallSection = defineAsyncComponent(() => import('@/sections/InstallSection.vue'))
 </script>
 
 <template>
@@ -31,11 +34,11 @@ const ReleaseSection = defineAsyncComponent(() => import('@/sections/ReleaseSect
     <AcquisitionSection />
     <DataSection />
     <AnnotationSection />
-    <ResearchSection />
+    <!-- <ResearchSection /> -->
     <FormatSection />
     <PipelineSection />
-    <AccessSection />
-    <ReleaseSection />
+    <CommunitySection />
+    <InstallSection />
   </main>
 
   <SiteFooter />
