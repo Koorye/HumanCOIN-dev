@@ -2,11 +2,10 @@
 /**
  * The cover.
  *
- * Laid out as a journal cover rather than as a landing page: a masthead rule
- * naming the project and the release, then the paper title, then one figure
- * with its own numbered caption. Nothing else — a cover carries the title, and
- * the claim and the standfirst belong to the abstract, where there is room to
- * argue them.
+ * Laid out as a journal cover rather than as a landing page: the paper title,
+ * then one figure with its own numbered caption. Nothing else — a cover carries
+ * the title, and the claim and the standfirst belong to the abstract, where
+ * there is room to argue them.
  *
  * The figure is the release itself, shown as a carousel over a synchronised
  * moment. Three marquee rows carry the takes, one per acquisition tier, each row
@@ -141,13 +140,6 @@ onMounted(() => {
     <img class="cover__mark" :src="BAAI_MARK" alt="" aria-hidden="true" />
 
     <div class="shell cover__inner">
-      <!-- masthead -->
-      <header class="masthead">
-        <span class="masthead__name">{{ t(COVER.masthead) }}</span>
-        <span class="masthead__disc">{{ t(COVER.discipline) }}</span>
-        <span class="masthead__issue mono">{{ t(COVER.issue) }}</span>
-      </header>
-
       <h1 class="cover__title">{{ t(COVER.title) }}</h1>
 
       <figure class="coverfig">
@@ -277,34 +269,6 @@ onMounted(() => {
 }
 
 .cover__inner { position: relative; z-index: 1; }
-
-/* ---- masthead ---- */
-.masthead {
-  display: flex;
-  align-items: baseline;
-  gap: 0.9rem;
-  padding-bottom: 0.55rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.85);
-  margin-bottom: clamp(0.85rem, 0.65rem + 0.7vw, 1.25rem);
-}
-.masthead__name {
-  font-family: var(--ff-display);
-  font-size: var(--fs-h4);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-.masthead__disc {
-  font-size: var(--fs-micro);
-  color: var(--ink-mute);
-}
-.masthead__issue {
-  margin-left: auto;
-  font-size: var(--fs-tick);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #3a6f96;
-}
 
 /* ---- the paper title ---- */
 .cover__title {

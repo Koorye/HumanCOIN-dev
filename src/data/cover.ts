@@ -1,10 +1,10 @@
 /**
  * The cover band: the journal-cover reading at the top of the page.
  *
- * Structure follows a printed cover rather than a landing page. A masthead rule
- * with the project name and issue line, then the paper title set in the display
- * serif — a cover carries the title, and the claim and the standfirst belong to
- * the abstract, where there is room to argue them.
+ * Structure follows a printed cover rather than a landing page: the paper title
+ * set in the display serif, then the figure — a cover carries the title, and the
+ * claim and the standfirst belong to the abstract, where there is room to argue
+ * them.
  *
  * The figure is the release, shown three ways at once. A carousel carries one
  * marquee row per acquisition tier — L3, L2, L1 — and choosing a take opens the
@@ -24,16 +24,10 @@
 import type { Bi } from '@/content'
 
 export const COVER = {
-  masthead: { en: 'HumanCOIN', zh: 'HumanCOIN' },
-  issue: { en: 'Dataset release · 2026', zh: '数据集发布 · 2026' },
-  discipline: {
-    en: 'Egocentric multimodal human signals',
-    zh: '第一人称多模态人体信号',
-  },
-  /* The cover carries the paper title and nothing else. */
+  /* The cover carries the report's title and nothing else. */
   title: {
-    en: 'HumanCOIN: A Large-Scale Egocentric Multimodal Human-Signal Dataset for Embodied Manipulation',
-    zh: 'HumanCOIN：面向具身操作的大规模第一人称多模态人体信号数据集',
+    en: 'HumanCOIN: The Human-Signal Dataset at the Scale of Egocentric Manipulation',
+    zh: 'HumanCOIN：第一人称操作规模下的人体信号数据集',
   },
   figureLabel: { en: 'Cover figure', zh: '封面图' },
   figureNote: {
