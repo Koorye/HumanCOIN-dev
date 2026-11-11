@@ -17,7 +17,7 @@ import SectionHead from '@/components/SectionHead.vue'
 import BodyMap from '@/components/BodyMap.vue'
 import ModalityMatrix from '@/components/ModalityMatrix.vue'
 
-const { t } = useI18n()
+const { t, isZh } = useI18n()
 const activeId = ref<Tier['id']>('L3')
 const active = computed(() => TIERS.find((x) => x.id === activeId.value) ?? TIERS[0])
 /** Instrument previewed by the inventory, highlighted on the worn figure. */
@@ -51,6 +51,12 @@ const points = (b: (typeof BANDS)[number]) =>
 
 function metaOf(id: Tier['devices'][number]['id']) {
   return DEVICE_META.find((m) => m.id === id)!
+}
+
+/** The pyramid's top band is narrow; split the English two-word tier names. */
+function bandNameLines(tier: Tier): string[] {
+  const name = t(tier.name)
+  return isZh.value ? [name] : name.split(' ')
 }
 </script>
 
@@ -107,10 +113,15 @@ function metaOf(id: Tier['devices'][number]['id']) {
               <text class="band__id" :x="CX" :y="(b.y0 + b.y1) / 2 - 14" text-anchor="middle">
                 {{ b.id }}
               </text>
-              <text class="band__name" :x="CX" :y="(b.y0 + b.y1) / 2 + 4" text-anchor="middle">
-                {{ t(b.tier.name) }}
+              <text class="band__name" :x="CX" :y="(b.y0 + b.y1) / 2 - 1" text-anchor="middle">
+                <tspan
+                  v-for="(line, li) in bandNameLines(b.tier)"
+                  :key="line"
+                  :x="CX"
+                  :dy="li === 0 ? 0 : 11"
+                >{{ line }}</tspan>
               </text>
-              <text class="band__hours mono" :x="CX" :y="(b.y0 + b.y1) / 2 + 22" text-anchor="middle">
+              <text class="band__hours mono" :x="CX" :y="(b.y0 + b.y1) / 2 + 24" text-anchor="middle">
                 {{ b.tier.hours }} h · {{ share(b.tier) }}%
               </text>
             </g>

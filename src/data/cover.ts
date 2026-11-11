@@ -139,11 +139,11 @@ export interface TierProvenance {
 export const TIER_PROVENANCE: TierProvenance[] = [
   {
     id: 'L3',
-    name: { en: 'Cognition', zh: '认知' },
+    name: { en: 'Cognitive intention', zh: '认知意图' },
     hours: { en: '500 h planned', zh: '规划 500 小时' },
     note: {
-      en: 'The layer that sees the brain. Four headband views, two wrist views, gaze, head and wrist pose, glove skeleton, 16 EMG lanes, 8 EEG lanes and the capture’s own step notes are recorded on each take; every channel in the panel below is measured, not inferred.',
-      zh: '看见大脑的一层。每段录制同时记录四路头环视角、两路腕部视角、注视、头与腕部位姿、手套骨架、16 路肌电、8 路脑电与采集自带的步骤标注；下方面板中的每一路都是实测，而非推断。',
+      en: 'The layer that reads the cognitive intention. Four headband views, two wrist views, gaze, head and wrist pose, glove skeleton, 16 EMG lanes, 8 EEG lanes and the capture’s own step notes are recorded on each take; every channel in the panel below is measured, not inferred.',
+      zh: '读取认知意图的一层。每段录制同时记录四路头环视角、两路腕部视角、注视、头与腕部位姿、手套骨架、16 路肌电、8 路脑电与采集自带的步骤标注；下方面板中的每一路都是实测，而非推断。',
     },
     wrist: true,
     streams: {
@@ -157,11 +157,11 @@ export const TIER_PROVENANCE: TierProvenance[] = [
   },
   {
     id: 'L2',
-    name: { en: 'Effort', zh: '发力' },
+    name: { en: 'Motor intention', zh: '动作意图' },
     hours: { en: '2,000 h planned', zh: '规划 2,000 小时' },
     note: {
-      en: 'The layer that sees the muscles move. Four synchronised wide views, two wrist views and the two wrist bands’ 16 EMG lanes are recorded; EEG belongs to the tier above. Gaze, head/wrist pose and finger kinematics are predicted from the video (EgoM2P for gaze, HaMeR for hands) and ship with the data — this viewer draws measured streams only.',
-      zh: '看见肌肉发力的一层。记录四路同步广角视角、两路腕部视角与两条腕带的 16 路肌电；脑电属于上一层。注视、头/腕位姿与手指运动学由视频预测（注视用 EgoM2P，手部用 HaMeR），随数据一并发布——本查看器只绘制实测流。',
+      en: 'The layer that reads the motor intention. Four synchronised wide views, two wrist views and the two wrist bands’ 16 EMG lanes are recorded; EEG belongs to the tier above. Gaze, head/wrist pose and finger kinematics are predicted from the video (EgoM2P for gaze, HaMeR for hands) and ship with the data — this viewer draws measured streams only.',
+      zh: '读取动作意图的一层。记录四路同步广角视角、两路腕部视角与两条腕带的 16 路肌电；脑电属于上一层。注视、头/腕位姿与手指运动学由视频预测（注视用 EgoM2P，手部用 HaMeR），随数据一并发布——本查看器只绘制实测流。',
     },
     wrist: true,
     streams: {
@@ -175,11 +175,11 @@ export const TIER_PROVENANCE: TierProvenance[] = [
   },
   {
     id: 'L1',
-    name: { en: 'Perception', zh: '感知' },
+    name: { en: 'Visual intention', zh: '视觉意图' },
     hours: { en: '10,000 h planned', zh: '规划 10,000 小时' },
     note: {
-      en: 'Heterogeneous everyday environments from varied head-mounted rigs. The capture is head-mounted views only; gaze, head/wrist pose and finger kinematics are predicted from those views and ship with the data, while no muscle or cortical channel exists at this tier. This viewer draws measured streams only.',
-      zh: '来自多种头戴设备的异构日常环境。采集本身只有头戴视角；注视、头/腕位姿与手指运动学由这些视角预测，随数据一并发布；该层级不含肌肉与脑电通道。本查看器只绘制实测流。',
+      en: 'The layer that reads the visual intention, from heterogeneous everyday environments captured by varied head-mounted rigs. The capture is head-mounted views only; gaze, head/wrist pose and finger kinematics are predicted from those views and ship with the data, while no muscle or cortical channel exists at this tier. This viewer draws measured streams only.',
+      zh: '读取视觉意图的一层：来自多种头戴设备的异构日常环境。采集本身只有头戴视角；注视、头/腕位姿与手指运动学由这些视角预测，随数据一并发布；该层级不含肌肉与脑电通道。本查看器只绘制实测流。',
     },
     wrist: false,
     streams: {

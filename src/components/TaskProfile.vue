@@ -164,10 +164,10 @@ watch(slides, tick)
 
       <p class="tf__legend">
         <span class="tf__lg" style="--c: var(--c-violet)">
-          <i />{{ isZh ? 'L3 · 认知' : 'L3 · cognition' }}
+          <i />{{ isZh ? 'L3 · 认知意图' : 'L3 · cognitive intention' }}
         </span>
         <span class="tf__lg" style="--c: var(--c-teal)">
-          <i />{{ isZh ? 'L2 · 动作' : 'L2 · action' }}
+          <i />{{ isZh ? 'L2 · 动作意图' : 'L2 · motor intention' }}
         </span>
         <span class="tf__lg tf__lg--none">
           {{ isZh ? 'L1 不枚举条目，故不在图中' : 'L1 enumerates no entries, so it is absent here' }}

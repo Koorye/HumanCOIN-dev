@@ -20,9 +20,9 @@ const tierColor: Record<TierId, string> = {
 }
 
 const tierName: Record<TierId, { en: string; zh: string }> = {
-  L1: { en: 'Perception', zh: '感知' },
-  L2: { en: 'Effort', zh: '发力' },
-  L3: { en: 'Cognition', zh: '认知' },
+  L1: { en: 'Visual intention', zh: '视觉意图' },
+  L2: { en: 'Motor intention', zh: '动作意图' },
+  L3: { en: 'Cognitive intention', zh: '认知意图' },
 }
 
 const hoursOf = (id: TierId) => TIER_HOURS.find((x) => x.id === id)!.hours

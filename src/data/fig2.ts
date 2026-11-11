@@ -43,7 +43,7 @@ export interface Tier {
 export const TIERS: Tier[] = [
   {
     id: 'L1',
-    name: { en: 'Perception', zh: '感知' },
+    name: { en: 'Visual intention', zh: '视觉意图' },
     hours: 10000,
     share: 80,
     color: 'var(--c-blue)',
@@ -54,7 +54,7 @@ export const TIERS: Tier[] = [
   },
   {
     id: 'L2',
-    name: { en: 'Effort', zh: '用力' },
+    name: { en: 'Motor intention', zh: '动作意图' },
     hours: 2000,
     share: 16,
     color: 'var(--c-teal)',
@@ -65,7 +65,7 @@ export const TIERS: Tier[] = [
   },
   {
     id: 'L3',
-    name: { en: 'Cognition', zh: '认知' },
+    name: { en: 'Cognitive intention', zh: '认知意图' },
     hours: 500,
     share: 4,
     color: 'var(--c-violet)',

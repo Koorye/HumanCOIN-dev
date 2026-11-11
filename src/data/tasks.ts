@@ -421,7 +421,7 @@ export interface TaskBand {
 export const TASK_BANDS: TaskBand[] = [
   {
     id: 'L3',
-    label: { en: 'L3 · Cognition', zh: 'L3 · 认知' },
+    label: { en: 'L3 · Cognitive intention', zh: 'L3 · 认知意图' },
     note: {
       en: 'High-cognitive work only, seated or standing at a fixed desk, workbench or dual-interaction table, because the EEG amplifier stays tethered to the host.',
       zh: '仅高思维任务，坐姿或站定于固定书桌、工作台或双人交互桌；脑电放大器连线固定主机，故工位不可移动。',
@@ -430,7 +430,7 @@ export const TASK_BANDS: TaskBand[] = [
   },
   {
     id: 'L2',
-    label: { en: 'L2 · Effort', zh: 'L2 · 发力' },
+    label: { en: 'L2 · Motor intention', zh: 'L2 · 动作意图' },
     note: {
       en: 'Every instrumented task that needs to leave a fixed workstation, plus the dual-interaction baseline and the portable off-site segments.',
       zh: '所有需要离开固定工位的仪器化任务，另含双人交互基线任务与外采便携段。',
@@ -439,7 +439,7 @@ export const TASK_BANDS: TaskBand[] = [
   },
   {
     id: 'L1',
-    label: { en: 'L1 · Perception', zh: 'L1 · 感知' },
+    label: { en: 'L1 · Visual intention', zh: 'L1 · 视觉意图' },
     note: {
       en: 'Runs the same ontology as a passive natural stream: no script, no intervention, so the protocol enumerates no entries here and none are drawn.',
       zh: '复用同一任务本体，以自然流被动采集：不干预、不脚本，故协议不枚举条目，此层不绘制任何条目。',

@@ -161,7 +161,7 @@ function onPick(take: CoverTake, tier: TierProvenance) {
 /* ---- a row: key at the left, marquee to its right ---- */
 .row {
   display: grid;
-  grid-template-columns: 6.2rem minmax(0, 1fr);
+  grid-template-columns: 7rem minmax(0, 1fr);
   gap: 0.6rem;
   align-items: center;
 }

@@ -89,10 +89,10 @@ export const ABSTRACT = {
   title: { en: 'Abstract', zh: '摘要' },
   body: {
     en: [
-      'HumanCOIN is a large-scale egocentric multimodal dataset for embodied manipulation. Beyond conventional first-person observation — head-mounted multi-view RGB, wrist cameras, and hand and body pose — it records the state of the operator: gaze, surface electromyography, electroencephalography, and glove-level finger kinematics, all under one clock and one spatiotemporal reference. The data is organised in three tiers — perception, effort, and cognition — each adding the modalities the layer below does not carry, so that scene coverage and signal depth can be studied together rather than as competing axes.',
+      'HumanCOIN is a large-scale egocentric multimodal dataset for embodied manipulation. Beyond conventional first-person observation — head-mounted multi-view RGB, wrist cameras, and hand and body pose — it records the state of the operator: gaze, surface electromyography, electroencephalography, and glove-level finger kinematics, all under one clock and one spatiotemporal reference. The data is organised in three tiers — visual intention, motor intention, and cognitive intention — each adding the modalities the layer below does not carry, so that scene coverage and signal depth can be studied together rather than as competing axes.',
     ],
     zh: [
-      'HumanCOIN 是面向具身操作的大规模第一人称多模态数据集。除常规第一人称观测（头戴多目 RGB、腕部相机、手部与身体姿态）外，它同步记录操作者自身的状态信号：注视、表面肌电、脑电与手套级手指运动学，全部在统一时钟与统一时空参考下采集。数据按感知、发力、认知三层组织，每层加入下一层不具备的模态，使"场景覆盖"与"信号深度"可以一并研究，而非相互竞争。',
+      'HumanCOIN 是面向具身操作的大规模第一人称多模态数据集。除常规第一人称观测（头戴多目 RGB、腕部相机、手部与身体姿态）外，它同步记录操作者自身的状态信号：注视、表面肌电、脑电与手套级手指运动学，全部在统一时钟与统一时空参考下采集。数据按视觉意图、动作意图、认知意图三层组织，每层加入下一层不具备的模态，使"场景覆盖"与"信号深度"可以一并研究，而非相互竞争。',
     ],
   },
 } as const
@@ -219,13 +219,13 @@ export interface Tier {
 export const TIERS: Tier[] = [
   {
     id: 'L1',
-    name: { en: 'Perception', zh: '感知' },
+    name: { en: 'Visual intention', zh: '视觉意图' },
     hours: '10,000',
     hoursLabel: { en: 'hours planned', zh: '规划小时' },
     accent: 'blue',
     summary: {
-      en: 'Where the operator is looking — the shallowest signal, read from the world. Head-mounted capture of heterogeneous everyday environments; gaze is inferred from the views, marking where attention falls.',
-      zh: '操作者在看环境的哪里——最浅的一层信号，从世界本身读出。头戴采集异构日常环境，注视由画面推断，标记注意落点。',
+      en: 'The visual target the operator intends to acquire — the shallowest signal, read from the world. Head-mounted capture of heterogeneous everyday environments; gaze is inferred from the views, marking where visual attention falls before the hand moves.',
+      zh: '操作者意图看向的目标——最浅的一层信号，从世界本身读出。头戴采集异构日常环境，注视由画面推断，在手动作之前标记视觉注意的落点。',
     },
     seats: { en: 'No fixed rig · head-mounted capture, gaze estimated from the views', zh: '无固定席位 · 头戴采集，注视由画面估计' },
     devices: [
@@ -242,13 +242,13 @@ export const TIERS: Tier[] = [
   },
   {
     id: 'L2',
-    name: { en: 'Effort', zh: '发力' },
+    name: { en: 'Motor intention', zh: '动作意图' },
     hours: '2,000',
     hoursLabel: { en: 'hours planned', zh: '规划小时' },
     accent: 'teal',
     summary: {
-      en: 'Adds how the body executes: surface EMG at the muscle — the last link of the motor command — plus near-hand wrist views, over semi-structured tasks that leave the desk.',
-      zh: '在感知之上加入身体如何执行：肌肉处的表面肌电——运动指令的最后一环——以及近手腕视角，覆盖离开桌面的半结构化任务。',
+      en: 'How the motor intention is carried out: surface EMG at the muscle — the last link of the motor command — plus near-hand wrist views, over semi-structured tasks that leave the desk.',
+      zh: '动作意图如何被执行：肌肉处的表面肌电——运动指令的最后一环——以及近手腕视角，覆盖离开桌面的半结构化任务。',
     },
     seats: { en: '8 stations · portable EMG kits plus a shared pool of headbands and wrist cameras', zh: '8 席位 · 便携肌电套件与共享头环、腕相机池' },
     devices: [
@@ -259,13 +259,13 @@ export const TIERS: Tier[] = [
   },
   {
     id: 'L3',
-    name: { en: 'Cognition', zh: '认知' },
+    name: { en: 'Cognitive intention', zh: '认知意图' },
     hours: '500',
     hoursLabel: { en: 'hours planned', zh: '规划小时' },
     accent: 'violet',
     summary: {
-      en: 'Adds what the nervous system is doing: gaze measured rather than inferred, and EEG at the cortex, on controlled tabletop manipulation where calibration quality matters most.',
-      zh: '在动作之上加入神经系统在做什么：注视由估计变为实测，脑电直达皮层，用于受控桌面操作任务，对标定质量要求最高。',
+      en: 'The cognitive intention behind the act: gaze measured rather than inferred, and EEG at the cortex, on controlled tabletop manipulation where calibration quality matters most.',
+      zh: '动作背后的认知意图：注视由估计变为实测，脑电直达皮层，用于受控桌面操作任务，对标定质量要求最高。',
     },
     seats: { en: '11 stations · 3 research-grade, 8 portable EEG · tabletop tasks', zh: '11 席位 · 3 研究级、8 便携 EEG · 桌面任务' },
     devices: [
