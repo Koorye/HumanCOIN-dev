@@ -112,6 +112,8 @@
   --gap-sm: clamp(0.55rem, 0.45rem + 0.4vw, 0.9rem);
   --section-y: clamp(2.1rem, 1.6rem + 2.2vw, 3.6rem);
   --nav-h: 56px;
+  /* the fixed left rail; the page is offset by exactly this much */
+  --rail-w: 13rem;
 
   /* ---- Radii ---- */
   --r-xs: 3px;

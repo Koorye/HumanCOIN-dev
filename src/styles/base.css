@@ -34,6 +34,13 @@ body {
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  /* The rail is fixed, so the document is inset by its width instead of
+     carrying a top bar. Below the breakpoint the bar comes back and the inset
+     goes away. */
+  padding-left: var(--rail-w);
+}
+@media (max-width: 1080px) {
+  body { padding-left: 0; }
 }
 
 img, video, canvas, svg { display: block; max-width: 100%; }

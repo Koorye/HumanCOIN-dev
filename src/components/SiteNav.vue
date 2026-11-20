@@ -1,13 +1,15 @@
 <script setup lang="ts">
 /**
- * The masthead bar.
+ * The left rail.
  *
- * Three zones: the institute's wordmark on the left, the section index in the
- * middle, the three things a reader came for on the right — the dataset, the
- * report, the code. The middle index is the page's own order, and the section
- * in view is marked with a hairline rather than a filled chip.
+ * A fixed column that carries the institute's wordmark, the section index and
+ * the three destinations — the dataset, the report, the code — so the page
+ * itself keeps its full width for figures. The section in view is marked with a
+ * tinted row rather than a filled chip, and a hairline down the rail's right
+ * edge fills as the document is read.
  *
- * Under it, a one-pixel rule fills as the document is read.
+ * Below 1080 px the rail folds back into a top bar: the page gets the width
+ * back and the index is the first thing to go.
  */
 import { NAV, UI } from '@/content'
 import { useI18n } from '@/composables/useI18n'
@@ -43,7 +45,7 @@ const ACTIONS = [
 
 <template>
   <header class="nav">
-    <div class="nav__inner shell">
+    <div class="nav__inner">
       <a class="nav__brand" href="#top" aria-label="BAAI">
         <img class="nav__logo" :src="BAAI_MARK" alt="BAAI" />
       </a>
@@ -118,60 +120,57 @@ const ACTIONS = [
       </nav>
     </div>
 
-    <div class="nav__progress" :style="{ transform: `scaleX(${progress})` }" aria-hidden="true" />
+    <div class="nav__progress" :style="{ transform: `scaleY(${progress})` }" aria-hidden="true" />
   </header>
 </template>
 
 <style scoped>
 .nav {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--rail-w);
   z-index: 60;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: saturate(160%) blur(12px);
-  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
 }
 .nav__inner {
   position: relative;
-  height: var(--nav-h);
+  height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding: 1.15rem 0.9rem 1.25rem 1.05rem;
 }
 
 .nav__brand { display: flex; align-items: center; flex: none; }
 .nav__brand:hover { text-decoration: none; }
-.nav__logo { height: 24px; width: auto; display: block; }
-@media (max-width: 520px) { .nav__logo { height: 21px; } }
+.nav__logo { height: 22px; width: auto; display: block; }
 
 .nav__links {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.05rem;
   min-width: 0;
 }
 .nav__links a {
-  display: inline-flex;
+  display: flex;
   align-items: baseline;
-  gap: 0.3em;
-  padding: 0.32rem 0.42rem;
+  gap: 0.45em;
+  padding: 0.36rem 0.55rem;
+  border-radius: 6px;
   color: var(--ink-soft);
   font-size: 0.8rem;
+  line-height: 1.35;
   white-space: nowrap;
   text-decoration: none;
-  box-shadow: inset 0 -1px 0 transparent;
-  transition: color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.nav__links a:hover { color: var(--ink); text-decoration: none; }
+.nav__links a:hover { color: var(--ink); background: var(--surface-2); text-decoration: none; }
 .nav__links a[aria-current='true'] {
   color: var(--ink);
   font-weight: 560;
-  box-shadow: inset 0 -1px 0 var(--c-blue);
+  background: var(--t-blue);
 }
 .nav__num {
   font-family: var(--ff-mono);
@@ -181,15 +180,15 @@ const ACTIONS = [
 .nav__links a[aria-current='true'] .nav__num { color: var(--c-blue); }
 
 .nav__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex: none;
+  margin-top: auto;
+  display: grid;
+  gap: 0.3rem;
 }
 .nav__act {
   display: inline-flex;
   align-items: center;
-  padding: 0.32rem 0.72rem;
+  justify-content: flex-start;
+  padding: 0.42rem 0.7rem;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-pill);
   color: var(--ink);
@@ -214,7 +213,7 @@ const ACTIONS = [
 
 .nav__ico {
   flex: none;
-  margin-right: 0.3rem;
+  margin-right: 0.35rem;
   margin-bottom: -0.06em;
   fill: none;
   stroke: currentColor;
@@ -224,10 +223,11 @@ const ACTIONS = [
 }
 
 .nav__lang {
-  margin-left: 0.35rem;
+  justify-self: start;
+  margin: 0.35rem 0 0 0.15rem;
   border: 0;
   background: none;
-  padding: 0.3rem 0.15rem;
+  padding: 0.2rem 0;
   font: inherit;
   font-size: var(--fs-micro);
   font-weight: 550;
@@ -238,18 +238,56 @@ const ACTIONS = [
 }
 .nav__lang:hover { color: var(--ink); }
 
+/* the reading progress runs down the rail's outer edge */
 .nav__progress {
-  height: 1px;
+  position: absolute;
+  top: 0;
+  right: -1px;
+  width: 2px;
+  height: 100%;
   background: var(--c-blue);
-  transform-origin: 0 50%;
+  transform-origin: 50% 0;
   transition: transform 90ms linear;
 }
 
-/* The index is the first thing to go: the bar keeps the two ends, and the page
-   still reads in order without it. */
-@media (max-width: 1140px) {
+/* ---- below the rail breakpoint: back to a top bar ---- */
+@media (max-width: 1080px) {
+  .nav {
+    inset: 0 0 auto 0;
+    width: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+  }
+  .nav__inner {
+    height: var(--nav-h);
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 0 1.25rem;
+  }
   .nav__links { display: none; }
+  .nav__actions {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .nav__act { padding: 0.32rem 0.72rem; }
+  .nav__lang { margin: 0 0 0 0.35rem; justify-self: auto; }
+  .nav__progress {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 1px;
+    transform-origin: 0 50%;
+  }
 }
+
 @media (max-width: 560px) {
   .nav__act { padding: 0.3rem 0.6rem; font-size: var(--fs-micro); }
   .nav__lang { display: none; }

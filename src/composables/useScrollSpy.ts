@@ -12,10 +12,14 @@ export function useScrollSpy(ids: readonly string[]) {
 
   function measure() {
     ticking = false
+    /* The rail is fixed to the side, so the page has no top bar to clear on
+       wide screens; below the breakpoint the bar is back and the probe has to
+       sit under it. */
     const navH = parseFloat(
       getComputedStyle(document.documentElement).getPropertyValue('--nav-h'),
     ) || 60
-    const probe = window.scrollY + navH + 90
+    const hasTopBar = window.matchMedia('(max-width: 1080px)').matches
+    const probe = window.scrollY + (hasTopBar ? navH : 0) + 90
 
     let current = ids[0] ?? ''
     for (const id of ids) {
