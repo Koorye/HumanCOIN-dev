@@ -7,6 +7,7 @@
  * section index, and the section in view marked by colour alone. It is type,
  * not a panel — no sheet, no rule, nothing boxed.
  */
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { NAV, UI } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import { useScrollSpy } from '@/composables/useScrollSpy'
@@ -21,6 +22,25 @@ const { active } = useScrollSpy(ids)
 const openSection = (item: (typeof NAV)[number]) =>
   active.value === item.id || item.children?.some((c) => c.id === active.value)
 
+/* The cover is a title page, not an article: while it fills the view, the
+   contents has nothing to point at, so it stays out of the way. */
+const heroVisible = ref(true)
+let io: IntersectionObserver | null = null
+
+onMounted(() => {
+  const hero = document.getElementById('top')
+  if (!hero || typeof IntersectionObserver === 'undefined') return
+  io = new IntersectionObserver(([entry]) => { heroVisible.value = entry.isIntersecting }, {
+    threshold: 0.08,
+  })
+  io.observe(hero)
+})
+
+onBeforeUnmount(() => {
+  io?.disconnect()
+  io = null
+})
+
 function go(e: MouseEvent, id: string) {
   e.preventDefault()
   const el = document.getElementById(id)
@@ -30,7 +50,11 @@ function go(e: MouseEvent, id: string) {
 </script>
 
 <template>
-  <aside class="toc" :aria-label="t({ en: 'Contents', zh: '目录' })">
+  <aside
+    class="toc"
+    :data-hidden="heroVisible ? 'true' : 'false'"
+    :aria-label="t({ en: 'Contents', zh: '目录' })"
+  >
     <p class="toc__label">{{ t(UI.contents) }}</p>
     <nav class="toc__links">
       <template v-for="item in NAV" :key="item.id">
@@ -61,26 +85,32 @@ function go(e: MouseEvent, id: string) {
   position: fixed;
   /* same left edge as the page container, not the viewport */
   left: max(1.25rem, calc(50% - var(--shell-max) / 2));
-  top: calc(var(--nav-h) + 2.4rem);
-  width: 220px;
+  top: calc(var(--nav-h) + 2.8rem);
+  width: 240px;
   z-index: 40;
+  transition: opacity var(--dur-3) var(--ease), transform var(--dur-3) var(--ease);
+}
+.toc[data-hidden='true'] {
+  opacity: 0;
+  transform: translateY(-0.4rem);
+  pointer-events: none;
 }
 .toc__label {
-  margin: 0 0 0.85rem;
-  font-size: var(--fs-micro);
-  letter-spacing: 0.18em;
+  margin: 0 0 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ink-mute);
 }
-.toc__links { display: grid; gap: 0.12rem; }
+.toc__links { display: grid; gap: 0.18rem; }
 .toc__links a {
   display: flex;
   align-items: baseline;
   gap: 0.45em;
-  padding: 0.42rem 0;
+  padding: 0.45rem 0;
   color: var(--ink-soft);
-  font-size: 0.9rem;
-  line-height: 1.35;
+  font-size: 0.95rem;
+  line-height: 1.45;
   white-space: nowrap;
   text-decoration: none;
   transition: color var(--dur) var(--ease);
@@ -89,12 +119,19 @@ function go(e: MouseEvent, id: string) {
 .toc__links a[aria-current='true'] { color: var(--c-blue); font-weight: 560; }
 .toc__item.is-open { color: var(--ink); }
 .toc__sub {
-  padding-left: 1.5rem !important;
-  font-size: 0.8rem !important;
+  margin-left: 0.15rem;
+  padding: 0.34rem 0 0.34rem 1.1rem !important;
+  border-left: 1px solid var(--line);
+  font-size: 0.82rem !important;
+  line-height: 1.4;
   color: var(--ink-mute) !important;
 }
 .toc__sub:hover { color: var(--ink) !important; }
-.toc__sub[aria-current='true'] { color: var(--c-blue) !important; font-weight: 560; }
+.toc__sub[aria-current='true'] {
+  color: var(--c-blue) !important;
+  font-weight: 560;
+  border-left-color: var(--c-blue);
+}
 .toc__num {
   font-family: var(--ff-mono);
   font-size: var(--fs-micro);
