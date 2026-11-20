@@ -45,24 +45,24 @@ function go(e: MouseEvent, id: string) {
   /* same left edge as the page container, not the viewport */
   left: max(1.25rem, calc(50% - var(--shell-max) / 2));
   top: calc(var(--nav-h) + 2.4rem);
-  width: 180px;
+  width: 220px;
   z-index: 40;
 }
 .toc__label {
-  margin: 0 0 0.6rem;
-  font-size: var(--fs-tick);
+  margin: 0 0 0.85rem;
+  font-size: var(--fs-micro);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-mute);
 }
-.toc__links { display: grid; gap: 0.1rem; }
+.toc__links { display: grid; gap: 0.12rem; }
 .toc__links a {
   display: flex;
   align-items: baseline;
   gap: 0.45em;
-  padding: 0.3rem 0;
+  padding: 0.42rem 0;
   color: var(--ink-soft);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   line-height: 1.35;
   white-space: nowrap;
   text-decoration: none;
@@ -72,7 +72,7 @@ function go(e: MouseEvent, id: string) {
 .toc__links a[aria-current='true'] { color: var(--c-blue); font-weight: 560; }
 .toc__num {
   font-family: var(--ff-mono);
-  font-size: var(--fs-tick);
+  font-size: var(--fs-micro);
   color: var(--ink-mute);
 }
 .toc__links a[aria-current='true'] .toc__num { color: var(--c-blue); }
