@@ -233,33 +233,24 @@ onBeforeUnmount(() => {
 
           <!-- ---------- intent ↓ m = f(z, o) + ε ↓ three proxies ---------- -->
           <path class="loop__line" d="M150 188V198" />
-          <rect
-            class="loop__station"
-            :class="{ 'is-lit': active === 1 }"
-            x="72"
-            y="194"
-            width="156"
-            height="56"
-            rx="8"
-          />
           <text class="loop__m" x="150" y="208" text-anchor="middle">m = f(z, o) + ε</text>
 
           <path
             class="loop__line loop__proxyline loop__proxyline--gaze"
             :class="{ 'is-sub': active === 1 && sub === 1 }"
-            d="M90 212V230"
+            d="M90 212V246"
             marker-end="url(#loop-arrow-teal)"
           />
           <path
             class="loop__line loop__proxyline loop__proxyline--emg"
             :class="{ 'is-sub': active === 1 && sub === 2 }"
-            d="M150 212V230"
+            d="M150 212V246"
             marker-end="url(#loop-arrow-amber)"
           />
           <path
             class="loop__line loop__proxyline loop__proxyline--eeg"
             :class="{ 'is-sub': active === 1 && sub === 0 }"
-            d="M210 212V230"
+            d="M210 212V246"
             marker-end="url(#loop-arrow-violet)"
           />
 
@@ -267,28 +258,28 @@ onBeforeUnmount(() => {
             class="loop__proxy loop__proxy--gaze"
             :class="{ 'is-sub': active === 1 && sub === 1 }"
             x="90"
-            y="240"
+            y="256"
             text-anchor="middle"
           >gaze</text>
           <text
             class="loop__proxy loop__proxy--emg"
             :class="{ 'is-sub': active === 1 && sub === 2 }"
             x="150"
-            y="240"
+            y="256"
             text-anchor="middle"
           >EMG</text>
           <text
             class="loop__proxy loop__proxy--eeg"
             :class="{ 'is-sub': active === 1 && sub === 0 }"
             x="210"
-            y="240"
+            y="256"
             text-anchor="middle"
           >EEG</text>
 
           <!-- horizontal brace + horizontal label -->
-          <path class="loop__brace" d="M80 250C80 258 88 260 96 260H132C142 260 148 262 150 266C152 262 158 260 168 260H204C212 260 220 258 220 250" />
-          <rect class="loop__recordpill" x="80" y="274" width="140" height="14" rx="3" />
-          <text class="loop__recordlabel" x="150" y="284" text-anchor="middle">
+          <path class="loop__brace" d="M80 260C80 268 88 270 96 270H132C142 270 148 272 150 276C152 272 158 270 168 270H204C212 270 220 268 220 260" />
+          <rect class="loop__recordpill" x="80" y="282" width="140" height="14" rx="3" />
+          <text class="loop__recordlabel" x="150" y="292" text-anchor="middle">
             {{ t({ en: 'what HumanCOIN records', zh: 'HumanCOIN 记录的内容' }) }}
           </text>
           </g>
@@ -366,7 +357,7 @@ onBeforeUnmount(() => {
 .loop__m {
   font-family: Georgia, 'Times New Roman', serif;
   font-style: italic;
-  font-size: 16px;
+  font-size: 13px;
   fill: var(--ink);
 }
 .loop__arc {
@@ -428,18 +419,6 @@ onBeforeUnmount(() => {
   stroke-width: 1.6;
   fill: var(--c-amber);
   fill-opacity: 0.12;
-  filter: drop-shadow(0 0 5px rgba(138, 97, 54, 0.38));
-}
-.loop__station {
-  fill: transparent;
-  stroke: transparent;
-  stroke-width: 1.6;
-  transition: fill 200ms ease, stroke 200ms ease;
-}
-.loop__station.is-lit {
-  fill: var(--c-amber);
-  fill-opacity: 0.12;
-  stroke: var(--c-amber);
   filter: drop-shadow(0 0 5px rgba(138, 97, 54, 0.38));
 }
 
