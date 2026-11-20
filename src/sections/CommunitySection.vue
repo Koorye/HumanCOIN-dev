@@ -141,7 +141,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   margin-bottom: 0.6rem;
 }
 .host img {
-  max-height: 4.55rem;
+  max-height: 3.3rem;
   width: auto;
   object-fit: contain;
   transition: transform var(--dur) var(--ease);
