@@ -69,6 +69,7 @@ const ACTIONS = [
           :href="action.href"
           :target="action.external ? '_blank' : undefined"
           :rel="action.external ? 'noopener noreferrer' : undefined"
+          :aria-label="t(action.label)"
         >
           <!-- The same three glyphs the cover uses, drawn at 13 px so they sit
                with the bar's smaller type and inherit the label colour. -->
@@ -105,7 +106,7 @@ const ACTIONS = [
           >
             <path d="m5.5 4.5-3.5 3.5 3.5 3.5M10.5 4.5 14 8l-3.5 3.5" />
           </svg>
-          {{ t(action.label) }}
+          <span class="nav__act-label">{{ t(action.label) }}</span>
         </a>
 
         <button
@@ -252,5 +253,13 @@ const ACTIONS = [
 @media (max-width: 560px) {
   .nav__act { padding: 0.3rem 0.6rem; font-size: var(--fs-micro); }
   .nav__lang { display: none; }
+}
+/* Below this the three pills would push the bar past the viewport, so they
+   collapse to their glyphs — the icon is what carries the meaning, and the
+   label survives as the link's accessible name. */
+@media (max-width: 440px) {
+  .nav__act { padding: 0.34rem 0.5rem; }
+  .nav__act-label { display: none; }
+  .nav__ico { margin-right: 0; }
 }
 </style>
