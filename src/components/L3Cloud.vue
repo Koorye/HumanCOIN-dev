@@ -30,11 +30,13 @@ interface CloudMeta {
 }
 interface Signals {
   fps: number
-  gaze: number[]
-  eeg: number[]
-  eeg2: number[]
-  emgL: number[]
-  emgR: number[]
+  channels: { emgL: number; emgR: number; eeg: number }
+  gazeX: number[]
+  gazeY: number[]
+  emgL: number[][]
+  emgR: number[][]
+  eeg: number[][]
+  eegNames: string[]
 }
 interface Gaze2D {
   fps: number
@@ -47,14 +49,22 @@ interface Step {
   label: string
   object: string
 }
+interface Subtask {
+  start: number
+  end: number
+  title: string
+  object: string
+  actions: { label: string; start: number; end: number }[]
+}
 interface Steps {
   scene: string
   task: string
   steps: Step[]
+  subtasks: Subtask[]
 }
 
 const CLIP = 30
-const WINDOW = 6 /* seconds of signal shown at once */
+const WINDOW = 10 /* seconds of signal shown at once */
 
 const RGB = [
   { key: 'left', src: 'real/l3/rgb-left.mp4', label: 'Headband · left' },
@@ -75,7 +85,9 @@ const meta = ref<CloudMeta | null>(null)
 const signals = ref<Signals | null>(null)
 const gaze2d = ref<Gaze2D | null>(null)
 const steps = ref<Step[]>([])
+const subtasks = ref<Subtask[]>([])
 const task = ref('')
+const sigIndex = ref(0)
 
 const t = ref(0)
 const playing = ref(true)
@@ -85,34 +97,42 @@ const layers = ref({ cloud: true, hands: true, bones: true, axes: true })
 const frame = computed(() => Math.round(200 + t.value * 30))
 const clock = computed(() => `${t.value.toFixed(2)} s`)
 const step = computed(() => steps.value.find((s) => t.value >= s.start && t.value < s.end) ?? null)
+const subtask = computed(() => subtasks.value.find((s) => t.value >= s.start && t.value < s.end) ?? null)
+/* before the annotated stretch begins, the action row previews the next one */
+const shownSub = computed(() => subtask.value ?? subtasks.value.find((s) => s.start > t.value) ?? null)
 
 /* ---------- sliding-window traces ---------- */
 const TW = 900
-const TH = 30
-const TRACES = [
-  { key: 'gaze' as const, label: 'Gaze X', color: '#6f5aa0' },
-  { key: 'emgL' as const, label: 'EMG left', color: '#a8623c' },
-  { key: 'emgR' as const, label: 'EMG right', color: '#a8623c' },
-  { key: 'eeg' as const, label: 'EEG · FP1', color: '#33796f' },
-]
+const TH = 24
 
-const traces = computed(() =>
-  TRACES.map((tr) => {
-    const s = signals.value
-    if (!s) return { ...tr, points: '' }
-    const data = s[tr.key]
-    const n = data.length
-    const i1 = Math.min(n - 1, Math.round(t.value * s.fps))
-    const i0 = Math.max(0, Math.round((t.value - WINDOW) * s.fps))
-    const span = Math.max(1, i1 - i0)
-    const pts: string[] = []
-    for (let i = i0; i <= i1; i++) {
-      const x = ((i - i0) / span) * TW
-      pts.push(`${x.toFixed(1)},${((1 - data[i]) * TH).toFixed(1)}`)
-    }
-    return { ...tr, points: pts.join(' ') }
-  }),
-)
+function windowed(values: number[]): string {
+  const n = values.length
+  const i1 = Math.min(n - 1, sigIndex.value)
+  const i0 = Math.max(0, Math.round(sigIndex.value - WINDOW * (signals.value?.fps ?? 15)))
+  const span = Math.max(1, i1 - i0)
+  const pts: string[] = []
+  for (let i = i0; i <= i1; i++) pts.push(`${(((i - i0) / span) * TW).toFixed(1)},${((1 - values[i]) * TH).toFixed(1)}`)
+  return pts.join(' ')
+}
+
+const gazeTraces = computed(() => {
+  const s = signals.value
+  if (!s) return []
+  return [
+    { key: 'x', label: 'Gaze X', color: '#6f5aa0', points: windowed(s.gazeX) },
+    { key: 'y', label: 'Gaze Y', color: '#6f5aa0', points: windowed(s.gazeY) },
+  ]
+})
+
+const banks = computed(() => {
+  const s = signals.value
+  if (!s) return []
+  return [
+    { key: 'emgL', title: `EMG · left (${s.channels.emgL})`, color: '#a8623c', rows: s.emgL.map((v, i) => ({ label: `ch ${i + 1}`, points: windowed(v) })) },
+    { key: 'emgR', title: `EMG · right (${s.channels.emgR})`, color: '#a8623c', rows: s.emgR.map((v, i) => ({ label: `ch ${i + 1}`, points: windowed(v) })) },
+    { key: 'eeg', title: `EEG · 16 of 128`, color: '#33796f', rows: s.eeg.map((v, i) => ({ label: s.eegNames[i] ?? `ch ${i + 1}`, points: windowed(v) })) },
+  ]
+})
 
 /* ---------- gaze heat + trail ---------- */
 const HEAT_W = 128
@@ -335,6 +355,9 @@ function loop(now: number) {
     t.value += (dt / 1000) * speed.value
     if (t.value >= CLIP) t.value = 0
   }
+  const fps = signals.value?.fps ?? 15
+  const si = Math.round(t.value * fps)
+  if (si !== sigIndex.value) sigIndex.value = si
   const n = meta.value?.frames.length ?? 0
   const idx = n ? Math.min(n - 1, Math.round((t.value / CLIP) * (n - 1))) : 0
   if (idx !== drawn) drawCloud(idx)
@@ -412,6 +435,7 @@ onMounted(async () => {
   signals.value = sig
   gaze2d.value = g2
   steps.value = st.steps
+  subtasks.value = st.subtasks ?? []
   task.value = st.task
 
   renderer = new THREE.WebGLRenderer({ canvas: el, antialias: true, alpha: true })
@@ -490,6 +514,18 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
+    <!-- transport sits above the panels it drives -->
+    <div class="viewer__foot">
+      <button class="viewer__play" type="button" @click="playing = !playing">
+        {{ playing ? 'Pause' : 'Play' }}
+      </button>
+      <div class="viewer__speed" role="group" aria-label="Playback speed">
+        <button v-for="s in [1, 2, 4]" :key="s" type="button" :aria-pressed="speed === s" @click="speed = s">{{ s }}×</button>
+      </div>
+      <input v-model.number="t" class="viewer__range" type="range" min="0" :max="CLIP" step="0.033" aria-label="Time" />
+      <p class="viewer__read mono">frame {{ frame }} · {{ clock }} · window {{ WINDOW }} s</p>
+    </div>
+
     <div class="viewer__grid">
       <div class="viewer__stage">
         <canvas
@@ -528,53 +564,84 @@ onBeforeUnmount(() => {
         <canvas ref="gazeCanvas" class="gaze__map" />
         <div class="gaze__keys mono">
           <span>gaze · last {{ WINDOW }} s</span>
-          <span class="gaze__heat">heat = dwell</span>
+          <span class="gaze__heat">pseudo-colour heat = dwell</span>
         </div>
       </div>
 
-      <div class="side">
-        <figure class="cam cam--depth">
-          <video ref="depthEl" :src="DEPTH_SRC" muted playsinline preload="auto" />
-          <figcaption class="mono">Depth · headband left (rectified)</figcaption>
-        </figure>
+      <figure class="cam cam--depth">
+        <video ref="depthEl" :src="DEPTH_SRC" muted playsinline preload="auto" />
+        <figcaption class="mono">Depth · headband left · pseudo-colour</figcaption>
+      </figure>
+    </div>
 
-        <div class="traces" aria-hidden="true">
-          <div v-for="tr in traces" :key="tr.key" class="trace">
-            <span class="trace__label mono">{{ tr.label }}</span>
-            <svg class="trace__svg" :viewBox="`0 0 ${TW} ${TH}`" preserveAspectRatio="none">
+    <div class="signals">
+      <div class="signals__banks">
+        <div class="bank">
+          <p class="bank__title mono">Gaze (x / y)</p>
+          <div v-for="tr in gazeTraces" :key="tr.key" class="sig">
+            <span class="sig__label mono">{{ tr.label }}</span>
+            <svg class="sig__svg sig__svg--gaze" :viewBox="`0 0 ${TW} ${TH}`" preserveAspectRatio="none">
               <polyline :points="tr.points" fill="none" :stroke="tr.color" stroke-width="1" vector-effect="non-scaling-stroke" />
+            </svg>
+          </div>
+          <p class="bank__title mono bank__title--gap">{{ banks[0]?.title }}</p>
+          <div v-for="row in banks[0]?.rows ?? []" :key="row.label" class="sig">
+            <span class="sig__label mono">{{ row.label }}</span>
+            <svg class="sig__svg" :viewBox="`0 0 ${TW} ${TH}`" preserveAspectRatio="none">
+              <polyline :points="row.points" fill="none" :stroke="banks[0].color" stroke-width="1" vector-effect="non-scaling-stroke" />
+            </svg>
+          </div>
+        </div>
+
+        <div v-for="b in banks.slice(1)" :key="b.key" class="bank">
+          <p class="bank__title mono">{{ b.title }}</p>
+          <div v-for="row in b.rows" :key="row.label" class="sig">
+            <span class="sig__label mono">{{ row.label }}</span>
+            <svg class="sig__svg" :viewBox="`0 0 ${TW} ${TH}`" preserveAspectRatio="none">
+              <polyline :points="row.points" fill="none" :stroke="b.color" stroke-width="1" vector-effect="non-scaling-stroke" />
             </svg>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="anno">
-      <div class="anno__chips">
-        <button
-          v-for="(s, i) in steps"
-          :key="i"
-          type="button"
-          class="anno__chip mono"
-          :class="{ 'is-on': step === s }"
-          @click="t = s.start + 0.01"
-        >{{ s.label }}</button>
-      </div>
-      <p class="anno__line mono">
-        <template v-if="step">{{ step.label }} · {{ step.object }} — {{ step.start.toFixed(1) }}–{{ step.end.toFixed(1) }} s</template>
-        <template v-else>{{ task }}</template>
+      <p class="signals__note mono">
+        one window of {{ WINDOW }} s at the playhead · EMG 8 + 8 channels · EEG 16 of 128
       </p>
     </div>
 
-    <div class="viewer__foot">
-      <button class="viewer__play" type="button" @click="playing = !playing">
-        {{ playing ? 'Pause' : 'Play' }}
-      </button>
-      <div class="viewer__speed" role="group" aria-label="Playback speed">
-        <button v-for="s in [1, 2, 4]" :key="s" type="button" :aria-pressed="speed === s" @click="speed = s">{{ s }}×</button>
+    <div class="anno">
+      <div class="anno__row">
+        <span class="anno__tag mono">task</span>
+        <p class="anno__task mono">{{ task }}</p>
       </div>
-      <input v-model.number="t" class="viewer__range" type="range" min="0" :max="CLIP" step="0.033" aria-label="Time" />
-      <p class="viewer__read mono">frame {{ frame }} · {{ clock }}</p>
+      <div class="anno__row">
+        <span class="anno__tag mono">subtask</span>
+        <div class="anno__chips">
+          <button
+            v-for="(sub, i) in subtasks"
+            :key="i"
+            type="button"
+            class="anno__chip mono"
+            :class="{ 'is-on': subtask === sub }"
+            @click="t = sub.start + 0.01"
+          >{{ sub.title }}</button>
+        </div>
+      </div>
+      <div class="anno__row">
+        <span class="anno__tag mono">action</span>
+        <div class="anno__chips">
+          <template v-if="shownSub">
+            <button
+              v-for="(a, i) in shownSub.actions"
+              :key="i"
+              type="button"
+              class="anno__pill mono"
+              :class="{ 'is-on': step?.label === a.label }"
+              @click="t = a.start + 0.01"
+            >{{ a.label }}</button>
+          </template>
+          <span v-else class="anno__idle mono">—</span>
+        </div>
+      </div>
     </div>
   </figure>
 </template>
@@ -684,12 +751,43 @@ onBeforeUnmount(() => {
 .side { display: grid; grid-template-rows: auto 1fr; gap: 0.55rem; min-width: 0; min-height: 0; }
 .cam--depth video { aspect-ratio: 16 / 9; height: auto; min-height: 0; }
 
-.traces { display: grid; gap: 0.1rem; align-content: start; min-width: 0; overflow: hidden; }
-.trace { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: center; gap: 0.5rem; min-width: 0; }
-.trace__label { font-size: var(--fs-tick); color: var(--ink-mute); }
-.trace__svg { width: 100%; min-width: 0; height: 26px; display: block; border-bottom: 1px solid #eef1f3; }
+.signals {
+  margin-top: 0.55rem;
+  border: 1px solid #e4e7ea;
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem 0.6rem;
+}
+.signals__banks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.9rem; }
+.signals__note { margin: 0.5rem 0 0; font-size: var(--fs-tick); color: var(--ink-mute); }
+@media (max-width: 900px) { .signals__banks { grid-template-columns: minmax(0, 1fr); } }
+.bank__title--gap { margin-top: 0.55rem; }
+.bank__title {
+  margin: 0 0 0.15rem;
+  font-size: var(--fs-tick);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.sig { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); align-items: center; gap: 0.4rem; min-width: 0; }
+.sig__label { font-size: 10px; color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sig__svg { width: 100%; min-width: 0; height: 18px; display: block; }
+.sig__svg--gaze { height: 26px; border-bottom: 1px solid #eef1f3; }
 
-.anno { margin-top: 0.6rem; }
+.anno { margin-top: 0.6rem; display: grid; gap: 0.3rem; }
+.anno__row { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); align-items: center; gap: 0.6rem; }
+.anno__tag { font-size: var(--fs-tick); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); }
+.anno__task { margin: 0; font-size: var(--fs-tick); color: var(--ink-soft); }
+.anno__idle { font-size: var(--fs-tick); color: var(--ink-mute); }
+.anno__pill {
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: none;
+  padding: 0.05rem 0.4rem;
+  font-size: var(--fs-tick);
+  color: var(--ink-mute);
+  cursor: pointer;
+}
+.anno__pill.is-on { color: var(--ink); background: var(--t-blue); border-color: var(--c-blue); }
 .anno__chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .anno__chip {
   border: 1px solid var(--line);
@@ -704,7 +802,7 @@ onBeforeUnmount(() => {
 .anno__chip.is-on { color: var(--c-blue); border-color: var(--c-blue); background: var(--t-blue); }
 .anno__line { margin: 0.45rem 0 0; font-size: var(--fs-tick); color: var(--ink-soft); }
 
-.viewer__foot { display: flex; align-items: center; gap: 0.7rem; padding-top: 0.6rem; }
+.viewer__foot { display: flex; align-items: center; gap: 0.7rem; padding: 0 0 0.6rem; }
 .viewer__play {
   border: 0;
   border-bottom: 1px solid var(--line-strong);
