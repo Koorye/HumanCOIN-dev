@@ -382,6 +382,8 @@ export const DATA = {
     en: 'Hours are the release plan: 10,000 / 2,000 / 500 h, or 80 / 16 / 4% of the corpus. The outer band splits each tier between open and controlled collection; the two photographs are illustrative reconstructions of the settings, not corpus frames.',
     zh: '时长为发布计划：10,000 / 2,000 / 500 小时，占全库 80 / 16 / 4%。外环把每层时长拆分为开放与受控采集；两张照片为采集方式的示意重建，并非语料画面。',
   },
+  statsTitle: { en: 'The distribution, in six panels', zh: '六个面板看分布' },
+  statsAside: { en: 'hours · episodes · scenes · verbs · objects', zh: '小时 · 片段 · 场景 · 动词 · 物体' },
   sceneTitle: { en: '38 scene classes, five zones and a residual', zh: '38 个场景类别，五个区域加一个残余类' },
   sceneAside: { en: '38 classes · 5 zones + residual', zh: '38 类 · 5 区域 + 残余' },
   sceneNote: {

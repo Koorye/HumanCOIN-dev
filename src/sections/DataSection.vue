@@ -16,11 +16,11 @@ import { DATA } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import SectionHead from '@/components/SectionHead.vue'
 import FigFrame from '@/components/FigFrame.vue'
-import TierDepthFigure from '@/components/TierDepthFigure.vue'
 import SceneCarousel from '@/components/SceneCarousel.vue'
 import VerbTail from '@/components/VerbTail.vue'
 import ObjectTail from '@/components/ObjectTail.vue'
 import { SCENES, TOTAL_HOURS } from '@/data/fig2'
+import FigureStats from '@/components/FigureStats.vue'
 
 const { t, list } = useI18n()
 const fmt = (n: number) => n.toLocaleString('en-US')
@@ -57,14 +57,8 @@ const fmt = (n: number) => n.toLocaleString('en-US')
       </ul>
 
       <div class="figures">
-        <FigFrame
-          id="data-tiers"
-          n="3"
-          :title="DATA.depthTitle"
-          :aside="DATA.depthAside"
-          :note="DATA.depthNote"
-        >
-          <TierDepthFigure />
+        <FigFrame id="data-stats" n="3" :title="DATA.statsTitle" :aside="DATA.statsAside">
+          <FigureStats />
         </FigFrame>
 
         <FigFrame id="data-scenes" n="4" :title="DATA.sceneTitle" :aside="DATA.sceneAside">
