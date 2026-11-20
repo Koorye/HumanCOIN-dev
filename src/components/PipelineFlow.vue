@@ -16,7 +16,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { PIPELINE } from '@/content'
 import type { Bi } from '@/content'
 import { useI18n } from '@/composables/useI18n'
-import { PF_FOOT, PF_LANES, PF_PROV } from '@/data/pipelineFlow'
+import { PF_FOOT, PF_PROV } from '@/data/pipelineFlow'
 
 const { t } = useI18n()
 
@@ -26,8 +26,8 @@ const COL_W = 190
 const PITCH = 228
 const X0 = 10
 const HEAD_Y = 34
-const HEAD_H = 66
-const STEP_Y = 128
+const HEAD_H = 80
+const STEP_Y = 136
 const STEP_H = 34
 const STEP_GAP = 72
 const RULE_Y = 356
@@ -38,8 +38,10 @@ const H = 410
 interface Group {
   id: string
   icon: string
+  accent: string
   inputs: Bi
   title: Bi
+  sub: Bi
   steps: Bi[]
 }
 
@@ -56,8 +58,10 @@ const GROUPS: Group[] = [
   {
     id: 'sync',
     icon: 'camera',
+    accent: '#4a6f9e',
     inputs: { en: 'head RGB · wrist RGB', zh: '头部 RGB · 腕部 RGB' },
     title: { en: 'Synchronize + calibrate', zh: '同步与标定' },
+    sub: { en: 'soft sync, no resampling', zh: '软同步，不重采样' },
     steps: [
       { en: 'clock offsets', zh: '时钟偏移' },
       { en: 'intrinsics', zh: '相机内参' },
@@ -67,8 +71,10 @@ const GROUPS: Group[] = [
   {
     id: 'geometry',
     icon: 'depth',
+    accent: '#33796f',
     inputs: { en: 'depth · 6-DoF pose', zh: '深度 · 6-DoF 位姿' },
     title: { en: 'Geometry + motion', zh: '几何与运动' },
+    sub: { en: 'built on the camera intrinsics', zh: '由相机内参构建' },
     steps: [
       { en: 'FoundationStereo', zh: 'FoundationStereo' },
       { en: 'point cloud', zh: '点云' },
@@ -78,7 +84,9 @@ const GROUPS: Group[] = [
   {
     id: 'gaze',
     icon: 'eye',
+    accent: '#6f5aa0',
     inputs: { en: 'gaze', zh: '注视' },
+    sub: { en: 'measured at L3, predicted below', zh: 'L3 实测，低层预测' },
     title: { en: 'Gaze', zh: '注视' },
     steps: [
       { en: 'L3 acquire', zh: 'L3 采集' },
@@ -88,8 +96,10 @@ const GROUPS: Group[] = [
   {
     id: 'ephys',
     icon: 'wave',
+    accent: '#a8623c',
     inputs: { en: 'EMG · EEG', zh: '肌电 · 脑电' },
     title: { en: 'Electrophysiology', zh: '电生理' },
+    sub: { en: 'per-channel cleanup', zh: '逐通道清洗' },
     steps: [
       { en: 'band-pass', zh: '带通滤波' },
       { en: 'notch', zh: '陷波' },
@@ -99,8 +109,10 @@ const GROUPS: Group[] = [
   {
     id: 'annot',
     icon: 'video',
+    accent: '#8a5a6e',
     inputs: { en: 'video', zh: '视频' },
     title: { en: 'Annotation', zh: '标注' },
+    sub: { en: 'consumes the other four', zh: '依赖其余四组' },
     steps: [
       { en: 'action phases', zh: '动作阶段' },
       { en: 'subgoals + events', zh: '子目标与事件' },
@@ -184,16 +196,18 @@ const running = computed(() => playing.value && !reduced.value)
         </defs>
 
         <!-- one column per chain -->
-        <g v-for="c in cols" :key="c.g.id" class="pf__col">
+        <g v-for="c in cols" :key="c.g.id" class="pf__col" :style="{ '--accent': c.g.accent }">
           <!-- what arrives -->
           <text class="pf__input" :x="c.x" :y="18">{{ t(c.g.inputs) }}</text>
 
           <!-- the chain's header -->
+          <rect class="pf__tint" :x="c.x" :y="HEAD_Y" :width="COL_W" :height="HEAD_H" rx="9" />
           <rect class="pf__card" :x="c.x" :y="HEAD_Y" :width="COL_W" :height="HEAD_H" rx="9" />
           <g class="pf__glyph" :transform="`translate(${c.x + 14} ${HEAD_Y + 13})`" aria-hidden="true">
             <path :d="ICONS[c.g.icon]" />
           </g>
-          <text class="pf__head" :x="c.x + 14" :y="HEAD_Y + 56">{{ t(c.g.title) }}</text>
+          <text class="pf__head" :x="c.x + 14" :y="HEAD_Y + 45">{{ t(c.g.title) }}</text>
+          <text class="pf__sub" :x="c.x + 14" :y="HEAD_Y + 63">{{ t(c.g.sub) }}</text>
 
           <!-- the steps, in the order they run -->
           <path class="pf__link" :d="`M${c.x + COL_W / 2} ${HEAD_Y + HEAD_H + 2}V${STEP_Y - 6}`" />
@@ -234,14 +248,6 @@ const running = computed(() => playing.value && !reduced.value)
       <p v-for="(line, i) in PF_PROV" :key="i" class="pf__prov mono">{{ line }}</p>
     </figcaption>
 
-    <!-- what each chain contributes, in prose -->
-    <div class="pf__lanes">
-      <article v-for="l in PF_LANES" :key="l.id" class="pf__lanecard">
-        <h4 class="pf__lanecard-t">{{ t(l.title) }}</h4>
-        <p class="pf__lanecard-p">{{ t(l.prose) }}</p>
-        <p v-if="l.method" class="pf__lanecard-m mono">{{ l.method }}</p>
-      </article>
-    </div>
   </figure>
 </template>
 
@@ -295,22 +301,24 @@ const running = computed(() => playing.value && !reduced.value)
 }
 .pf__input { font-size: 10.5px; fill: #9aa1a9; }
 .pf__head { font-size: 12.5px; font-weight: 600; fill: #16191d; letter-spacing: -0.008em; }
+.pf__sub { font-size: 10px; fill: #969da5; }
 .pf__chip-t { font-size: 11px; fill: #596069; }
 .pf__note { font-size: 10.5px; fill: #9aa1a9; letter-spacing: 0.04em; }
 .pf__ep { font-size: 11px; font-weight: 600; fill: #16191d; }
 
 .pf__card { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
+.pf__tint { fill: var(--accent, transparent); opacity: 0.11; }
 .pf__chip { fill: #fff; stroke: #e7eaed; stroke-width: 1; }
-.pf__dot { fill: #b4bcc4; }
+.pf__dot { fill: var(--accent, #b4bcc4); }
 .pf__glyph path {
   fill: none;
-  stroke: #9aa3ad;
+  stroke: var(--accent, #9aa3ad);
   stroke-width: 1.35;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .pf__link { fill: none; stroke: #ccd2d8; stroke-width: 1; stroke-dasharray: 4 4; marker-end: url(#pf-arrow); }
-.pf__link--drop { marker-end: none; }
+.pf__link--drop { marker-end: none; stroke: var(--accent, #ccd2d8); opacity: 0.55; }
 .pf__rule { fill: none; stroke: #a8b0b8; stroke-width: 1.2; }
 .pf__rule-arrow { fill: none; stroke: #9aa1a9; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -338,21 +346,4 @@ const running = computed(() => playing.value && !reduced.value)
   line-height: 1.6;
 }
 
-.pf__lanes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1.35rem;
-  border-top: 1px solid var(--line);
-}
-.pf__lanecard {
-  border: 1px solid #e7eaed;
-  border-radius: 10px;
-  padding: 0.85rem 0.95rem;
-  background: #fff;
-}
-.pf__lanecard-t { font-size: var(--fs-small); font-weight: 620; margin-bottom: 0.3rem; }
-.pf__lanecard-p { margin: 0; font-size: var(--fs-micro); line-height: 1.65; color: var(--ink-body); }
-.pf__lanecard-m { margin: 0.45rem 0 0; font-size: var(--fs-tick); color: var(--ink-mute); }
 </style>
