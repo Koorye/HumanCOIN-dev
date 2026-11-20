@@ -20,13 +20,15 @@ export interface NavChild {
 }
 export interface NavItem {
   id: string
-  num: string
+  /** Section number; the unnumbered entries (abstract, cite, …) omit it. */
+  num?: string
   label: Bi
   /** Blocks inside the section that are worth jumping to directly. */
   children?: NavChild[]
 }
 
 export const NAV: NavItem[] = [
+  { id: 'abstract', label: { en: 'Abstract', zh: '摘要' } },
   { id: 'overview', num: '01', label: { en: 'Overview', zh: '总览' } },
   { id: 'acquisition', num: '02', label: { en: 'Acquisition', zh: '采集体系' } },
   {
@@ -49,6 +51,9 @@ export const NAV: NavItem[] = [
     children: [{ id: 'pipeline-framework', label: { en: 'Five chains', zh: '五条链路' } }],
   },
   { id: 'community', num: '07', label: { en: 'Community', zh: '合作机构' } },
+  { id: 'install', label: { en: 'Start', zh: '开始使用' } },
+  { id: 'cite', label: { en: 'Cite', zh: '引用' } },
+  { id: 'license', label: { en: 'License', zh: '许可' } },
 ]
 
 export const HERO = {

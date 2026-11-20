@@ -103,7 +103,7 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
       </div>
 
       <!-- the citation takes a row of its own: the author list needs the width -->
-      <section class="foot__cite">
+      <section id="cite" class="foot__cite">
         <div class="foot__citehead">
           <h3 class="foot__h">{{ t(FOOTER.citeTitle) }}</h3>
           <button
@@ -120,7 +120,7 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
       </section>
 
       <div class="foot__cols">
-        <section>
+        <section id="license">
           <h3 class="foot__h">{{ t(FOOTER.licenseTitle) }}</h3>
           <p class="foot__p">{{ t(FOOTER.licenseBody) }}</p>
           <p class="foot__p foot__p--strong">CC BY-NC 4.0</p>

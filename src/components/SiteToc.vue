@@ -7,7 +7,7 @@
  * section index, and the section in view marked by colour alone. It is type,
  * not a panel — no sheet, no rule, nothing boxed.
  */
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { NAV, UI } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import { useScrollSpy } from '@/composables/useScrollSpy'
@@ -19,8 +19,15 @@ const { t } = useI18n()
 const ids = NAV.flatMap((n) => [n.id, ...(n.children?.map((c) => c.id) ?? [])])
 const { active } = useScrollSpy(ids)
 
+/* A click sets the highlight straight away: the footer blocks sit too close to
+   the end of the document for the scroll probe to ever reach them. */
+const clicked = ref<string | null>(null)
+let clearClick = 0
+
+const current = computed(() => clicked.value ?? active.value)
+
 const openSection = (item: (typeof NAV)[number]) =>
-  active.value === item.id || item.children?.some((c) => c.id === active.value)
+  current.value === item.id || item.children?.some((c) => c.id === current.value)
 
 /* The cover is a title page, not an article: while it fills the view, the
    contents has nothing to point at, so it stays out of the way. */
@@ -46,6 +53,9 @@ function go(e: MouseEvent, id: string) {
   const el = document.getElementById(id)
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   history.replaceState(null, '', `#${id}`)
+  clicked.value = id
+  window.clearTimeout(clearClick)
+  clearClick = window.setTimeout(() => { clicked.value = null }, 1600)
 }
 </script>
 
@@ -62,17 +72,17 @@ function go(e: MouseEvent, id: string) {
           class="toc__item"
           :class="{ 'is-open': openSection(item) }"
           :href="`#${item.id}`"
-          :aria-current="active === item.id ? 'true' : undefined"
+          :aria-current="current === item.id ? 'true' : undefined"
           @click="go($event, item.id)"
         >
-          <span class="toc__num">{{ item.num }}</span>{{ t(item.label) }}
+          <span v-if="item.num" class="toc__num">{{ item.num }}</span>{{ t(item.label) }}
         </a>
         <a
           v-for="child in item.children"
           :key="child.id"
           class="toc__sub"
           :href="`#${child.id}`"
-          :aria-current="active === child.id ? 'true' : undefined"
+          :aria-current="current === child.id ? 'true' : undefined"
           @click="go($event, child.id)"
         >{{ t(child.label) }}</a>
       </template>
@@ -118,6 +128,8 @@ function go(e: MouseEvent, id: string) {
 .toc__links a:hover { color: var(--ink); text-decoration: none; }
 .toc__links a[aria-current='true'] { color: var(--c-blue); font-weight: 560; }
 .toc__item.is-open { color: var(--ink); }
+.toc__item:not(:has(.toc__num)) { color: var(--ink-mute); }
+.toc__item:not(:has(.toc__num))[aria-current='true'] { color: var(--c-blue); }
 .toc__sub {
   margin-left: 0.15rem;
   padding: 0.34rem 0 0.34rem 1.1rem !important;
