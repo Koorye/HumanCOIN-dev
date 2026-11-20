@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
 import SiteNav from '@/components/SiteNav.vue'
+import SiteToc from '@/components/SiteToc.vue'
 import HeroSection from '@/sections/HeroSection.vue'
 import OverviewSection from '@/sections/OverviewSection.vue'
 import SiteFooter from '@/sections/SiteFooter.vue'
@@ -26,6 +27,7 @@ const InstallSection = defineAsyncComponent(() => import('@/sections/InstallSect
 <template>
   <a class="skip-link" href="#main">{{ t({ en: 'Skip to content', zh: '跳到正文' }) }}</a>
   <SiteNav />
+  <SiteToc />
 
   <main id="main">
     <HeroSection />

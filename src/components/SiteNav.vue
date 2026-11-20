@@ -1,37 +1,26 @@
 <script setup lang="ts">
 /**
- * The left rail.
+ * The masthead.
  *
- * A fixed column that carries the institute's wordmark, the section index and
- * the three destinations — the dataset, the report, the code — so the page
- * itself keeps its full width for figures. The section in view is marked with a
- * tinted row rather than a filled chip, and a hairline down the rail's right
- * edge fills as the document is read.
- *
- * Below 1080 px the rail folds back into a top bar: the page gets the width
- * back and the index is the first thing to go.
+ * One horizontal bar carries everything: the institute's wordmark at the left,
+ * the section index in the middle, the three destinations a reader came for at
+ * the right. Set as type rather than as a panel — no chips, no boxes; the
+ * section in view is marked with colour. A hairline along the bottom edge fills
+ * as the document is read.
  */
-import { NAV, UI } from '@/content'
+import { UI } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import { useScrollSpy } from '@/composables/useScrollSpy'
 
 const { t, toggle } = useI18n()
 
-const { active, progress } = useScrollSpy(NAV.map((n) => n.id))
-
-function go(e: MouseEvent, id: string) {
-  e.preventDefault()
-  const el = document.getElementById(id)
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  history.replaceState(null, '', `#${id}`)
-}
+const { progress } = useScrollSpy([])
 
 const BAAI_MARK = 'logos/baai-acrylic.png'
 
 /**
- * The three destinations the bar carries: the dataset manager, the paper on
- * arXiv, and the code on GitHub. All three leave the page, so they open in a
- * new tab and keep the external treatment.
+ * The three destinations: the dataset manager, the paper on arXiv, and the code
+ * on GitHub. All three leave the page, so they open in a new tab.
  */
 const ACTIONS = [
   { id: 'download', href: 'https://flagopen.github.io/HumanCOIN-DataManager', external: true, primary: true,
@@ -50,19 +39,6 @@ const ACTIONS = [
         <img class="nav__logo" :src="BAAI_MARK" alt="BAAI" />
       </a>
 
-      <nav class="nav__links" :aria-label="t({ en: 'Section index', zh: '章节导航' })">
-        <p class="nav__toc-label">{{ t(UI.contents) }}</p>
-        <a
-          v-for="item in NAV"
-          :key="item.id"
-          :href="`#${item.id}`"
-          :aria-current="active === item.id ? 'true' : undefined"
-          @click="go($event, item.id)"
-        >
-          <span class="nav__num">{{ item.num }}</span>{{ t(item.label) }}
-        </a>
-      </nav>
-
       <nav class="nav__actions" :aria-label="t({ en: 'Dataset resources', zh: '数据集资源' })">
         <a
           v-for="action in ACTIONS"
@@ -74,8 +50,6 @@ const ACTIONS = [
           :rel="action.external ? 'noopener noreferrer' : undefined"
           :aria-label="t(action.label)"
         >
-          <!-- The same three glyphs the cover uses, drawn at 13 px so they sit
-               with the bar's smaller type and inherit the label colour. -->
           <svg
             v-if="action.id === 'download'"
             class="nav__ico"
@@ -99,14 +73,7 @@ const ACTIONS = [
             <path d="M4 1.8h5.2L13 5.4v8.8H4z" />
             <path d="M9 1.8v3.8h4M6 8.5h4.5M6 11h4.5" />
           </svg>
-          <svg
-            v-else
-            class="nav__ico"
-            viewBox="0 0 16 16"
-            width="13"
-            height="13"
-            aria-hidden="true"
-          >
+          <svg v-else class="nav__ico" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
             <path d="m5.5 4.5-3.5 3.5 3.5 3.5M10.5 4.5 14 8l-3.5 3.5" />
           </svg>
           <span class="nav__act-label">{{ t(action.label) }}</span>
@@ -121,63 +88,50 @@ const ACTIONS = [
       </nav>
     </div>
 
-    <div class="nav__progress" :style="{ transform: `scaleY(${progress})` }" aria-hidden="true" />
+    <div class="nav__progress" :style="{ transform: `scaleX(${progress})` }" aria-hidden="true" />
   </header>
 </template>
 
 <style scoped>
 .nav {
   position: fixed;
-  inset: 0 auto 0 var(--rail-inset);
-  width: var(--rail-w);
+  inset: 0 0 auto 0;
   z-index: 60;
-  /* The rail is set as type on the page, not as a panel: no sheet, no rule,
-     nothing that draws a box around the index. */
-  background: transparent;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: saturate(160%) blur(12px);
 }
 .nav__inner {
-  position: relative;
-  height: 100%;
+  height: var(--nav-h);
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem 1.1rem 1.4rem 1.15rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  width: min(100% - 2.5rem, var(--shell-max));
+  margin-inline: auto;
 }
 
 .nav__brand { display: flex; align-items: center; flex: none; }
-.nav__brand:hover { text-decoration: none; }
-.nav__logo { height: 22px; width: auto; display: block; }
 
 .nav__links {
-  display: grid;
-  align-content: start;
-  gap: 0.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-right: auto;
+  margin-left: 1.6rem;
   min-width: 0;
 }
-.nav__toc-label {
-  margin: 0 0 0.55rem;
-  font-size: var(--fs-tick);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
 .nav__links a {
-  display: flex;
+  display: inline-flex;
   align-items: baseline;
-  gap: 0.45em;
-  padding: 0.3rem 0;
+  gap: 0.3em;
   color: var(--ink-soft);
-  font-size: 0.82rem;
-  line-height: 1.35;
+  font-size: 0.8rem;
   white-space: nowrap;
   text-decoration: none;
   transition: color var(--dur) var(--ease);
 }
 .nav__links a:hover { color: var(--ink); text-decoration: none; }
-.nav__links a[aria-current='true'] {
-  color: var(--c-blue);
-  font-weight: 560;
-}
+.nav__links a[aria-current='true'] { color: var(--c-blue); font-weight: 560; }
 .nav__num {
   font-family: var(--ff-mono);
   font-size: var(--fs-tick);
@@ -185,17 +139,22 @@ const ACTIONS = [
 }
 .nav__links a[aria-current='true'] .nav__num { color: var(--c-blue); }
 
+@media (max-width: 1180px) {
+  .nav__links { display: none; }
+}
+.nav__brand:hover { text-decoration: none; }
+.nav__logo { height: 22px; width: auto; display: block; }
+
 .nav__actions {
-  margin-top: auto;
-  display: grid;
-  gap: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex: none;
 }
 .nav__act {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 0.34rem 0;
-  border: 0;
+  padding: 0.3rem 0;
   color: var(--ink-soft);
   font-size: var(--fs-small);
   font-weight: 550;
@@ -208,7 +167,7 @@ const ACTIONS = [
 
 .nav__ico {
   flex: none;
-  margin-right: 0.35rem;
+  margin-right: 0.3rem;
   margin-bottom: -0.06em;
   fill: none;
   stroke: currentColor;
@@ -218,8 +177,7 @@ const ACTIONS = [
 }
 
 .nav__lang {
-  justify-self: start;
-  margin: 0.35rem 0 0 0.15rem;
+  margin-left: 0.2rem;
   border: 0;
   background: none;
   padding: 0.2rem 0;
@@ -233,66 +191,22 @@ const ACTIONS = [
 }
 .nav__lang:hover { color: var(--ink); }
 
-/* the reading progress runs down the rail's outer edge */
 .nav__progress {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 1px;
-  opacity: 0.55;
-  height: 100%;
+  height: 1px;
   background: var(--c-blue);
-  transform-origin: 50% 0;
+  transform-origin: 0 50%;
+  opacity: 0.6;
   transition: transform 90ms linear;
 }
 
-/* ---- below the rail breakpoint: back to a top bar ---- */
-@media (max-width: 1080px) {
-  .nav {
-    inset: 0 0 auto 0;
-    width: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-    position: sticky;
-    top: 0;
-  }
-  .nav__inner {
-    height: var(--nav-h);
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.25rem;
-    padding: 0 1.25rem;
-  }
-  .nav__links { display: none; }
-  .nav__actions {
-    margin-top: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-  }
-  .nav__act { padding: 0.32rem 0.72rem; }
-  .nav__lang { margin: 0 0 0 0.35rem; justify-self: auto; }
-  .nav__progress {
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 1px;
-    transform-origin: 0 50%;
-  }
-}
-
 @media (max-width: 560px) {
-  .nav__act { padding: 0.3rem 0.6rem; font-size: var(--fs-micro); }
+  .nav__act { font-size: var(--fs-micro); }
   .nav__lang { display: none; }
 }
-/* Below this the three pills would push the bar past the viewport, so they
-   collapse to their glyphs — the icon is what carries the meaning, and the
-   label survives as the link's accessible name. */
+/* Below this the three links would push the bar past the viewport, so they
+   collapse to their glyphs; the label survives as the link's accessible name. */
 @media (max-width: 440px) {
-  .nav__act { padding: 0.34rem 0.5rem; }
+  .nav__actions { gap: 0.5rem; }
   .nav__act-label { display: none; }
   .nav__ico { margin-right: 0; }
 }

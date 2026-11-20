@@ -34,13 +34,10 @@ body {
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  /* The rail is fixed, so the document is inset by its width instead of
-     carrying a top bar. Below the breakpoint the bar comes back and the inset
-     goes away. */
-  padding-left: calc(var(--rail-w) + var(--rail-inset));
-}
-@media (max-width: 1080px) {
-  body { padding-left: 0; }
+  /* The bar is fixed across the top and the contents column is fixed at the
+     left, so the document is inset by both. Below the breakpoint the contents
+     column folds away and the page takes the width back. */
+  padding-top: var(--nav-h);
 }
 
 img, video, canvas, svg { display: block; max-width: 100%; }
@@ -111,6 +108,11 @@ strong, b { font-weight: 640; color: var(--ink); }
 .shell {
   width: min(100% - 2.5rem, var(--shell-max));
   margin-inline: auto;
+}
+/* Wide screens keep a gutter on the left of the container for the contents
+   column, so the article reads as one column beside it. */
+@media (min-width: 1181px) {
+  #main .shell, .foot .shell { padding-left: 200px; }
 }
 @media (max-width: 640px) {
   .shell { width: min(100% - 1.75rem, var(--shell-max)); }

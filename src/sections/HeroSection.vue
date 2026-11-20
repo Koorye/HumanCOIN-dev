@@ -244,11 +244,6 @@ onMounted(() => {
   isolation: isolate;
   color: var(--ink-body);
   padding-top: clamp(1rem, 0.8rem + 0.9vw, 1.6rem);
-}
-/* With the rail there is no top bar to clear, so the cover gives itself the
-   breathing room the bar used to provide. */
-@media (min-width: 1081px) {
-  .cover { padding-top: clamp(1.5rem, 1.1rem + 1vw, 2.4rem); }
   padding-bottom: clamp(1.1rem, 0.9rem + 1vw, 1.9rem);
   /* A pale blue acrylic sheet: cool washes, a white sheen at the top edge, and
      a soft caustic where the two blues meet. The body below stays white. */
