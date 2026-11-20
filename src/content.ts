@@ -1021,6 +1021,7 @@ export const FOOTER = {
 } as const
 
 export const UI = {
+  contents: { en: 'Contents', zh: '目录' },
   languageToggle: { en: '中文', zh: 'EN' },
   languageToggleAria: { en: 'Switch to Chinese', zh: '切换到英文' },
   menu: { en: 'Menu', zh: '菜单' },

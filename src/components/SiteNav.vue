@@ -51,6 +51,7 @@ const ACTIONS = [
       </a>
 
       <nav class="nav__links" :aria-label="t({ en: 'Section index', zh: '章节导航' })">
+        <p class="nav__toc-label">{{ t(UI.contents) }}</p>
         <a
           v-for="item in NAV"
           :key="item.id"
@@ -130,17 +131,17 @@ const ACTIONS = [
   inset: 0 auto 0 0;
   width: var(--rail-w);
   z-index: 60;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: saturate(160%) blur(12px);
-  border-right: 1px solid var(--line);
+  /* The rail is set as type on the page, not as a panel: no sheet, no rule,
+     nothing that draws a box around the index. */
+  background: transparent;
 }
 .nav__inner {
   position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
-  padding: 1.15rem 0.9rem 1.25rem 1.05rem;
+  gap: 1.5rem;
+  padding: 1.5rem 1.1rem 1.4rem 1.15rem;
 }
 
 .nav__brand { display: flex; align-items: center; flex: none; }
@@ -150,27 +151,32 @@ const ACTIONS = [
 .nav__links {
   display: grid;
   align-content: start;
-  gap: 0.05rem;
+  gap: 0.1rem;
   min-width: 0;
+}
+.nav__toc-label {
+  margin: 0 0 0.55rem;
+  font-size: var(--fs-tick);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
 }
 .nav__links a {
   display: flex;
   align-items: baseline;
   gap: 0.45em;
-  padding: 0.36rem 0.55rem;
-  border-radius: 6px;
+  padding: 0.3rem 0;
   color: var(--ink-soft);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   line-height: 1.35;
   white-space: nowrap;
   text-decoration: none;
-  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease);
 }
-.nav__links a:hover { color: var(--ink); background: var(--surface-2); text-decoration: none; }
+.nav__links a:hover { color: var(--ink); text-decoration: none; }
 .nav__links a[aria-current='true'] {
-  color: var(--ink);
+  color: var(--c-blue);
   font-weight: 560;
-  background: var(--t-blue);
 }
 .nav__num {
   font-family: var(--ff-mono);
@@ -188,28 +194,17 @@ const ACTIONS = [
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0.42rem 0.7rem;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--r-pill);
-  color: var(--ink);
+  padding: 0.34rem 0;
+  border: 0;
+  color: var(--ink-soft);
   font-size: var(--fs-small);
   font-weight: 550;
   line-height: 1.2;
   text-decoration: none;
-  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease),
-    background var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease);
 }
-.nav__act:hover {
-  color: var(--c-blue);
-  border-color: var(--c-blue);
-  background: var(--t-blue);
-  text-decoration: none;
-}
-.nav__act--primary {
-  color: var(--c-blue);
-  border-color: var(--c-blue);
-}
-.nav__act--primary:hover { background: var(--t-blue); }
+.nav__act:hover { color: var(--ink); text-decoration: none; }
+.nav__act--primary { color: var(--c-blue); }
 
 .nav__ico {
   flex: none;
@@ -242,8 +237,9 @@ const ACTIONS = [
 .nav__progress {
   position: absolute;
   top: 0;
-  right: -1px;
-  width: 2px;
+  right: 0;
+  width: 1px;
+  opacity: 0.55;
   height: 100%;
   background: var(--c-blue);
   transform-origin: 50% 0;
