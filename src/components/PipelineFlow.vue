@@ -35,6 +35,10 @@ const EP_X = 1136
 const EP_W = 74
 const H = 410
 
+interface Step {
+  label: Bi
+  detail: Bi
+}
 interface Group {
   id: string
   icon: string
@@ -42,7 +46,7 @@ interface Group {
   inputs: Bi
   title: Bi
   sub: Bi
-  steps: Bi[]
+  steps: Step[]
 }
 
 const ICONS: Record<string, string> = {
@@ -63,9 +67,27 @@ const GROUPS: Group[] = [
     title: { en: 'Synchronize + calibrate', zh: '同步与标定' },
     sub: { en: 'soft sync, no resampling', zh: '软同步，不重采样' },
     steps: [
-      { en: 'clock offsets', zh: '时钟偏移' },
-      { en: 'intrinsics', zh: '相机内参' },
-      { en: 'eye calibration', zh: '眼动标定' },
+      {
+        label: { en: 'clock offsets', zh: '时钟偏移' },
+        detail: {
+          en: 'Every sample is stamped against the start of the recording, and the sync host logs arrival offsets, so streams on a shared transport land on one base without resampling.',
+          zh: '每个样本相对录制起点打时间戳，同步主机记录到达偏移，同一传输上的流因此落在同一基准上，且不做重采样。',
+        },
+      },
+      {
+        label: { en: 'intrinsics', zh: '相机内参' },
+        detail: {
+          en: 'Intrinsics and distortion ship per camera, in both encodings, so the geometry can be re-derived rather than trusted.',
+          zh: '每台相机的内参与畸变参数随片段发布，并提供两种编码，几何可自行重新推导。',
+        },
+      },
+      {
+        label: { en: 'eye calibration', zh: '眼动标定' },
+        detail: {
+          en: 'The eye tracker’s calibration is stored beside the episode instead of being baked into the gaze values.',
+          zh: '眼动仪的标定结果与片段存放在一起，而不是烘焙进注视数值里。',
+        },
+      },
     ],
   },
   {
@@ -76,9 +98,27 @@ const GROUPS: Group[] = [
     title: { en: 'Geometry + motion', zh: '几何与运动' },
     sub: { en: 'built on the camera intrinsics', zh: '由相机内参构建' },
     steps: [
-      { en: 'FoundationStereo', zh: 'FoundationStereo' },
-      { en: 'point cloud', zh: '点云' },
-      { en: '6-DoF pose · hand recon', zh: '6-DoF 位姿 · 手部重建' },
+      {
+        label: { en: 'FoundationStereo', zh: 'FoundationStereo' },
+        detail: {
+          en: 'The front pair is hardware-synchronised and rectified, then passed to FoundationStereo, which returns a depth map stored with the intrinsics that produced it.',
+          zh: '前视双目硬件同步并矫正后送入 FoundationStereo，返回的深度图与产生它所用的内参一起存储。',
+        },
+      },
+      {
+        label: { en: 'point cloud', zh: '点云' },
+        detail: {
+          en: 'Depth is projected through the intrinsics into a metric point cloud and subsampled to a fixed budget per frame.',
+          zh: '深度经内参投影成米制点云，并按每帧固定预算下采样。',
+        },
+      },
+      {
+        label: { en: '6-DoF pose · hand recon', zh: '6-DoF 位姿 · 手部重建' },
+        detail: {
+          en: 'At L3 three trackers give head and wrists directly; below that, both hands are reconstructed from the rectified front view, with two confidence fields per hand.',
+          zh: 'L3 由三个追踪器直接给出头与双腕位姿；更低层级从矫正后的前视重建双手，并给出两个置信度字段。',
+        },
+      },
     ],
   },
   {
@@ -86,11 +126,23 @@ const GROUPS: Group[] = [
     icon: 'eye',
     accent: '#6f5aa0',
     inputs: { en: 'gaze', zh: '注视' },
-    sub: { en: 'measured at L3, predicted below', zh: 'L3 实测，低层预测' },
     title: { en: 'Gaze', zh: '注视' },
+    sub: { en: 'measured at L3, predicted below', zh: 'L3 实测，低层预测' },
     steps: [
-      { en: 'L3 acquire', zh: 'L3 采集' },
-      { en: 'L1/L2 EgoM2P', zh: 'L1/L2 EgoM2P' },
+      {
+        label: { en: 'L3 acquire', zh: 'L3 采集' },
+        detail: {
+          en: 'Gaze is measured on the controlled L3 sessions with the head-mounted eye tracker.',
+          zh: '在受控 L3 会话中用头戴眼动仪实测注视。',
+        },
+      },
+      {
+        label: { en: 'L1/L2 EgoM2P', zh: 'L1/L2 EgoM2P' },
+        detail: {
+          en: 'Elsewhere gaze is predicted from head video by EgoM2P, and the field is tagged as estimated rather than measured.',
+          zh: '其余层级由 EgoM2P 从头部视频预测注视，字段标记为估计而非实测。',
+        },
+      },
     ],
   },
   {
@@ -101,9 +153,27 @@ const GROUPS: Group[] = [
     title: { en: 'Electrophysiology', zh: '电生理' },
     sub: { en: 'per-channel cleanup', zh: '逐通道清洗' },
     steps: [
-      { en: 'band-pass', zh: '带通滤波' },
-      { en: 'notch', zh: '陷波' },
-      { en: 'bad-channel interpolation', zh: '坏道插值' },
+      {
+        label: { en: 'band-pass', zh: '带通滤波' },
+        detail: {
+          en: 'Each EMG and EEG channel is band-passed in its own physiological band before anything else touches it.',
+          zh: '每条肌电、脑电通道先按各自的生理频带做带通，再做其他处理。',
+        },
+      },
+      {
+        label: { en: 'notch', zh: '陷波' },
+        detail: {
+          en: 'Line noise is removed with a notch at the mains frequency.',
+          zh: '用陷波器去掉工频干扰。',
+        },
+      },
+      {
+        label: { en: 'bad-channel interpolation', zh: '坏道插值' },
+        detail: {
+          en: 'Channels that fail the audit are interpolated, and the failure is written into the episode metadata rather than hidden.',
+          zh: '未通过检查的通道做插值，并把失败写进片段元数据，而不是隐去。',
+        },
+      },
     ],
   },
   {
@@ -114,14 +184,50 @@ const GROUPS: Group[] = [
     title: { en: 'Annotation', zh: '标注' },
     sub: { en: 'consumes the other four', zh: '依赖其余四组' },
     steps: [
-      { en: 'action phases', zh: '动作阶段' },
-      { en: 'subgoals + events', zh: '子目标与事件' },
-      { en: 'human review', zh: '人工复核' },
+      {
+        label: { en: 'action phases', zh: '动作阶段' },
+        detail: {
+          en: 'Each captured segment carries a verb and a short description, and is cut into phases on the shared clock.',
+          zh: '每段录制带一个动词与简短描述，并按统一时钟切分为阶段。',
+        },
+      },
+      {
+        label: { en: 'subgoals + events', zh: '子目标与事件' },
+        detail: {
+          en: 'Subgoals and contact events are annotated against the same timestamps the signals carry.',
+          zh: '子目标与接触事件按与信号相同的时间戳标注。',
+        },
+      },
+      {
+        label: { en: 'human review', zh: '人工复核' },
+        detail: {
+          en: 'A human pass checks the annotation before the episode is released.',
+          zh: '片段发布前由人工复核标注。',
+        },
+      },
     ],
   },
 ]
 
 const cols = GROUPS.map((g, i) => ({ g, x: X0 + i * PITCH, i }))
+
+/* ---- per-step detail, on hover or keyboard focus ---- */
+const scroller = ref<HTMLElement | null>(null)
+const tip = ref<{ x: number; y: number; text: string } | null>(null)
+
+function showTip(e: Event, step: Step) {
+  const box = scroller.value?.getBoundingClientRect()
+  if (!box) return
+  const r = (e.currentTarget as SVGGElement).getBoundingClientRect()
+  tip.value = {
+    x: r.left - box.left + r.width / 2,
+    y: r.top - box.top,
+    text: t(step.detail),
+  }
+}
+function hideTip() {
+  tip.value = null
+}
 
 const oneClock: Bi = { en: 'one clock', zh: '统一时钟' }
 const episodeLabel: Bi = { en: 'episode', zh: '片段' }
@@ -177,7 +283,7 @@ const running = computed(() => playing.value && !reduced.value)
       </button>
     </div>
 
-    <div class="pf__scroll" tabindex="0" role="region" :aria-label="t(PIPELINE.figScrollAria)">
+    <div ref="scroller" class="pf__scroll" role="region" :aria-label="t(PIPELINE.figScrollAria)">
       <svg
         class="pf__svg"
         :viewBox="`0 0 ${W} ${H}`"
@@ -211,10 +317,19 @@ const running = computed(() => playing.value && !reduced.value)
 
           <!-- the steps, in the order they run -->
           <path class="pf__link" :d="`M${c.x + COL_W / 2} ${HEAD_Y + HEAD_H + 2}V${STEP_Y - 6}`" />
-          <g v-for="(s, k) in c.g.steps" :key="k" class="pf__step">
+          <g
+            v-for="(s, k) in c.g.steps"
+            :key="k"
+            class="pf__step"
+            tabindex="0"
+            @mouseenter="showTip($event, s)"
+            @mouseleave="hideTip"
+            @focus="showTip($event, s)"
+            @blur="hideTip"
+          >
             <rect class="pf__chip" :x="c.x + 16" :y="STEP_Y + k * STEP_GAP" :width="COL_W - 32" :height="STEP_H" rx="8" />
             <circle class="pf__dot" :cx="c.x + 30" :cy="STEP_Y + k * STEP_GAP + STEP_H / 2" r="2.4" />
-            <text class="pf__chip-t" :x="c.x + 40" :y="STEP_Y + k * STEP_GAP + STEP_H / 2 + 3.6">{{ t(s) }}</text>
+            <text class="pf__chip-t" :x="c.x + 40" :y="STEP_Y + k * STEP_GAP + STEP_H / 2 + 3.6">{{ t(s.label) }}</text>
             <path
               v-if="k < c.g.steps.length - 1"
               class="pf__link pf__link--live"
@@ -241,6 +356,12 @@ const running = computed(() => playing.value && !reduced.value)
         </g>
         <text class="pf__ep" :x="EP_X + EP_W / 2" :y="RULE_Y + 24" text-anchor="middle">{{ t(episodeLabel) }}</text>
       </svg>
+      <div
+        v-if="tip"
+        class="pf__tip"
+        :style="{ left: `${tip.x}px`, top: `${tip.y}px` }"
+        role="tooltip"
+      >{{ tip.text }}</div>
     </div>
 
     <figcaption class="pf__cap">
@@ -284,6 +405,7 @@ const running = computed(() => playing.value && !reduced.value)
 
 /* ---- the figure ---- */
 .pf__scroll {
+  position: relative;
   width: 100%;
   overflow: visible;
   border-top: 1px solid var(--line-strong);
@@ -306,6 +428,28 @@ const running = computed(() => playing.value && !reduced.value)
 .pf__ep { font-size: 11px; font-weight: 600; fill: #16191d; }
 
 .pf__card { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
+.pf__step { cursor: default; outline: none; }
+.pf__step:hover .pf__chip,
+.pf__step:focus-visible .pf__chip { stroke: var(--accent, #9aa3ad); }
+.pf__step:hover .pf__chip-t,
+.pf__step:focus-visible .pf__chip-t { fill: #16191d; }
+
+.pf__tip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 10px));
+  width: max-content;
+  max-width: 260px;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #e4e7ea;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(20, 26, 33, 0.1);
+  font-size: var(--fs-micro);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  pointer-events: none;
+  z-index: 5;
+}
 .pf__tint { fill: var(--accent, transparent); opacity: 0.11; }
 .pf__chip { fill: #fff; stroke: #e7eaed; stroke-width: 1; }
 .pf__dot { fill: var(--accent, #b4bcc4); }
