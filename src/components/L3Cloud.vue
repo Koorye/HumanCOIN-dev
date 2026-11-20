@@ -116,7 +116,7 @@ const shownSub = computed(() => subtask.value ?? subtasks.value.find((s) => s.st
 /* ---------- sliding-window traces ---------- */
 const TW = 900
 const TH = 24
-const RH = 14
+const BH = 42
 
 function windowed(values: number[], h = TH): string {
   const n = values.length
@@ -142,7 +142,17 @@ const regionOf = (name: string) => REGION[name.charAt(0)] ?? '#33796f'
 const bands = computed(() => {
   const s = signals.value
   if (!s) return []
+  const line = (v: number[], color: string) => ({ points: windowed(v, BH), color })
   return [
+    {
+      key: 'gaze',
+      title: 'Gaze · x / y',
+      legend: [
+        { label: 'x', color: '#6f5aa0' },
+        { label: 'y', color: '#a8623c' },
+      ],
+      lines: [line(s.gazeX, '#6f5aa0'), line(s.gazeY, '#a8623c')],
+    },
     {
       key: 'emg',
       title: `EMG · ${s.channels.emgL} left + ${s.channels.emgR} right`,
@@ -150,9 +160,9 @@ const bands = computed(() => {
         { label: 'left', color: '#a8623c' },
         { label: 'right', color: '#2f6f8f' },
       ],
-      rows: [
-        ...s.emgL.map((v, i) => ({ label: `L${i + 1}`, color: '#a8623c', points: windowed(v, RH) })),
-        ...s.emgR.map((v, i) => ({ label: `R${i + 1}`, color: '#2f6f8f', points: windowed(v, RH) })),
+      lines: [
+        ...s.emgL.map((v) => line(v, '#a8623c')),
+        ...s.emgR.map((v) => line(v, '#2f6f8f')),
       ],
     },
     {
@@ -164,23 +174,7 @@ const bands = computed(() => {
         { label: 'posterior', color: '#8a5a6e' },
         { label: 'temporal', color: '#9a7b2e' },
       ],
-      rows: s.eeg.map((v, i) => ({
-        label: s.eegNames[i] ?? `ch ${i + 1}`,
-        color: regionOf(s.eegNames[i] ?? 'F'),
-        points: windowed(v, RH),
-      })),
-    },
-    {
-      key: 'gaze',
-      title: 'Gaze · image x / y',
-      legend: [
-        { label: 'x', color: '#6f5aa0' },
-        { label: 'y', color: '#a8623c' },
-      ],
-      rows: [
-        { label: 'x', color: '#6f5aa0', points: windowed(s.gazeX, RH) },
-        { label: 'y', color: '#a8623c', points: windowed(s.gazeY, RH) },
-      ],
+      lines: s.eeg.map((v, i) => line(v, regionOf(s.eegNames[i] ?? 'F'))),
     },
   ]
 })
@@ -669,29 +663,29 @@ onBeforeUnmount(() => {
         <p class="viewer__help mono">drag to orbit · wheel zoom</p>
       </div>
 
+      <div class="cams">
+        <figure v-for="(c, i) in RGB" :key="c.key" class="cam">
+          <video
+            :ref="(el) => { if (el) rgbEls[i] = el as HTMLVideoElement }"
+            :src="c.src"
+            muted
+            playsinline
+            preload="auto"
+          />
+          <figcaption class="mono">{{ c.label }}</figcaption>
+        </figure>
+      </div>
+
       <div class="rail">
         <figure class="rail__cell">
           <video ref="depthEl" :src="DEPTH_SRC" muted playsinline preload="auto" />
           <figcaption class="mono">Depth · pseudo-colour</figcaption>
         </figure>
         <div class="rail__cell rail__cell--gaze">
-          <figcaption class="mono">Gaze · tracker frame · last {{ TRAIL }} s · fitted</figcaption>
+          <figcaption class="mono">Gaze · tracker frame · fitted</figcaption>
           <canvas ref="gazeCanvas" class="gaze__overlay" aria-hidden="true" />
         </div>
       </div>
-    </div>
-
-    <div class="cams">
-      <figure v-for="(c, i) in RGB" :key="c.key" class="cam">
-        <video
-          :ref="(el) => { if (el) rgbEls[i] = el as HTMLVideoElement }"
-          :src="c.src"
-          muted
-          playsinline
-          preload="auto"
-        />
-        <figcaption class="mono">{{ c.label }}</figcaption>
-      </figure>
     </div>
 
     <div class="bands">
@@ -704,14 +698,24 @@ onBeforeUnmount(() => {
             </span>
           </span>
         </header>
-        <div class="band__grid">
-          <div v-for="row in band.rows" :key="row.label" class="band__row">
-            <span class="band__label mono" :style="{ color: row.color }">{{ row.label }}</span>
-            <svg class="band__svg" :viewBox="`0 0 ${TW} ${RH}`" preserveAspectRatio="none">
-              <polyline :points="row.points" fill="none" :stroke="row.color" stroke-width="1" vector-effect="non-scaling-stroke" />
-            </svg>
-          </div>
-        </div>
+        <svg class="band__plot" :viewBox="`0 0 ${TW} ${BH}`" preserveAspectRatio="none">
+          <defs>
+            <pattern :id="`grid-${band.key}`" width="56" height="10" patternUnits="userSpaceOnUse">
+              <path d="M56 0 H0 V10" fill="none" stroke="#eef1f3" stroke-width="1" />
+            </pattern>
+          </defs>
+          <rect :width="TW" :height="BH" :fill="`url(#grid-${band.key})`" />
+          <polyline
+            v-for="(line, i) in band.lines"
+            :key="i"
+            :points="line.points"
+            fill="none"
+            :stroke="line.color"
+            stroke-width="1"
+            opacity="0.6"
+            vector-effect="non-scaling-stroke"
+          />
+        </svg>
       </section>
     </div>
 
@@ -801,11 +805,12 @@ onBeforeUnmount(() => {
 
 .viewer__stage {
   position: relative;
+  min-height: 240px;
   border-radius: 10px;
   background: #dfeaf3;
   overflow: hidden;
 }
-.viewer__canvas { display: block; width: 100%; aspect-ratio: 16 / 10; touch-action: none; outline: none; }
+.viewer__canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
 .viewer__help {
   position: absolute;
   left: 0.8rem;
@@ -955,11 +960,12 @@ onBeforeUnmount(() => {
 /* ---- row of its own: cloud beside a right rail of depth and gaze ---- */
 .viewer__top {
   display: grid;
-  grid-template-columns: minmax(0, 1.72fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr) minmax(0, 0.95fr);
   gap: 0.5rem;
   align-items: stretch;
 }
-@media (max-width: 900px) { .viewer__top { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 1100px) { .viewer__top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media (max-width: 760px) { .viewer__top { grid-template-columns: minmax(0, 1fr); } }
 
 .rail { display: grid; grid-template-rows: 1fr 1fr; gap: 0.5rem; min-width: 0; }
 .rail__cell {
@@ -1005,8 +1011,8 @@ onBeforeUnmount(() => {
     repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 40px);
 }
 
-.cams { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; margin-top: 0.5rem; }
-@media (max-width: 900px) { .cams { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.cams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.5rem; min-width: 0; }
+@media (max-width: 760px) { .cams { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* ---- three modality bands, white graph paper, no grey frame ---- */
 .bands { display: grid; gap: 0.5rem; margin-top: 0.5rem; }
@@ -1028,13 +1034,5 @@ onBeforeUnmount(() => {
 .band__key { display: inline-flex; align-items: center; gap: 0.25rem; }
 .band__key i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
 
-.band__grid {
-  background-image:
-    repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 56px),
-    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 14px);
-  background-position: 0 0;
-}
-.band__row { display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: center; gap: 0.3rem; }
-.band__label { font-size: 10px; text-align: right; opacity: 0.75; }
-.band__svg { width: 100%; min-width: 0; height: 14px; display: block; }
+.band__plot { width: 100%; height: 42px; display: block; border-top: 1px solid #eef1f3; }
 </style>
