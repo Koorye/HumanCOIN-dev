@@ -29,6 +29,13 @@ export const COVER = {
     en: 'HumanCOIN: A 12,500-Hour Dataset for Human Intent in Egocentric Manipulation',
     zh: 'HumanCOIN：第一人称操作中人类意图的 12,500 小时数据集',
   },
+  /** One sentence under the title: what the release is, in plain terms. */
+  tldr: {
+    en: '12,500 hours of egocentric manipulation, in three tiers that make the intent behind the action observable.',
+    zh: '12,500 小时的第一人称操作数据，三层信号让动作背后的意图变得可观测。',
+  },
+  team: 'BAAI - AhaData Group',
+  date: 'Nov 20, 2026',
   figureLabel: { en: 'Cover figure', zh: '封面图' },
   figureNote: {
     en: 'One take, read three ways at once: the tier’s own synchronised views, the non-visual channels its capture ships, and the annotation of the moment the playhead sits on. Every band reads one clock.',

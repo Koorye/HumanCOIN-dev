@@ -142,6 +142,13 @@ onMounted(() => {
     <div class="shell cover__inner">
       <h1 class="cover__title">{{ t(COVER.title) }}</h1>
 
+      <p class="cover__tldr">{{ t(COVER.tldr) }}</p>
+      <p class="cover__byline">
+        <span>{{ COVER.team }}</span>
+        <span class="cover__sep" aria-hidden="true">·</span>
+        <span>{{ COVER.date }}</span>
+      </p>
+
       <figure class="coverfig">
         <!-- the moment: the take opened by the carousel, all three bands on one clock -->
         <CoverMoment
@@ -278,17 +285,35 @@ onMounted(() => {
 /* ---- the paper title ---- */
 .cover__title {
   font-family: var(--ff-display);
-  /* A title, not a claim: the type is large but it has to carry 15 words across
-     two or three lines, so the scale is capped well under the old claim size. */
+  /* One line, always: the scale is set so the longest title still fits the
+     column at the breakpoint, rather than wrapping onto a second row. */
   font-size: var(--fs-cover);
   font-weight: 500;
-  line-height: 1.14;
+  line-height: 1.16;
   letter-spacing: -0.025em;
   color: var(--ink);
   margin: 0;
-  max-width: 54ch;
-  text-wrap: balance;
 }
+@media (min-width: 1081px) {
+  .cover__title { white-space: nowrap; }
+}
+.cover__tldr {
+  margin: 0.75rem 0 0;
+  max-width: 74ch;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.cover__byline {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0.55rem 0 0;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.02em;
+  color: var(--ink-mute);
+}
+.cover__sep { opacity: 0.6; }
 .coverfig {
   margin: clamp(0.9rem, 0.7rem + 0.8vw, 1.35rem) 0 0;
   padding: clamp(0.55rem, 0.45rem + 0.5vw, 0.8rem);
