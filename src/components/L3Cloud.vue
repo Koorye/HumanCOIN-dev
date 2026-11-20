@@ -84,7 +84,6 @@ const RGB = [
 const DEPTH_SRC = 'real/l3/depth.mp4'
 /* the camera the tracker writes against */
 const EYE_SRC = 'real/l3/eye.mp4'
-const EYE_LABEL = 'Scene camera'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
 const rgbEls = ref<HTMLVideoElement[]>([])
@@ -148,7 +147,7 @@ const bands = computed(() => {
   const s = signals.value
   if (!s) return []
   const Hz = RH
-  const hz = Math.round(RH / 2)
+  const hz = Math.round(RH / 4)
   const row = (label: string, v: number[], color: string, h = Hz) => ({ label, color, points: windowed(v, h) })
   return [
     {
@@ -326,6 +325,7 @@ let yaw = 0
 let pitch = 0
 let dist = 3
 let pan = 0.1
+let panY = -0.05
 let target = new THREE.Vector3()
 const drag = { active: false, x: 0, y: 0, pan: false }
 const refBase = { yaw: 0, pitch: 0, dist: 3 }
@@ -361,7 +361,7 @@ function seed() {
   else target = new THREE.Vector3(cx, cy - r * 0.16, cz)
 
   yaw = refBase.yaw + 0.44
-  pitch = refBase.pitch + 0.14
+  pitch = refBase.pitch + 0.2
   dist = 1.55
   pan = 0.06
   applyCamera()
@@ -378,6 +378,7 @@ function applyCamera() {
   /* a small sideways offset of the camera, which slides the subject left in
      the frame without turning the view */
   if (pan) camera.translateX(pan)
+  if (panY) camera.translateY(panY)
 }
 
 function drawCloud(index: number) {
@@ -686,16 +687,16 @@ onBeforeUnmount(() => {
         </figure>
       </div>
 
-      <div class="rail">
-        <figure class="rail__cell">
+      <div class="col">
+        <figure class="cell">
           <video ref="depthEl" :src="DEPTH_SRC" muted playsinline preload="auto" />
-          <figcaption class="mono">Depth · pseudo-colour</figcaption>
+          <figcaption class="mono">Depth</figcaption>
         </figure>
-        <div class="rail__cell rail__cell--gaze">
+        <figure class="cell cell--gaze">
           <video ref="eyeEl" :src="EYE_SRC" muted playsinline preload="auto" />
           <canvas ref="gazeCanvas" class="gaze__overlay" aria-hidden="true" />
-          <figcaption class="mono">{{ EYE_LABEL }} · gaze overlay</figcaption>
-        </div>
+          <figcaption class="mono">Scene · gaze</figcaption>
+        </figure>
       </div>
     </div>
 
@@ -967,9 +968,10 @@ onBeforeUnmount(() => {
 /* ---- row of its own: cloud beside a right rail of depth and gaze ---- */
 .viewer__top {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr) minmax(0, 0.95fr);
-  gap: 0.5rem;
-  height: 380px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1.55fr) minmax(0, 0.95fr);
+  gap: 0.4rem;
+  height: 330px;
+  align-items: stretch;
   align-items: stretch;
 }
 @media (max-width: 1100px) { .viewer__top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: auto; } }
@@ -1015,7 +1017,7 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-.cams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.5rem; min-width: 0; }
+.cams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.4rem; min-width: 0; min-height: 0; }
 @media (max-width: 760px) { .cams { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* ---- three modality bands, white graph paper, no grey frame ---- */
@@ -1041,10 +1043,10 @@ onBeforeUnmount(() => {
 .band__grid {
   background-image:
     repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 56px),
-    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 10px);
+    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 5px);
 }
 .band__row { display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: center; gap: 0.3rem; }
-.band__label { font-size: 10px; text-align: right; opacity: 0.8; }
+.band__label { font-size: 8px; text-align: right; opacity: 0.8; }
 .band__svg { width: 100%; min-width: 0; display: block; }
 
 /* the camera that sits under the trajectory, inside the same cell */
@@ -1060,4 +1062,52 @@ onBeforeUnmount(() => {
   padding: 0 0.25rem;
   border-radius: 3px;
 }
+
+/* the depth and scene cells sit in the same row and stretch to its height */
+.cell {
+  position: relative;
+  margin: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #0c1018;
+  min-width: 0;
+}
+.cell video { width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block; }
+.cell figcaption {
+  padding: 0.2rem 0.4rem;
+  font-size: var(--fs-tick);
+  color: var(--ink-mute);
+  background: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cell--gaze .gaze__overlay { position: absolute; inset: 0 0 1.5rem 0; width: 100%; height: auto; pointer-events: none; }
+
+/* depth over scene, in the last column of the same row */
+.col { display: grid; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.4rem; min-width: 0; min-height: 0; }
+.cell {
+  position: relative;
+  margin: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #0c1018;
+  min-width: 0;
+  min-height: 0;
+}
+.cell video { width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block; }
+.cell figcaption {
+  padding: 0.18rem 0.4rem;
+  font-size: var(--fs-tick);
+  color: var(--ink-mute);
+  background: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cell--gaze .gaze__overlay { position: absolute; inset: 0 0 1.45rem 0; width: 100%; height: auto; pointer-events: none; }
 </style>
