@@ -55,34 +55,37 @@ export const HERO_STATS: Stat[] = [
 ]
 
 /**
- * Named authors of the report, in its order. The draft leaves several industry
- * slots as "TBD"; those placeholders cannot appear in a citation, so only the
- * named authors are carried into the BibTeX entry.
+ * Named authors, in the order of the arXiv release (2611.26434v1). The author
+ * line runs to 51 names, so it is kept verbatim rather than trimmed to the
+ * corresponding authors.
  */
 export const AUTHORS = [
-  'Shihan Wu', 'You Liu', 'Chunyu He', 'Minghui Qin', 'Xiang Yang', 'Longhan Jiao',
-  'Shaoxuan Xie', 'Runtian Xu', 'Tengfei Pan', 'Yance Jiao', 'Yunyan Zhang',
-  'Kaiqian Tian', 'Wenjie Chen', 'Jingrui Pang', 'Zhiwei Yu', 'Yihang Li',
-  'Jiangmiao Pang', 'Kai Zhu', 'Jianxing Chen', 'Sihan Liu', 'Xiaofeng Wang',
-  'Zheng Zhu', 'Jie Zhao', 'Jing Li', 'Zhongpu Xia', 'Jianwei Niu', 'Wei Li',
-  'Zhexuan Yang', 'Yue Cao', 'Ji Zhao', 'Dongsheng Jiang', 'Yongwei Wang',
-  'Yunge Liu', 'Bo Lei', 'Huan Yang', 'Tiejun Huang', 'Zhongyuan Wang',
+  'Shihan Wu', 'You Liu', 'Chunyu He', 'Minghui Qin', 'Longhan Jiao',
+  'Jinbang Guo', 'Shaoxuan Xie', 'Kaixi Tian', 'Wenjie Chen', 'Jingrui Pang',
+  'Yuanhang Zhang', 'Yichi Zhang', 'Miao Liu', 'Tengfei Pan', 'Yance Jiao',
+  'Yunyan Zhang', 'Yihang Li', 'Yongjian Shen', 'Li Liu', 'Kai Zhu',
+  'Chen Fang', 'Jianxing Chen', 'Sihan Liu', 'Xiaofeng Wang', 'Jie Zhao',
+  'Jing Li', 'Yueqi Wang', 'Yichen Tang', 'Wei Li', 'Zhexuan Yang',
+  'Yue Cao', 'Ji Zhao', 'Kai Wang', 'Dongsheng Jiang', 'Yongwei Wang',
+  'Wei Mu', 'Jiangmiao Pang', 'Maoqing Yao', 'Wenchao Ding', 'Zheng Zhu',
+  'Zhongpu Xia', 'Dalong Du', 'Jianwei Niu', 'Dahui Gao', 'Zhiwei Yu',
+  'Bo Lei', 'Huan Yang', 'Yonghua Lin', 'Tiejun Huang', 'Zhongyuan Wang',
   'Guocai Yao',
 ] as const
 
 /**
- * The report's citation record. It is an institutional technical report with
- * no venue or DOI, so the entry carries the institution and the report URL.
+ * The citation record. The work is now an arXiv preprint (cs.CV) rather than an
+ * institutional technical report, so the entry follows the arXiv convention:
+ * `@misc` with `eprint` / `archivePrefix` / `primaryClass`.
  */
 export const CITATION = {
   key: 'wu2026humancoin',
-  type: 'techreport',
-  title: 'HumanCOIN: The Human-Signal Dataset at the Scale of Egocentric Manipulation',
+  type: 'misc',
+  title: 'HumanCOIN: A 12,500-Hour Dataset for Human Intent in Egocentric Manipulation',
   year: '2026',
-  institution: 'Beijing Academy of Artificial Intelligence',
-  reportType: 'Technical Report',
-  url: 'https://koorye.github.io/HumanCOIN-dev',
-  license: 'CC BY-NC 4.0',
+  eprint: '2611.26434',
+  primaryClass: 'cs.CV',
+  url: 'https://arxiv.org/abs/2611.26434',
 } as const
 
 export const ABSTRACT = {
