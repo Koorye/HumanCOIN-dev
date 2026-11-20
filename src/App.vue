@@ -33,9 +33,9 @@ const InstallSection = defineAsyncComponent(() => import('@/sections/InstallSect
     <HeroSection />
     <AbstractSection />
     <OverviewSection />
-    <AcquisitionSection />
     <DataSection />
     <AnnotationSection />
+    <AcquisitionSection />
     <!-- <ResearchSection /> -->
     <FormatSection />
     <PipelineSection />

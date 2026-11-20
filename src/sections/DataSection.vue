@@ -20,7 +20,7 @@ import TierDepthFigure from '@/components/TierDepthFigure.vue'
 import SceneCarousel from '@/components/SceneCarousel.vue'
 import VerbTail from '@/components/VerbTail.vue'
 import ObjectTail from '@/components/ObjectTail.vue'
-import { OBJECT_TOTALS, SCENES, TOTAL_HOURS } from '@/data/fig2'
+import { SCENES, TOTAL_HOURS } from '@/data/fig2'
 
 const { t, list } = useI18n()
 const fmt = (n: number) => n.toLocaleString('en-US')
@@ -47,12 +47,12 @@ const fmt = (n: number) => n.toLocaleString('en-US')
           <p class="dstats__l">{{ t({ en: 'Scene classes', zh: '场景类别' }) }}</p>
         </li>
         <li>
-          <p class="dstats__v">500<span>+</span></p>
-          <p class="dstats__l">{{ t({ en: 'Task entries', zh: '任务条目' }) }}</p>
+          <p class="dstats__v">99</p>
+          <p class="dstats__l">{{ t({ en: 'Task verbs', zh: '任务动词' }) }}</p>
         </li>
         <li>
-          <p class="dstats__v">{{ OBJECT_TOTALS.entries }}</p>
-          <p class="dstats__l">{{ t({ en: 'Object entries', zh: '物体条目' }) }}</p>
+          <p class="dstats__v">635</p>
+          <p class="dstats__l">{{ t({ en: 'Object classes', zh: '物体类别' }) }}</p>
         </li>
       </ul>
 

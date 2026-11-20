@@ -1,58 +1,36 @@
 <script setup lang="ts">
 /**
- * The 18 scene classes, grouped the way the report groups them: residential,
- * commercial and working. Each zone carries its share of the 12,500 hours,
+ * The 38 scene classes, grouped the way the report groups them: five zones plus
+ * a residual class. Each zone carries its share of the 12,500 hours,
  * stacked by tier, so a reader can see which zones the deep tiers actually
  * reach — L3 never leaves the desk, and the bars say so before the text does.
  */
 import { computed } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { SCENE_ALLOCATION, SCENE_NAMES } from '@/data/stats'
+import { ZONE_GROUPS } from '@/data/fig2'
 
 const { t } = useI18n()
 
-type Zone = { id: string; name: { en: string; zh: string }; scenes: string[] }
-
-const ZONES: Zone[] = [
-  {
-    id: 'residential',
-    name: { en: 'Residential', zh: '居住' },
-    scenes: ['bedroom', 'kitchen', 'dining', 'bath', 'laundry', 'wardrobe', 'storage', 'home'],
-  },
-  {
-    id: 'commercial',
-    name: { en: 'Commercial', zh: '商业' },
-    scenes: ['market', 'coffee', 'books', 'fitness', 'cleaning'],
-  },
-  {
-    id: 'working',
-    name: { en: 'Working', zh: '工作' },
-    scenes: ['desk', 'bench', 'assembly', 'farm', 'medical'],
-  },
-]
-
 const TIERS = ['L1', 'L2', 'L3'] as const
-const TIER_SHARE = { L1: 80, L2: 16, L3: 4 }
 const TIER_COLOR = { L1: 'var(--c-blue)', L2: 'var(--c-teal)', L3: 'var(--c-violet)' }
 
+/* five functional zones plus the residual class, each stacked by the tier that
+   records it — the split the report prints in its scene table */
 const rows = computed(() =>
-  ZONES.map((zone) => {
-    const slices = TIERS.map((tier) => {
-      const within = (SCENE_ALLOCATION[tier] as { key: string; share: number }[])
-        .filter((s) => zone.scenes.includes(s.key))
-        .reduce((n, s) => n + s.share, 0)
-      return { tier, share: (within / 100) * TIER_SHARE[tier] }
-    })
-    const total = slices.reduce((n, s) => n + s.share, 0)
-    return {
-      zone,
-      slices: slices.map((s) => ({ ...s, pct: total ? (s.share / total) * 100 : 0 })),
-      total,
-    }
-  }),
+  ZONE_GROUPS.filter((g) => g.scenes.length).map((g) => ({
+    zone: g.zone,
+    total: g.share,
+    hours: g.hours,
+    slices: TIERS.map((tier) => ({
+      tier,
+      share: g.tiers[tier],
+      pct: g.hours ? (g.tiers[tier] / g.hours) * 100 : 0,
+    })),
+    scenes: g.scenes.map((sc) => t(sc.name)),
+  })),
 )
 
-const fmt = (v: number) => `${v.toFixed(1)}`
+const fmt = (v: number) => v.toFixed(1)
 </script>
 
 <template>
@@ -72,14 +50,13 @@ const fmt = (v: number) => `${v.toFixed(1)}`
             :title="`${s.tier} · ${fmt(s.share)}%`"
           />
         </div>
-        <p class="zone__scenes">{{ row.zone.scenes.map((k) => t(SCENE_NAMES[k])).join(' · ') }}</p>
+        <p class="zone__scenes">{{ row.scenes.join(' · ') }}</p>
       </li>
     </ul>
 
     <ul class="zones__legend">
       <li v-for="tier in TIERS" :key="tier">
-        <span class="zones__sw" :style="{ background: TIER_COLOR[tier] }" />{{ tier }} ·
-        {{ TIER_SHARE[tier] }}%
+        <span class="zones__sw" :style="{ background: TIER_COLOR[tier] }" />{{ tier }}
       </li>
     </ul>
   </div>

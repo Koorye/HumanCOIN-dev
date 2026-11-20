@@ -29,12 +29,11 @@ export interface NavItem {
 
 export const NAV: NavItem[] = [
   { id: 'abstract', label: { en: 'Abstract', zh: '摘要' } },
-  { id: 'overview', num: '01', label: { en: 'Overview', zh: '总览' } },
-  { id: 'acquisition', num: '02', label: { en: 'Acquisition', zh: '采集体系' } },
+  { id: 'overview', num: '01', label: { en: 'Introduction', zh: '引言' } },
   {
     id: 'data',
-    num: '03',
-    label: { en: 'Data', zh: '数据集' },
+    num: '02',
+    label: { en: 'Data distribution', zh: '数据分布' },
     children: [
       { id: 'data-tiers', label: { en: 'Three tiers', zh: '三层级' } },
       { id: 'data-scenes', label: { en: 'Scenes', zh: '场景' } },
@@ -42,15 +41,20 @@ export const NAV: NavItem[] = [
       { id: 'data-objects', label: { en: 'Objects', zh: '物体' } },
     ],
   },
-  { id: 'annotation', num: '04', label: { en: 'Viewer', zh: '查看器' } },
-  { id: 'format', num: '05', label: { en: 'Format', zh: '数据格式' } },
+  { id: 'annotation', num: '03', label: { en: 'Inside an episode', zh: '片段之内' } },
+  { id: 'acquisition', num: '04', label: { en: 'Intent proxies', zh: '意图代理量' } },
+  {
+    id: 'format',
+    num: '05',
+    label: { en: 'Data format', zh: '数据格式' },
+  },
   {
     id: 'pipeline',
     num: '06',
-    label: { en: 'Pipeline', zh: '处理流程' },
+    label: { en: 'Data processing', zh: '数据处理' },
     children: [{ id: 'pipeline-framework', label: { en: 'Five chains', zh: '五条链路' } }],
   },
-  { id: 'community', num: '07', label: { en: 'Community', zh: '合作机构' } },
+  { id: 'community', num: '07', label: { en: 'Collaboration', zh: '合作机构' } },
   { id: 'install', label: { en: 'Start', zh: '开始使用' } },
   { id: 'cite', label: { en: 'Cite', zh: '引用' } },
   { id: 'license', label: { en: 'License', zh: '许可' } },
@@ -124,10 +128,14 @@ export const ABSTRACT = {
   title: { en: 'Abstract', zh: '摘要' },
   body: {
     en: [
-      'HumanCOIN is a large-scale egocentric multimodal dataset for embodied manipulation. Beyond conventional first-person observation — head-mounted multi-view RGB, wrist cameras, and hand and body pose — it records the state of the operator: gaze, surface electromyography, electroencephalography, and glove-level finger kinematics, all under one clock and one spatiotemporal reference. The data is organised in three tiers — visual intention, motor intention, and cognitive intention — each adding the modalities the layer below does not carry, so that scene coverage and signal depth can be studied together rather than as competing axes.',
+      'First-person manipulation datasets treat the observation–action pair as the atom, and compress the intent behind an action into a policy’s weights. HumanCOIN records that intent instead: 12,500 hours of egocentric manipulation with three tiers of proxies along the pathway from decision to effect.',
+      'L1 (10,000 h) infers gaze from headband video, so the eye reaches the target before the hand moves. L2 (2,000 h) adds 8 + 8 channels of forearm EMG, so load expectations are readable before execution completes. L3 (500 h) adds scalp EEG, and in its controlled subset measures gaze, hand pose and finger kinematics directly. Every tier inherits the proxies below it.',
+      'Alongside the proxies the corpus carries multi-view RGB, metric depth and point clouds, 6-DoF head and wrist pose, and step-level action and object annotation, across 38 scene classes, 99 task verbs and 635 object classes. Clocks and calibration ship with the data, so any read rate can be re-aligned.',
     ],
     zh: [
-      'HumanCOIN 是面向具身操作的大规模第一人称多模态数据集。除常规第一人称观测（头戴多目 RGB、腕部相机、手部与身体姿态）外，它同步记录操作者自身的状态信号：注视、表面肌电、脑电与手套级手指运动学，全部在统一时钟与统一时空参考下采集。数据按视觉意图、动作意图、认知意图三层组织，每层加入下一层不具备的模态，使"场景覆盖"与"信号深度"可以一并研究，而非相互竞争。',
+      '现有的第一人称操作数据集以"观测—动作"对为原子单元，把动作背后的意图压缩进策略网络的权重里。HumanCOIN 反过来把意图记录下来：12,500 小时的自我中心操作数据，沿"决策到执行"的通路设置三层代理量。',
+      'L1（10,000 小时）从头环视频估计注视，眼睛在手动之前抵达目标；L2（2,000 小时）加入双前臂各 8 通道表面肌电，接触之前的负荷预期因此可读；L3（500 小时）加入头皮脑电，并在其受控子集里直接测量注视、手部位姿与手指运动学。每一层都继承下层的全部代理量。',
+      '围绕这些代理量，数据集还提供多视角 RGB、米制深度与点云、头与腕的 6 自由度位姿，以及步级的动作与物体标注，覆盖 38 个场景类别、99 个任务动词与 635 个物体类别。时钟与标定随数据一同发布，任意读取速率都可以重新对齐。',
     ],
   },
 } as const
@@ -217,9 +225,9 @@ export const MOTIVATION = {
 }
 
 export const ACQUISITION = {
-  num: '02',
-  kicker: { en: 'Acquisition architecture', zh: '采集体系' },
-  title: { en: 'One pyramid: breadth at the base, measurement density at the apex.', zh: '一座金字塔：底座是广度，顶端是测量密度。' },
+  num: '04',
+  kicker: { en: 'Intent proxies', zh: '意图代理量' },
+  title: { en: 'Three stations on the intent pathway.', zh: '意图通路上的三个站点。' },
   aside: {
     en: 'Downwards, the pyramid widens: more scenes, more hours, more everyday variation. Upwards, it narrows: fewer hours, but the signals move inwards — where the eyes fall on the world, how the muscles execute, what the cortex is doing. Every tier shares the same task ontology.',
     zh: '向下，金字塔变宽：场景更多、时长更长、日常变化更丰富。向上，它收窄：时长更短，但信号来源向内推进——眼睛落向世界哪里，肌肉如何执行，皮层正在做什么。三层共享同一套任务本体。',
@@ -355,17 +363,17 @@ export const ANATOMY = {
 } as const
 
 export const DATA = {
-  num: '03',
+  num: '02',
   kicker: { en: 'Data distribution', zh: '数据分布' },
   title: { en: 'Depth for signal, breadth for the world.', zh: '深度取信号，广度取世界。' },
   body: {
     en: [
       'The corpus is cut twice: by signal depth, and by the places people actually work. The 12,500 hours fall into three tiers — 10,000, 2,000 and 500 — and each deeper tier carries every modality of the one before it. The deeper the tier, the smaller its share and the larger the part recorded under a controlled protocol: all of L1 is open, 60% of L2, 30% of L3.',
-      'Breadth runs the other way. L1 reaches all eighteen scene classes; L3 narrows to a handful of fixed stations. Between them sit 500+ task entries, a verb lexicon with a short head and a long tail, and 600 object records that grow from a name at L1 into a measured record at L2 and L3.',
+      'Breadth runs the other way. L1 reaches all 38 scene classes, in five zones plus a residual class; L3 narrows to the nine that can carry a fixed desk, a cap and an eye tracker. Between them sit 99 task verbs with a short head and a long tail, and 635 object classes that grow from a name at L1 into a measured record — colour, shape, size, material, weight — at L2 and L3.',
     ],
     zh: [
       '语料被切分两次：一次按信号深度，一次按人真正工作的地方。12,500 小时分为三层——10,000、2,000 与 500——每加深一层，都保留前一层的全部模态。层级越深，占比越小，受控协议所占的比例越大：L1 全部开放采集，L2 为 60%，L3 为 30%。',
-      '广度则朝相反方向展开。L1 覆盖全部十八类场景，L3 收窄到少数几个固定工位。两者之间是 500+ 任务条目、一条头短尾长的动词词表，以及 600 条物体记录——在 L1 只是一个名称，在 L2 与 L3 成为实测记录。',
+      '广度则朝相反方向展开。L1 覆盖全部 38 个场景类别（五个区域加一个残余类），L3 收窄到能容纳固定工位、脑电帽与眼动仪的 9 类。两者之间是 99 个任务动词——头短尾长——与 635 个物体类别：在 L1 只是一个名称，到 L2 与 L3 成为带颜色、形状、尺寸、材质与重量的实测记录。',
     ],
   },
   depthTitle: { en: 'Three tiers, two settings', zh: '三层深度，两种采集' },
@@ -374,11 +382,11 @@ export const DATA = {
     en: 'Hours are the release plan: 10,000 / 2,000 / 500 h, or 80 / 16 / 4% of the corpus. The outer band splits each tier between open and controlled collection; the two photographs are illustrative reconstructions of the settings, not corpus frames.',
     zh: '时长为发布计划：10,000 / 2,000 / 500 小时，占全库 80 / 16 / 4%。外环把每层时长拆分为开放与受控采集；两张照片为采集方式的示意重建，并非语料画面。',
   },
-  sceneTitle: { en: 'Eighteen scene classes, three zones', zh: '十八类场景，三个区域' },
-  sceneAside: { en: '18 classes · 3 zones', zh: '18 类 · 3 区域' },
+  sceneTitle: { en: '38 scene classes, five zones and a residual', zh: '38 个场景类别，五个区域加一个残余类' },
+  sceneAside: { en: '38 classes · 5 zones + residual', zh: '38 类 · 5 区域 + 残余' },
   sceneNote: {
-    en: 'The chart is the report’s Fig. 2b: eighteen classes, grouped into three zones, each bar stacked by tier. The panel beside it turns through one photograph per class; hovering or focusing a row holds the turn, and the arrows or play control move it by hand. Per-class hours reconstruct the allocation in Fig. 2b, and the photographs are illustrative reconstructions of the classes, not corpus frames.',
-    zh: '左侧为报告 Fig. 2b 的场景分布：18 类场景按区域分组，条形按层级堆叠。右侧按顺序自动轮播每一类的照片；悬停或聚焦某行会暂停轮播，箭头与播放键可手动切换。各类小时数按 Fig. 2b 的分配重建；照片为场景类别的示意重建，并非语料画面。',
+    en: 'The chart is the report’s Fig. 2d: thirty-eight classes in five zones plus a residual class, each bar stacked by the tier that records it. The panel beside it turns through one photograph per class; hovering or focusing a row holds the turn, and the arrows or play control move it by hand. Per-class hours are the report’s own table, and the photographs are illustrative reconstructions of the classes, not corpus frames.',
+    zh: '左侧为报告 Fig. 2d 的场景分布：38 个类别分属五个区域加一个残余类，条形按记录它的层级堆叠。右侧按顺序自动轮播每一类的照片；悬停或聚焦某行会暂停轮播，箭头与播放键可手动切换。各类小时数取自报告表格；照片为场景类别的示意重建，并非语料画面。',
   },
   verbTitle: { en: 'Eighty verbs, one long tail', zh: '八十个动词，一条长尾' },
   verbAside: { en: '80 of 100+ types', zh: '100+ 种中的 80 个' },
@@ -389,13 +397,13 @@ export const DATA = {
   objectTitle: { en: 'Six hundred objects, measured by depth', zh: '六百个物体，按深度记录' },
   objectAside: { en: '600 entries · one opened', zh: '600 条 · 展开一个' },
   objectNote: {
-    en: 'Object entries are ordered by instance count and keep the index’s own names; colour is the tier that records the instance. The frequency curve is modelled on the report’s Fig. 2d. The inset opens the report’s example: a cup is a name at L1, and at L2 and L3 it carries shape, colour, material, size and weight. The cup photograph is illustrative.',
-    zh: '物体条目按实例数排序，名称保留索引中的英文原词；颜色表示记录该实例的层级。频率曲线参照报告 Fig. 2d 的形态绘制。插图展开报告中的例子：杯子在 L1 只是一个名称，在 L2 与 L3 则带有形状、颜色、材质、尺寸与重量。杯子照片为示意。',
+    en: 'Object entries are ordered by instance count and keep the index’s own names; colour is the tier that records the instance. The frequency curve follows the report’s Fig. 2f. The inset opens the report’s example: a cup is a name at L1, and at L2 and L3 it carries shape, colour, material, size and weight. The cup photograph is illustrative.',
+    zh: '物体条目按实例数排序，名称保留索引中的英文原词；颜色表示记录该实例的层级。频率曲线参照报告 Fig. 2f 的形态绘制。插图展开报告中的例子：杯子在 L1 只是一个名称，在 L2 与 L3 则带有形状、颜色、材质、尺寸与重量。杯子照片为示意。',
   },
 } as const
 
 export const ANNOTATION = {
-  num: '04',
+  num: '03',
   kicker: { en: 'Annotation and inspection', zh: '标注与查看' },
   title: { en: 'One moment, seven kinds of evidence.', zh: '一个时刻，七种证据。' },
   body: {
