@@ -871,6 +871,7 @@ export const FORMAT = {
 
   /* ---- animated write / read figure ---- */
   figRead: { en: 'Read: the master clock drives every lookup', zh: '读取：主时钟驱动每一次查找' },
+  figKicker: { en: 'Figure 05 / Write, store, read', zh: '图 05 / 写入、落盘、读取' },
   stepWrite: { en: 'Writing', zh: '写入中' },
   stepSaved: { en: 'On disk', zh: '已落盘' },
   stepRead: { en: 'Querying frame %n', zh: '查询第 %n 帧' },

@@ -181,6 +181,19 @@ void inView
 
 <template>
   <figure ref="root" class="mf">
+    <div class="mf__bar">
+      <p class="mf__kicker mono">{{ t(FORMAT.figKicker) }}</p>
+      <button
+        v-if="canAnimate"
+        type="button"
+        class="mf__play mono"
+        :aria-label="t(FORMAT.playback)"
+        @click="toggle"
+      >
+        {{ playing ? t(FORMAT.pause) : phase === 'aligned' ? t(FORMAT.replay) : t(FORMAT.playback) }}
+      </button>
+    </div>
+
     <!-- process rail: one control, one story -->
     <aside class="mf__side">
       <ol class="mf__steps">
@@ -194,16 +207,6 @@ void inView
           <span class="mf__step-t">{{ s.label }}</span>
         </li>
       </ol>
-      <button
-        v-if="canAnimate"
-        type="button"
-        class="mf__play"
-        :aria-label="t(FORMAT.playback)"
-        @click="toggle"
-      >
-        <span aria-hidden="true">{{ playing ? '❚❚' : '▶' }}</span>
-        <span>{{ playing ? t(FORMAT.pause) : phase === 'aligned' ? t(FORMAT.replay) : t(FORMAT.playback) }}</span>
-      </button>
     </aside>
 
     <!-- the timeline itself: clocks, samples, window. Nothing else. -->
@@ -315,12 +318,36 @@ void inView
   gap: clamp(1rem, 0.55rem + 1.5vw, 2rem);
   align-items: start;
 }
-.mf__stage { min-width: 0; }
-.mf__data {
-  min-width: 0;
-  padding-left: clamp(0.9rem, 0.5rem + 1vw, 1.4rem);
-  border-left: 1px solid var(--line);
+.mf__bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid #e4e7ea;
+  margin-bottom: 1rem;
 }
+.mf__kicker {
+  margin: 0;
+  font-size: var(--fs-tick);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.mf__play {
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  background: none;
+  padding: 0 0 0.1rem;
+  font-size: var(--fs-tick);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.mf__play:hover { color: var(--ink); border-color: var(--ink); }
+
+.mf__stage { min-width: 0; }
+.mf__data { min-width: 0; }
 
 /* ---- process rail ---- */
 .mf__side {
@@ -347,8 +374,8 @@ void inView
   align-items: baseline;
   padding: 0.5rem 0;
   color: var(--ink-mute);
-  font-size: var(--fs-small);
-  line-height: 1.32;
+  font-size: 0.82rem;
+  line-height: 1.34;
 }
 .mf__step::before {
   content: '';
@@ -361,36 +388,27 @@ void inView
   background: var(--line-strong);
   transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.mf__step-i { font-size: var(--fs-tick); opacity: 0.8; }
+.mf__step-i { font-size: 10px; letter-spacing: 0.06em; opacity: 0.7; }
 .mf__step.is-done { color: var(--ink-soft); }
 .mf__step.is-done::before { background: var(--c-blue); opacity: 0.55; }
 .mf__step.is-on { color: var(--ink); font-weight: 600; }
 .mf__step.is-on::before { background: var(--c-blue); box-shadow: 0 0 0 3px var(--t-blue); }
-.mf__play {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.42rem;
-  border: 1px solid var(--line-strong);
-  background: var(--paper);
-  color: var(--ink);
-  font: inherit;
-  font-size: var(--fs-tick);
-  padding: 0.32rem 0.72rem;
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  transition: background var(--dur) var(--ease);
-}
-.mf__play:hover { background: var(--surface-2); }
+
 
 /* ---- data panel: shapes, rows, files ---- */
-.feat { list-style: none; margin: 0 0 1.2rem; padding: 0; }
-.feat li { padding: 0.55rem 0; border-bottom: 1px solid var(--line); break-inside: avoid; }
+.feat { list-style: none; margin: 0 0 1.2rem; padding: 0; display: grid; gap: 0.4rem; }
+.feat li {
+  padding: 0.42rem 0.55rem;
+  border: 1px solid #e4e7ea;
+  border-radius: 9px;
+  background: #fff;
+  break-inside: avoid;
+}
 .feat__top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
 .feat__key { font-size: var(--fs-tick); color: var(--ink); }
 .feat__meta { display: flex; flex-wrap: wrap; gap: 0.15rem 0.8rem; margin: 0.15rem 0 0; font-size: var(--fs-micro); color: var(--ink-soft); }
 .feat__file { margin: 0.12rem 0 0; font-size: var(--fs-micro); color: var(--ink-mute); }
-.feat li.is-on { background: var(--t-blue); }
+.feat li.is-on { background: var(--t-blue); border-color: var(--c-blue); }
 .feat li.is-on .feat__meta { color: var(--ink); }
 
 
@@ -419,8 +437,8 @@ void inView
 
 /* ---- svg ---- */
 .mf__svg { width: 100%; height: auto; display: block; }
-.mf__rail-label { font-size: var(--fs-tick); fill: var(--ink); font-weight: 600; font-family: var(--ff-sans); }
-.mf__rail-sub { font-size: var(--fs-mark); fill: var(--ink-mute); }
+.mf__rail-label { font-size: 11.5px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); }
+.mf__rail-sub { font-size: 10px; fill: #6d747c; }
 .mf__rail { stroke: var(--line-strong); stroke-width: 1.4; }
 .mf__tick { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 3; transition: stroke var(--dur) var(--ease); }
 .mf__tick.is-past { stroke: var(--c-slate); stroke-dasharray: none; opacity: 0.45; }
@@ -429,8 +447,8 @@ void inView
 .mf__band { fill: var(--c-amber); opacity: 0; transition: opacity 320ms var(--ease); }
 .mf__band.is-on { opacity: 0.1; }
 
-.mf__name { font-size: var(--fs-tick); fill: var(--ink); font-weight: 600; font-family: var(--ff-sans); }
-.mf__hz { font-size: var(--fs-mark); fill: var(--ink-mute); }
+.mf__name { font-size: 11.5px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); letter-spacing: -0.005em; }
+.mf__hz { font-size: 10px; fill: #6d747c; }
 .mf__axis { stroke: var(--line); stroke-width: 1.2; }
 .mf__dot { transition: opacity 240ms var(--ease); }
 .mf__dot.is-in { stroke: var(--ink); stroke-width: 1.1; }
