@@ -418,14 +418,14 @@ const running = computed(() => playing.value && !reduced.value)
 
 .pf__svg text {
   font-family: var(--ff-sans);
-  fill: #7f868f;
+  fill: #5c636b;
   font-size: 11px;
 }
-.pf__input { font-size: 10.5px; fill: #9aa1a9; }
-.pf__head { font-size: 12.5px; font-weight: 600; fill: #16191d; letter-spacing: -0.008em; }
-.pf__sub { font-size: 10px; fill: #969da5; }
-.pf__chip-t { font-size: 11px; fill: #596069; }
-.pf__note { font-size: 10.5px; fill: #9aa1a9; letter-spacing: 0.04em; }
+.pf__input { font-size: 10.5px; fill: #6d747c; }
+.pf__head { font-size: 12.5px; font-weight: 650; fill: #101317; letter-spacing: -0.008em; }
+.pf__sub { font-size: 10px; fill: #6b727a; }
+.pf__chip-t { font-size: 11px; fill: #3a4048; font-weight: 500; }
+.pf__note { font-size: 10.5px; fill: #6d747c; letter-spacing: 0.04em; }
 .pf__ep { font-size: 11px; font-weight: 600; fill: #16191d; }
 
 .pf__card { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
