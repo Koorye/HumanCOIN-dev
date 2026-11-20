@@ -33,12 +33,12 @@ const { t, isZh } = useI18n()
 
 /* ---- geometry, in SVG user units ---- */
 const W = 600
-const H = 268
+const H = 232
 const X0 = 100
 const X1 = 588
-const RAIL_Y = 42
-const LANE_Y0 = 80
-const LANE_GAP = 42
+const RAIL_Y = 26
+const LANE_Y0 = 62
+const LANE_GAP = 36
 
 const span = X1 - X0
 const xOf = (ms: number) => X0 + (ms / SPAN_MS) * span
@@ -194,20 +194,18 @@ void inView
       </button>
     </div>
 
-    <!-- process rail: one control, one story -->
-    <aside class="mf__side">
-      <ol class="mf__steps">
-        <li
-          v-for="(s, i) in steps"
-          :key="i"
-          class="mf__step"
-          :class="{ 'is-done': s.done, 'is-on': s.on }"
-        >
-          <span class="mf__step-i mono">{{ String(i + 1).padStart(2, '0') }}</span>
-          <span class="mf__step-t">{{ s.label }}</span>
-        </li>
-      </ol>
-    </aside>
+    <!-- the four stages, read left to right above the timeline -->
+    <ol class="mf__steps">
+      <li
+        v-for="(s2, i) in steps"
+        :key="i"
+        class="mf__step"
+        :class="{ 'is-done': s2.done, 'is-on': s2.on }"
+      >
+        <span class="mf__step-i mono">{{ String(i + 1).padStart(2, '0') }}</span>
+        <span class="mf__step-t">{{ s2.label }}</span>
+      </li>
+    </ol>
 
     <!-- the timeline itself: clocks, samples, window. Nothing else. -->
     <div class="mf__stage">
@@ -243,6 +241,9 @@ void inView
           <text class="mf__name" x="0" :y="l.y + 4">{{ t(l.lane.label) }}</text>
           <text class="mf__hz mono" x="0" :y="l.y + 17">{{ l.lane.rateLabel }}</text>
           <line class="mf__axis" :x1="X0" :x2="X1" :y1="l.y" :y2="l.y" />
+          <text class="mf__mode-tag mono" :x="X1" :y="l.y - 9" text-anchor="end">
+            {{ l.lane.mode }} · {{ l.lane.rateLabel }}
+          </text>
 
           <circle
             v-for="(d, j) in l.dots"
@@ -311,12 +312,8 @@ void inView
 
 .mf {
   margin: 0;
-  /* Three zones: process on the left, the bare timeline in the middle, and
-     everything that is data rather than time on the right. */
-  display: grid;
-  grid-template-columns: minmax(0, 176px) minmax(0, 1fr) minmax(0, 330px);
-  gap: clamp(1rem, 0.55rem + 1.5vw, 2rem);
-  align-items: start;
+  /* bar, the four stages, the timeline at full width, then the cards */
+  display: block;
 }
 .mf__bar {
   grid-column: 1 / -1;
@@ -347,56 +344,40 @@ void inView
 .mf__play:hover { color: var(--ink); border-color: var(--ink); }
 
 .mf__stage { min-width: 0; }
-.mf__data { min-width: 0; }
+.mf__svg { width: 100%; height: auto; display: block; }
+.mf__data { min-width: 0; margin-top: 1rem; }
 
-/* ---- process rail ---- */
-.mf__side {
-  position: sticky;
-  top: calc(var(--nav-h) + 1.2rem);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.9rem;
-}
+/* ---- the four stages, as a strip above the timeline ---- */
 .mf__steps {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1.6rem;
   list-style: none;
-  margin: 0;
-  padding: 0 0 0 0.95rem;
-  border-left: 1px solid var(--line);
+  margin: 0 0 0.9rem;
+  padding: 0 0 0.7rem;
+  border-bottom: 1px solid #eef1f3;
 }
 .mf__step {
   position: relative;
-  display: grid;
-  grid-template-columns: 1.55rem minmax(0, 1fr);
-  gap: 0.45rem;
+  display: inline-flex;
   align-items: baseline;
-  padding: 0.5rem 0;
+  gap: 0.42rem;
+  padding: 0;
   color: var(--ink-mute);
   font-size: 0.82rem;
   line-height: 1.34;
-}
-.mf__step::before {
-  content: '';
-  position: absolute;
-  left: -3px;
-  top: 0.86rem;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--line-strong);
-  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease);
 }
 .mf__step-i { font-size: 10px; letter-spacing: 0.06em; opacity: 0.7; }
 .mf__step.is-done { color: var(--ink-soft); }
-.mf__step.is-done::before { background: var(--c-blue); opacity: 0.55; }
-.mf__step.is-on { color: var(--ink); font-weight: 600; }
-.mf__step.is-on::before { background: var(--c-blue); box-shadow: 0 0 0 3px var(--t-blue); }
+.mf__step.is-on { color: var(--ink); font-weight: 620; }
+.mf__step.is-on .mf__step-i { color: var(--c-blue); opacity: 1; }
+
 
 
 /* ---- data panel: shapes, rows, files ---- */
-.feat { list-style: none; margin: 0 0 1.2rem; padding: 0; display: grid; gap: 0.4rem; }
+.feat { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.45rem; }
 .feat li {
   padding: 0.42rem 0.55rem;
   border: 1px solid #e4e7ea;
@@ -437,8 +418,8 @@ void inView
 
 /* ---- svg ---- */
 .mf__svg { width: 100%; height: auto; display: block; }
-.mf__rail-label { font-size: 11.5px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); }
-.mf__rail-sub { font-size: 10px; fill: #6d747c; }
+.mf__rail-label { font-size: 8.6px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); }
+.mf__rail-sub { font-size: 7.6px; fill: #6d747c; }
 .mf__rail { stroke: var(--line-strong); stroke-width: 1.4; }
 .mf__tick { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 3; transition: stroke var(--dur) var(--ease); }
 .mf__tick.is-past { stroke: var(--c-slate); stroke-dasharray: none; opacity: 0.45; }
@@ -447,8 +428,9 @@ void inView
 .mf__band { fill: var(--c-amber); opacity: 0; transition: opacity 320ms var(--ease); }
 .mf__band.is-on { opacity: 0.1; }
 
-.mf__name { font-size: 11.5px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); letter-spacing: -0.005em; }
-.mf__hz { font-size: 10px; fill: #6d747c; }
+.mf__name { font-size: 8.6px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); letter-spacing: -0.005em; }
+.mf__hz { font-size: 7.6px; fill: #6d747c; }
+.mf__mode-tag { font-size: 7.2px; fill: #8b929a; letter-spacing: 0.02em; }
 .mf__axis { stroke: var(--line); stroke-width: 1.2; }
 .mf__dot { transition: opacity 240ms var(--ease); }
 .mf__dot.is-in { stroke: var(--ink); stroke-width: 1.1; }
@@ -474,8 +456,8 @@ void inView
 .mf__query { opacity: 0; transition: opacity 320ms var(--ease); }
 .mf__query.is-on { opacity: 1; }
 .mf__query line { stroke: var(--ink); stroke-width: 1.3; stroke-dasharray: 4 4; }
-.mf__query text { font-family: var(--ff-mono); font-size: var(--fs-tick); fill: var(--ink); }
-.mf__band-label { font-size: var(--fs-mark); fill: var(--ink-soft); }
+.mf__query text { font-family: var(--ff-mono); font-size: 7.6px; fill: var(--ink); }
+.mf__band-label { font-size: 7.6px; fill: var(--ink-soft); }
 
 .mf__hint { margin: 0.7rem 0 0; font-size: var(--fs-micro); color: var(--ink-mute); min-height: 1.4em; }
 .mf__hint--cap { margin-top: 0.4rem; color: var(--ink-mute); }
@@ -518,6 +500,7 @@ void inView
 }
 .mf__tbl tbody th { font-weight: 500; color: var(--ink); font-size: var(--fs-tick); }
 .mf__num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.mf__notes { margin: 0.5rem 0 0; }
 .mf__note { display: block; margin-top: 0.32rem; color: var(--ink-mute); line-height: 1.5; }
 
 .mf__subhead {
