@@ -66,7 +66,7 @@ const task = ref('')
 const t = ref(0)
 const playing = ref(true)
 const speed = ref(1)
-const layers = ref({ cloud: true, hands: true, bones: true })
+const layers = ref({ cloud: true, hands: true, bones: true, axes: true })
 
 const frame = computed(() => Math.round(200 + t.value * 30))
 const clock = computed(() => `${t.value.toFixed(2)} s`)
@@ -102,6 +102,7 @@ let cloud: THREE.Points | null = null
 let handPts: THREE.Points | null = null
 let bones: THREE.LineSegments | null = null
 let grid: THREE.GridHelper | null = null
+const axisMeshes: THREE.Mesh[] = []
 let raf = 0
 let last = 0
 let drawn = -1
@@ -170,6 +171,27 @@ function drawCloud(index: number) {
   hc.needsUpdate = true
   handPts.geometry.setDrawRange(0, hands.length / 6)
 
+  /* the three pose frames (head, left wrist, right wrist): fat cylinders rather
+     than GL lines, because line width is capped at one pixel almost everywhere */
+  const up = new THREE.Vector3(0, 1, 0)
+  const a = new THREE.Vector3()
+  const b = new THREE.Vector3()
+  f.axes.forEach((row, i) => {
+    const mesh = axisMeshes[i]
+    if (!mesh) return
+    a.set(row[0], row[1], row[2])
+    b.set(row[3], row[4], row[5])
+    const dir = b.clone().sub(a)
+    /* the capture ships short triads; stretch them so the three pose frames
+       read at page size */
+    const len = dir.length() * 2.6
+    dir.normalize()
+    mesh.position.copy(a).addScaledVector(dir, len * 0.5)
+    mesh.quaternion.setFromUnitVectors(up, dir)
+    mesh.scale.set(1, len, 1)
+    ;(mesh.material as THREE.MeshBasicMaterial).color.setRGB(row[6], row[7], row[8])
+  })
+
   const gp = bones!.geometry.getAttribute('position') as THREE.BufferAttribute
   const gc = bones!.geometry.getAttribute('color') as THREE.BufferAttribute
   f.bones.forEach((row, i) => {
@@ -232,6 +254,7 @@ watch(
     if (cloud) cloud.visible = l.cloud
     if (handPts) handPts.visible = l.hands
     if (bones) bones.visible = l.bones
+    axisMeshes.forEach((m) => { m.visible = l.axes })
   },
   { deep: true },
 )
@@ -298,7 +321,7 @@ onMounted(async () => {
   const hg = new THREE.BufferGeometry()
   hg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(256 * 3), 3))
   hg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(256 * 3), 3))
-  handPts = new THREE.Points(hg, new THREE.PointsMaterial({ size: 4.5, sizeAttenuation: false, vertexColors: true }))
+  handPts = new THREE.Points(hg, new THREE.PointsMaterial({ size: 8, sizeAttenuation: false, vertexColors: true }))
   handPts.frustumCulled = false
   scene.add(handPts)
 
@@ -308,6 +331,19 @@ onMounted(async () => {
   bones = new THREE.LineSegments(bg, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9 }))
   bones.frustumCulled = false
   scene.add(bones)
+
+  /* nine fat segments: three axes on each of the three pose frames */
+  const segGeo = new THREE.CylinderGeometry(1, 1, 1, 8, 1, true)
+  for (let i = 0; i < 9; i++) {
+    const mesh = new THREE.Mesh(segGeo, new THREE.MeshBasicMaterial({ color: 0x334155 }))
+    mesh.frustumCulled = false
+    mesh.scale.setScalar(1)
+    // radius is baked into the geometry, length comes from the per-frame scale
+    mesh.geometry = segGeo.clone()
+    mesh.geometry.scale(0.022, 1, 0.022)
+    scene.add(mesh)
+    axisMeshes.push(mesh)
+  }
 
   /* a ground plane under the cloud, so the figure reads in space rather than
      floating in a void */
@@ -346,7 +382,7 @@ onBeforeUnmount(() => {
       <div class="viewer__layers">
         <label v-for="(_, key) in layers" :key="key" class="viewer__check">
           <input v-model="layers[key]" type="checkbox" />
-          <span>{{ { cloud: 'Point cloud', hands: 'Hands', bones: 'Bones' }[key] }}</span>
+          <span>{{ { cloud: 'Point cloud', hands: 'Hands', bones: 'Bones', axes: 'Head / wrists' }[key] }}</span>
         </label>
       </div>
     </div>
