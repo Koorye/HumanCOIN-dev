@@ -27,15 +27,17 @@ function go(e: MouseEvent, id: string) {
 const BAAI_MARK = 'logos/baai-acrylic.png'
 
 /**
- * The two destinations. Download jumps to the install section rather than
- * leaving the page; the report opens the paper itself, which sits at the site
- * root as ``humancoin.pdf``. The code link was dropped from the bar.
+ * The three destinations the bar carries: the dataset manager, the paper on
+ * arXiv, and the code on GitHub. All three leave the page, so they open in a
+ * new tab and keep the external treatment.
  */
 const ACTIONS = [
-  { id: 'download', href: '#install', external: false, primary: true,
+  { id: 'download', href: 'https://flagopen.github.io/HumanCOIN-DataManager', external: true, primary: true,
     label: { en: 'Download', zh: '下载' } },
-  { id: 'report', href: 'humancoin.pdf', external: true, primary: false,
+  { id: 'report', href: 'https://arxiv.org/abs/2611.26434', external: true, primary: false,
     label: { en: 'Report', zh: '报告' } },
+  { id: 'code', href: 'https://github.com/FlagOpen/HumanCOIN', external: true, primary: false,
+    label: { en: 'Code', zh: '代码' } },
 ] as const
 </script>
 
@@ -67,7 +69,44 @@ const ACTIONS = [
           :href="action.href"
           :target="action.external ? '_blank' : undefined"
           :rel="action.external ? 'noopener noreferrer' : undefined"
-        >{{ t(action.label) }}</a>
+        >
+          <!-- The same three glyphs the cover uses, drawn at 13 px so they sit
+               with the bar's smaller type and inherit the label colour. -->
+          <svg
+            v-if="action.id === 'download'"
+            class="nav__ico"
+            viewBox="0 0 16 16"
+            width="13"
+            height="13"
+            aria-hidden="true"
+          >
+            <ellipse cx="8" cy="3.5" rx="5.5" ry="2.2" />
+            <path d="M2.5 3.5v4c0 1.2 2.5 2.2 5.5 2.2s5.5-1 5.5-2.2v-4" />
+            <path d="M8 10v4.2M5.5 11.8 8 14l2.5-2.2" />
+          </svg>
+          <svg
+            v-else-if="action.id === 'report'"
+            class="nav__ico"
+            viewBox="0 0 16 16"
+            width="13"
+            height="13"
+            aria-hidden="true"
+          >
+            <path d="M4 1.8h5.2L13 5.4v8.8H4z" />
+            <path d="M9 1.8v3.8h4M6 8.5h4.5M6 11h4.5" />
+          </svg>
+          <svg
+            v-else
+            class="nav__ico"
+            viewBox="0 0 16 16"
+            width="13"
+            height="13"
+            aria-hidden="true"
+          >
+            <path d="m5.5 4.5-3.5 3.5 3.5 3.5M10.5 4.5 14 8l-3.5 3.5" />
+          </svg>
+          {{ t(action.label) }}
+        </a>
 
         <button
           class="nav__lang"
@@ -171,6 +210,17 @@ const ACTIONS = [
   border-color: var(--c-blue);
 }
 .nav__act--primary:hover { background: var(--t-blue); }
+
+.nav__ico {
+  flex: none;
+  margin-right: 0.3rem;
+  margin-bottom: -0.06em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 .nav__lang {
   margin-left: 0.35rem;

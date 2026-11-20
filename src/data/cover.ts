@@ -38,20 +38,29 @@ export const COVER = {
   /**
    * The cover's actions.
    *
-   * None of the release's destinations are published yet, so `href` is a
-   * placeholder and the row renders inert. The list is the shape the links will
-   * take: the primary one is the dataset itself, and the rest are the report and
-   * the code that accompany it.
+   * The three destinations the release actually publishes: the data manager
+   * that serves the episodes, the paper, and the code. The primary one is the
+   * dataset itself; the report and the code accompany it.
    */
   actions: [
-    { id: 'seek', label: { en: 'Seek & Download', zh: '检索与下载' }, href: '#install', primary: true },
+    {
+      id: 'seek',
+      label: { en: 'Seek & Download', zh: '检索与下载' },
+      href: 'https://flagopen.github.io/HumanCOIN-DataManager',
+      primary: true,
+    },
     {
       id: 'report',
       label: { en: 'Technical Report', zh: '技术报告' },
-      href: 'humancoin.pdf',
+      href: 'https://arxiv.org/abs/2611.26434',
       primary: false,
     },
-    { id: 'code', label: { en: 'Code', zh: '代码' }, href: '#', primary: false },
+    {
+      id: 'code',
+      label: { en: 'Code', zh: '代码' },
+      href: 'https://github.com/FlagOpen/HumanCOIN',
+      primary: false,
+    },
   ] as { id: string; label: Bi; href: string; primary: boolean }[],
   /* Metric strip under the cover. */
   metrics: [
