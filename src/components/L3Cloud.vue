@@ -56,23 +56,32 @@ interface Subtask {
   object: string
   actions: { label: string; start: number; end: number }[]
 }
+interface SceneObject {
+  name: string
+  attrs: string
+  where: string
+}
 interface Steps {
   scene: string
   task: string
   steps: Step[]
   subtasks: Subtask[]
+  objects: SceneObject[]
 }
 
 const CLIP = 30
 const WINDOW = 10 /* seconds of signal shown at once */
+const TRAIL = 3 /* seconds of gaze path drawn on the camera */
 
 const RGB = [
-  { key: 'left', src: 'real/l3/rgb-left.mp4', label: 'Headband · left' },
   { key: 'right', src: 'real/l3/rgb-right.mp4', label: 'Headband · right' },
+  { key: 'scene', src: 'real/l3/eye.mp4', label: 'Scene camera' },
   { key: 'wl', src: 'real/l3/rgb-wl.mp4', label: 'Left wrist' },
   { key: 'wr', src: 'real/l3/rgb-wr.mp4', label: 'Right wrist' },
 ]
-const EYE_SRC = 'real/l3/eye.mp4'
+/* gaze is measured in the rectified headband-left frame, so that is the image
+   the trajectory is drawn on */
+const GAZE_SRC = 'real/l3/rgb-left.mp4'
 const DEPTH_SRC = 'real/l3/depth.mp4'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
@@ -86,6 +95,7 @@ const signals = ref<Signals | null>(null)
 const gaze2d = ref<Gaze2D | null>(null)
 const steps = ref<Step[]>([])
 const subtasks = ref<Subtask[]>([])
+const objects = ref<SceneObject[]>([])
 const task = ref('')
 const sigIndex = ref(0)
 
@@ -127,16 +137,19 @@ const gazeTraces = computed(() => {
 const banks = computed(() => {
   const s = signals.value
   if (!s) return []
+  const eegRows = s.eeg.map((v, i) => ({ label: s.eegNames[i] ?? `ch ${i + 1}`, points: windowed(v) }))
+  const half = Math.ceil(eegRows.length / 2)
   return [
-    { key: 'emgL', title: `EMG · left (${s.channels.emgL})`, color: '#a8623c', rows: s.emgL.map((v, i) => ({ label: `ch ${i + 1}`, points: windowed(v) })) },
-    { key: 'emgR', title: `EMG · right (${s.channels.emgR})`, color: '#a8623c', rows: s.emgR.map((v, i) => ({ label: `ch ${i + 1}`, points: windowed(v) })) },
-    { key: 'eeg', title: `EEG · 16 of 128`, color: '#33796f', rows: s.eeg.map((v, i) => ({ label: s.eegNames[i] ?? `ch ${i + 1}`, points: windowed(v) })) },
+    { key: 'emgL', title: `EMG · left · ${s.channels.emgL} ch`, color: '#a8623c', rows: s.emgL.map((v, i) => ({ label: `${i + 1}`, points: windowed(v) })) },
+    { key: 'emgR', title: `EMG · right · ${s.channels.emgR} ch`, color: '#a8623c', rows: s.emgR.map((v, i) => ({ label: `${i + 1}`, points: windowed(v) })) },
+    { key: 'eegA', title: 'EEG · 1–8 of 128', color: '#33796f', rows: eegRows.slice(0, half) },
+    { key: 'eegB', title: 'EEG · 9–16 of 128', color: '#33796f', rows: eegRows.slice(half) },
   ]
 })
 
 /* ---------- gaze heat + trail ---------- */
-const HEAT_W = 128
-const HEAT_H = 72
+const HEAT_W = 160
+const HEAT_H = 90
 let heatCanvas: HTMLCanvasElement | null = null
 let heatCtx: CanvasRenderingContext2D | null = null
 
@@ -157,6 +170,20 @@ function drawGaze() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   ctx.clearRect(0, 0, w, h)
 
+  /* the camera is painted with object-fit: cover, so the visible crop of the
+     frame is smaller than the box the canvas fills; gaze has to be mapped into
+     that crop or the dot sits off the thing it is looking at */
+  const vid = eyeEl.value
+  const vw = vid?.videoWidth || 16
+  const vh = vid?.videoHeight || 9
+  const scale = Math.max(w / vw, h / vh)
+  const paintW = vw * scale
+  const paintH = vh * scale
+  const ox = (w - paintW) / 2
+  const oy = (h - paintH) / 2
+  const px = (nx: number) => ox + nx * paintW
+  const py = (ny: number) => oy + ny * paintH
+
   if (!heatCanvas) {
     heatCanvas = document.createElement('canvas')
     heatCanvas.width = HEAT_W
@@ -167,7 +194,7 @@ function drawGaze() {
   hc.clearRect(0, 0, HEAT_W, HEAT_H)
 
   const i1 = Math.min(g.x.length - 1, Math.round(t.value * g.fps))
-  const i0 = Math.max(0, Math.round((t.value - WINDOW) * g.fps))
+  const i0 = Math.max(0, Math.round((t.value - TRAIL) * g.fps))
   /* a short moving average, because raw gaze jitters between saccades */
   const sx: number[] = []
   const sy: number[] = []
@@ -175,7 +202,7 @@ function drawGaze() {
     let ax = 0
     let ay = 0
     let n = 0
-    for (let k = Math.max(i0, i - 2); k <= Math.min(i1, i + 2); k++) {
+    for (let k = Math.max(i0, i - 4); k <= Math.min(i1, i + 4); k++) {
       ax += g.x[k]
       ay += g.y[k]
       n++
@@ -184,9 +211,10 @@ function drawGaze() {
     sy.push(ay / n)
   }
   const grid = new Float32Array(HEAT_W * HEAT_H)
-  for (let i = 0; i < sx.length; i++) {
-    const cx = Math.floor(sx[i] * (HEAT_W - 1))
-    const cy = Math.floor(sy[i] * (HEAT_H - 1))
+  /* the heat is cumulative: every sample so far, not just the visible trail */
+  for (let i = 0; i <= i1; i++) {
+    const cx = Math.floor(g.x[i] * (HEAT_W - 1))
+    const cy = Math.floor(g.y[i] * (HEAT_H - 1))
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         const px = cx + dx
@@ -201,20 +229,30 @@ function drawGaze() {
   /* warm ramp with alpha, because this now sits on top of the camera image */
   const img = hc.createImageData(HEAT_W, HEAT_H)
   for (let i = 0; i < grid.length; i++) {
-    const v = max > 0 ? Math.pow(grid[i] / max, 0.7) : 0
-    img.data[i * 4] = 255
-    img.data[i * 4 + 1] = 196 + 20 * (1 - v) - 150 * v
-    img.data[i * 4 + 2] = 138 * (1 - v) + 30
-    img.data[i * 4 + 3] = 205 * v
+    /* stretch the low end: a few cells collect most of the dwell, and without
+       this the rest of the map stays below the visibility floor */
+    const t = max > 0 ? Math.min(1, grid[i] / (max * 0.3)) : 0
+    const v = Math.pow(t, 0.55)
+    /* cool ramp: the capture is warm, so a warm heat would disappear into the
+       tablecloth */
+    img.data[i * 4] = 70 + 185 * v
+    img.data[i * 4 + 1] = 190 - 110 * v
+    img.data[i * 4 + 2] = 255 - 40 * v
+    img.data[i * 4 + 3] = 255 * v
   }
   hc.putImageData(img, 0, 0)
   ctx.imageSmoothingEnabled = true
-  ctx.drawImage(heatCanvas, 0, 0, w, h)
+  ctx.save()
+  ctx.filter = 'blur(6px)'
+  /* additive, so the dwell reads as light on the image rather than as a wash */
+  ctx.globalCompositeOperation = 'lighter'
+  ctx.drawImage(heatCanvas, ox, oy, paintW, paintH)
+  ctx.restore()
 
   ctx.beginPath()
   for (let i = 0; i < sx.length; i++) {
-    const x = sx[i] * w
-    const y = sy[i] * h
+    const x = px(sx[i])
+    const y = py(sy[i])
     if (i === 0) ctx.moveTo(x, y)
     else ctx.lineTo(x, y)
   }
@@ -225,8 +263,8 @@ function drawGaze() {
   ctx.lineWidth = 1.2
   ctx.stroke()
 
-  const cx = sx[sx.length - 1] * w
-  const cy = sy[sy.length - 1] * h
+  const cx = px(sx[sx.length - 1])
+  const cy = py(sy[sy.length - 1])
   ctx.beginPath()
   ctx.arc(cx, cy, 4.6, 0, Math.PI * 2)
   ctx.fillStyle = 'rgba(255,255,255,0.95)'
@@ -473,6 +511,7 @@ onMounted(async () => {
   gaze2d.value = g2
   steps.value = st.steps
   subtasks.value = st.subtasks ?? []
+  objects.value = st.objects ?? []
   task.value = st.task
 
   renderer = new THREE.WebGLRenderer({ canvas: el, antialias: true, alpha: true })
@@ -607,9 +646,9 @@ onBeforeUnmount(() => {
     <div class="viewer__grid2">
       <div class="gaze">
         <div class="gaze__eye">
-          <video ref="eyeEl" :src="EYE_SRC" muted playsinline preload="auto" />
+          <video ref="eyeEl" :src="GAZE_SRC" muted playsinline preload="auto" />
           <canvas ref="gazeCanvas" class="gaze__overlay" aria-hidden="true" />
-          <span class="gaze__tag mono">scene camera · gaze overlay</span>
+          <span class="gaze__tag mono">headband · left · gaze overlay</span>
         </div>
         <div class="gaze__keys mono">
           <span>gaze · last {{ WINDOW }} s</span>
@@ -691,6 +730,14 @@ onBeforeUnmount(() => {
           <span v-else class="anno__idle mono">—</span>
         </div>
       </div>
+      <div class="anno__row">
+        <span class="anno__tag mono">objects</span>
+        <div class="anno__objs">
+          <span v-for="(o, i) in objects" :key="i" class="anno__obj mono">
+            <b>{{ o.name }}</b><template v-if="o.attrs"> · {{ o.attrs }}</template><template v-if="o.where"> · <i>{{ o.where }}</i></template>
+          </span>
+        </div>
+      </div>
     </div>
   </figure>
 </template>
@@ -735,7 +782,6 @@ onBeforeUnmount(() => {
 
 .viewer__stage {
   position: relative;
-  border: 1px solid #e4e7ea;
   border-radius: 10px;
   background: #dfeaf3;
   overflow: hidden;
@@ -756,8 +802,7 @@ onBeforeUnmount(() => {
   margin: 0;
   display: grid;
   grid-template-rows: 1fr auto;
-  border: 1px solid #e4e7ea;
-  border-radius: 10px;
+  border-radius: 9px;
   overflow: hidden;
   background: #0c1018;
   min-width: 0;
@@ -767,8 +812,7 @@ onBeforeUnmount(() => {
   padding: 0.25rem 0.45rem;
   font-size: var(--fs-tick);
   color: var(--ink-mute);
-  background: #fff;
-  border-top: 1px solid #e4e7ea;
+  background: #f6f9fb;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -779,8 +823,8 @@ onBeforeUnmount(() => {
   grid-template-rows: minmax(0, 1fr) auto;
   gap: 0.35rem;
   height: 330px;
-  border: 1px solid #e4e7ea;
   border-radius: 10px;
+  background: #f6f9fb;
   padding: 0.5rem;
 }
 .gaze__eye { position: relative; border-radius: 7px; overflow: hidden; background: #0c1018; min-height: 0; }
@@ -801,14 +845,14 @@ onBeforeUnmount(() => {
 .cam--depth video { aspect-ratio: 16 / 9; height: auto; min-height: 0; }
 
 .signals {
-  margin-top: 0.55rem;
-  border: 1px solid #e4e7ea;
+  margin-top: 0.5rem;
   border-radius: 10px;
-  padding: 0.55rem 0.7rem 0.6rem;
+  background: #f6f9fb;
+  padding: 0.5rem 0.6rem 0.55rem;
 }
-.signals__banks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.9rem; }
+.signals__banks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.7rem; align-content: start; }
 .signals__note { margin: 0.5rem 0 0; font-size: var(--fs-tick); color: var(--ink-mute); }
-@media (max-width: 900px) { .signals__banks { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 900px) { .signals__banks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .bank__title--gap { margin-top: 0.55rem; }
 .bank__title {
   margin: 0 0 0.15rem;
@@ -817,9 +861,9 @@ onBeforeUnmount(() => {
   text-transform: uppercase;
   color: var(--ink-mute);
 }
-.sig { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); align-items: center; gap: 0.4rem; min-width: 0; }
+.sig { display: grid; grid-template-columns: 3rem minmax(0, 1fr); align-items: center; gap: 0.35rem; min-width: 0; }
 .sig__label { font-size: 10px; color: var(--ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sig__svg { width: 100%; min-width: 0; height: 18px; display: block; }
+.sig__svg { width: 100%; min-width: 0; height: 16px; display: block; }
 .sig__svg--gaze { height: 26px; border-bottom: 1px solid #eef1f3; }
 
 .anno { margin-top: 0.6rem; display: grid; gap: 0.3rem; }
@@ -827,6 +871,10 @@ onBeforeUnmount(() => {
 .anno__tag { font-size: var(--fs-tick); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); }
 .anno__task { margin: 0; font-size: var(--fs-tick); color: var(--ink-soft); }
 .anno__idle { font-size: var(--fs-tick); color: var(--ink-mute); }
+.anno__objs { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; }
+.anno__obj { font-size: var(--fs-tick); color: var(--ink-mute); }
+.anno__obj b { font-weight: 600; color: var(--ink-soft); }
+.anno__obj i { font-style: normal; color: var(--ink-mute); opacity: 0.85; }
 .anno__pill {
   border: 1px solid transparent;
   border-radius: 5px;
