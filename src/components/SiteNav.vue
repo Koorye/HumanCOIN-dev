@@ -128,7 +128,7 @@ const ACTIONS = [
 <style scoped>
 .nav {
   position: fixed;
-  inset: 0 auto 0 0;
+  inset: 0 auto 0 var(--rail-inset);
   width: var(--rail-w);
   z-index: 60;
   /* The rail is set as type on the page, not as a panel: no sheet, no rule,
