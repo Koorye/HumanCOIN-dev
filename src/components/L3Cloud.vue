@@ -729,8 +729,9 @@ onBeforeUnmount(() => {
     <div class="anno">
       <div class="anno__row">
         <span class="anno__tag mono">task</span>
-        <p class="anno__task mono">{{ task }}</p>
+        <p class="anno__task">{{ task }}</p>
       </div>
+
       <div class="anno__row">
         <span class="anno__tag mono">subtask</span>
         <div class="anno__chips">
@@ -738,15 +739,19 @@ onBeforeUnmount(() => {
             v-for="(sub, i) in subtasks"
             :key="i"
             type="button"
-            class="anno__chip mono"
+            class="anno__chip"
             :class="{ 'is-on': subtask === sub }"
             @click="t = sub.start + 0.01"
-          >{{ sub.title }}</button>
+          >
+            <span class="anno__chip-t">{{ sub.title }}</span>
+            <span class="anno__chip-s mono">{{ sub.start.toFixed(1) }}–{{ sub.end.toFixed(1) }}s</span>
+          </button>
         </div>
       </div>
+
       <div class="anno__row">
         <span class="anno__tag mono">action</span>
-        <div class="anno__chips">
+        <div class="anno__chips anno__chips--tight">
           <template v-if="shownSub">
             <button
               v-for="(a, i) in shownSub.actions"
@@ -755,18 +760,23 @@ onBeforeUnmount(() => {
               class="anno__pill mono"
               :class="{ 'is-on': step?.label === a.label }"
               @click="t = a.start + 0.01"
-            >{{ a.label }}</button>
+            >
+              <i class="anno__mark" />{{ a.label }}
+            </button>
           </template>
-          <span v-else class="anno__idle mono">—</span>
+          <span v-else class="anno__idle">—</span>
         </div>
       </div>
-      <div class="anno__row">
+
+      <div class="anno__row anno__row--top">
         <span class="anno__tag mono">objects</span>
-        <div class="anno__objs">
-          <span v-for="(o, i) in objects" :key="i" class="anno__obj mono">
-            <b>{{ o.name }}</b><template v-if="o.attrs"> · {{ o.attrs }}</template><template v-if="o.where"> · <i>{{ o.where }}</i></template>
-          </span>
-        </div>
+        <ul class="anno__objs">
+          <li v-for="(o, i) in objects" :key="i" class="anno__obj">
+            <b>{{ o.name }}</b>
+            <span v-if="o.attrs" class="anno__obj-a">{{ o.attrs }}</span>
+            <span v-if="o.where" class="anno__obj-w">{{ o.where }}</span>
+          </li>
+        </ul>
       </div>
     </div>
   </figure>
@@ -898,39 +908,117 @@ onBeforeUnmount(() => {
 .sig__svg { width: 100%; min-width: 0; height: 16px; display: block; }
 .sig__svg--gaze { height: 26px; border-bottom: 1px solid #eef1f3; }
 
-.anno { margin-top: 0.6rem; display: grid; gap: 0.3rem; }
-.anno__row { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); align-items: center; gap: 0.6rem; }
-.anno__tag { font-size: var(--fs-tick); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); }
-.anno__task { margin: 0; font-size: var(--fs-tick); color: var(--ink-soft); }
-.anno__idle { font-size: var(--fs-tick); color: var(--ink-mute); }
-.anno__objs { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; }
-.anno__obj { font-size: var(--fs-tick); color: var(--ink-mute); }
-.anno__obj b { font-weight: 600; color: var(--ink-soft); }
-.anno__obj i { font-style: normal; color: var(--ink-mute); opacity: 0.85; }
-.anno__pill {
-  border: 1px solid transparent;
-  border-radius: 5px;
-  background: none;
-  padding: 0.05rem 0.4rem;
-  font-size: var(--fs-tick);
-  color: var(--ink-mute);
-  cursor: pointer;
+.anno {
+  margin-top: 0.7rem;
+  display: grid;
+  gap: 0.55rem;
 }
-.anno__pill.is-on { color: var(--ink); background: var(--t-blue); border-color: var(--c-blue); }
-.anno__chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.anno__row {
+  display: grid;
+  grid-template-columns: 4.9rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.8rem;
+}
+.anno__row--top { align-items: start; }
+.anno__tag {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  padding-top: 0.15rem;
+}
+.anno__task {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 74ch;
+}
+
+/* subtasks: pills that carry their own time range */
+.anno__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.anno__chips--tight { gap: 0.5rem; }
 .anno__chip {
-  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  border: 1px solid #e4e7ea;
   border-radius: 999px;
   background: none;
-  padding: 0.12rem 0.5rem;
-  font-size: var(--fs-tick);
+  padding: 0.2rem 0.65rem 0.22rem;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.anno__chip:hover { color: var(--ink); border-color: #cfd6dd; }
+.anno__chip.is-on {
+  color: var(--ink);
+  border-color: var(--c-blue);
+  background: var(--t-blue);
+}
+.anno__chip-s {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+/* actions: a leading dot that lights up when it is the one playing */
+.anno__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  background: none;
+  padding: 0.1rem 0;
+  font-size: 0.78rem;
   color: var(--ink-mute);
   cursor: pointer;
 }
-.anno__chip:hover { color: var(--ink); border-color: var(--line-strong); }
-.anno__chip.is-on { color: var(--c-blue); border-color: var(--c-blue); background: var(--t-blue); }
-.anno__line { margin: 0.45rem 0 0; font-size: var(--fs-tick); color: var(--ink-soft); }
+.anno__pill:hover { color: var(--ink-soft); }
+.anno__mark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d5dbe1;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.anno__pill.is-on { color: var(--ink); }
+.anno__pill.is-on .anno__mark {
+  background: var(--c-blue);
+  box-shadow: 0 0 0 3px var(--t-blue);
+}
+.anno__idle { font-size: 0.78rem; color: var(--ink-mute); }
 
+/* objects: a small two-column list rather than one run-on line */
+.anno__objs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+  gap: 0.3rem 1.4rem;
+}
+.anno__obj {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.anno__obj b { font-weight: 600; color: var(--ink); }
+.anno__obj-a { color: var(--ink-soft); }
+.anno__obj-w {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-left: auto;
+}
 .viewer__foot { display: flex; align-items: center; gap: 0.7rem; padding: 0 0 0.6rem; }
 .viewer__play {
   border: 0;
