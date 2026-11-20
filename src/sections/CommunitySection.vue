@@ -161,7 +161,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
 @media (max-width: 460px) { .logos li { width: calc((100% - 0.75rem) / 2); } }
 .logos__item {
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto auto;
   justify-items: center;
   align-content: center;
   gap: 0.5rem;
@@ -173,7 +173,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
 }
 .logos__item:hover { background: var(--surface-2); }
 .logos img {
-  max-height: 3.4rem;
+  max-height: 3rem;
   max-width: 100%;
   width: auto;
   object-fit: contain;
