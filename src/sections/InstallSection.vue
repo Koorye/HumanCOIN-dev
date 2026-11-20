@@ -238,6 +238,10 @@ onBeforeUnmount(() => {
   color: #8d949e;
 }
 
+.term__body {
+  padding: 1.15rem 1.25rem 1.35rem;
+  min-height: 8.5rem;
+}
 .term__line { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
 .term__prompt { color: #7fd88f; user-select: none; }
 .term__cmd { color: #e9eff7; }
