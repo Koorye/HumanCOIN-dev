@@ -188,7 +188,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   /* One ink for the whole wall: the marks keep their shape and internal
      contrast, but lose their own colour so the grid reads as a texture rather
      than as twenty competing brands. */
-  opacity: 0.62;
+  opacity: 0.8;
   mix-blend-mode: multiply;
   transition: filter var(--dur) var(--ease), opacity var(--dur) var(--ease),
     transform var(--dur) var(--ease);
