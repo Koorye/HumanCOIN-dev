@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist -b gh-pages --dotfiles -m \"deploy: $(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+    "deploy": "npm run build && gh-pages -d dist -b gh-pages --dotfiles -m \"deploy: $(date -u +%Y-%m-%dT%H:%M:%SZ)\"",
+    "deploy:flagopen": "npm run build && gh-pages -d dist -b gh-pages -r https://github.com/FlagOpen/HumanCOIN.git --dotfiles --no-history -m \"deploy: $(date -u +%Y-%m-%dT%H:%M:%SZ)\""
   },
   "dependencies": {
     "playwright-core": "^1.49.1",
