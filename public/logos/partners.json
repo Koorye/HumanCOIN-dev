@@ -1,5 +1,10 @@
 [
   { "id": "baai", "src": "logos/partners/baai.png", "url": "https://www.baai.ac.cn/" },
+  { "id": "pku", "src": "logos/partners/pku.png", "url": "https://www.pku.edu.cn/" },
+  { "id": "ustc", "src": "logos/partners/ustc.png", "url": "https://www.ustc.edu.cn/" },
+  { "id": "thu", "src": "logos/partners/thu.png", "url": "https://www.tsinghua.edu.cn/" },
+  { "id": "fudan", "src": "logos/partners/fudan.png", "url": "https://www.fudan.edu.cn/" },
+  { "id": "beihang", "src": "logos/partners/beihang.png", "url": "https://www.buaa.edu.cn/" },
   { "id": "jdcloud", "src": "logos/partners/jdcloud.png", "url": "https://www.jdcloud.com/" },
   { "id": "mifeng", "src": "logos/partners/mifeng.png", "url": "https://www.maniformer.net/" },
   { "id": "ant", "src": "logos/partners/ant.png", "url": "https://www.antdigital.com/" },

@@ -22,6 +22,11 @@ interface Partner {
 
 const NAMES: Record<string, { en: string; zh: string }> = {
   baai: { en: 'BAAI', zh: '智源人工智能研究院' },
+  pku: { en: 'Peking University', zh: '北京大学' },
+  ustc: { en: 'University of Science and Technology of China', zh: '中国科学技术大学' },
+  thu: { en: 'College of AI, Tsinghua University', zh: '清华大学' },
+  fudan: { en: 'Fudan University', zh: '复旦大学' },
+  beihang: { en: 'Institute of Robotics, Beihang University', zh: '北京航空航天大学' },
   jdcloud: { en: 'JD Cloud', zh: '京东云' },
   mifeng: { en: 'Maniformer', zh: '觅蜂科技' },
   ant: { en: 'Ant Digital Technologies (AntDT)', zh: '蚂蚁数科' },
@@ -61,6 +66,12 @@ onMounted(async () => {
 })
 
 const nameOf = (id: string) => NAMES[id] ?? { en: id, zh: id }
+/**
+ * University marks are seals rather than wordmarks: at the shared cap height a
+ * round emblem reads smaller than a wide logotype, so the seals get a little
+ * more room and the row keeps the same optical weight.
+ */
+const SEALS = new Set(['pku', 'ustc', 'thu', 'fudan', 'beihang'])
 const lead = computed(() => partners.value.find((p) => p.id === LEAD_ID) ?? null)
 const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
 </script>
@@ -96,6 +107,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
                 v-if="p.src"
                 :src="p.src"
                 :alt="nameOf(p.id).en"
+                :class="{ 'is-seal': SEALS.has(p.id) }"
                 loading="lazy"
                 decoding="async"
               />
@@ -163,6 +175,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   object-fit: contain;
   transition: transform var(--dur) var(--ease);
 }
+.logos img.is-seal { max-height: 4.15rem; }
 .logos__item:hover img { transform: scale(1.04); }
 /* Companies whose mark has not been supplied yet are set as a wordmark, so the
    wall keeps one cell size and no placeholder graphic is invented. */
