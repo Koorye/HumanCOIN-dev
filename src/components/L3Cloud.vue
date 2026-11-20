@@ -256,6 +256,7 @@ let pitch = 0
 let dist = 3
 let target = new THREE.Vector3()
 const drag = { active: false, x: 0, y: 0, pan: false }
+const refBase = { yaw: 0, pitch: 0, dist: 3 }
 
 function seed() {
   if (!meta.value) return
@@ -263,10 +264,15 @@ function seed() {
   const [fx, fy, fz] = meta.value.forward
   const r = Math.max(meta.value.radius, 0.25)
   target = new THREE.Vector3(cx, cy - r * 0.16, cz)
-  const v = new THREE.Vector3(fx * -r * 1.9, fy * -r * 1.9 + r * 0.45, fz * -r * 1.9).multiplyScalar(0.58)
-  dist = v.length()
-  pitch = Math.asin(v.y / dist) + 0.02
-  yaw = Math.atan2(v.x, v.z) + 0.34
+  /* the capture's own opening view, kept as the reference every candidate
+     preset is expressed against */
+  const v = new THREE.Vector3(fx * -r * 1.9, fy * -r * 1.9 + r * 0.45, fz * -r * 1.9)
+  refBase.yaw = Math.atan2(v.x, v.z)
+  refBase.pitch = Math.asin(v.y / v.length())
+  refBase.dist = v.length()
+  yaw = refBase.yaw + 0.34
+  pitch = refBase.pitch + 0.02
+  dist = refBase.dist * 0.58
   applyCamera()
 }
 
@@ -497,6 +503,17 @@ onMounted(async () => {
   seed()
   resize()
   drawCloud(0)
+
+  /* dev-only handle, used to shoot candidate opening views for review */
+  if (import.meta.env.DEV) {
+    ;(window as unknown as Record<string, unknown>).__l3cam = (dYaw: number, dPitch: number, dScale: number) => {
+      yaw = refBase.yaw + dYaw
+      pitch = Math.max(-1.4, Math.min(1.4, refBase.pitch + dPitch))
+      dist = refBase.dist * dScale
+      applyCamera()
+      renderer?.render(scene!, camera!)
+    }
+  }
   drawGaze()
   window.addEventListener('resize', resize)
   raf = requestAnimationFrame(loop)
