@@ -114,7 +114,7 @@
   --nav-h: 56px;
   /* the fixed left rail: its width, and the gutter it keeps from the edge */
   --rail-w: 11.5rem;
-  --rail-inset: 1.75rem;
+  --rail-inset: 3.75rem;
 
   /* ---- Radii ---- */
   --r-xs: 3px;

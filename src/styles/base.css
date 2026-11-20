@@ -37,7 +37,7 @@ body {
   /* The rail is fixed, so the document is inset by its width instead of
      carrying a top bar. Below the breakpoint the bar comes back and the inset
      goes away. */
-  padding-left: calc(var(--rail-w) + var(--rail-inset) * 2);
+  padding-left: calc(var(--rail-w) + var(--rail-inset));
 }
 @media (max-width: 1080px) {
   body { padding-left: 0; }
