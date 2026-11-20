@@ -101,6 +101,7 @@ let camera: THREE.PerspectiveCamera | null = null
 let cloud: THREE.Points | null = null
 let handPts: THREE.Points | null = null
 let bones: THREE.LineSegments | null = null
+let grid: THREE.GridHelper | null = null
 let raf = 0
 let last = 0
 let drawn = -1
@@ -119,7 +120,7 @@ function seed() {
   /* aim a touch below the geometric centre: the wall is the tall half of the
      cloud, the work surface is what the figure is about */
   target = new THREE.Vector3(cx, cy - r * 0.16, cz)
-  const v = new THREE.Vector3(fx * -r * 1.9, fy * -r * 1.9 + r * 0.45, fz * -r * 1.9).multiplyScalar(0.56)
+  const v = new THREE.Vector3(fx * -r * 1.9, fy * -r * 1.9 + r * 0.45, fz * -r * 1.9).multiplyScalar(0.58)
   dist = v.length()
   /* Start off the capture's own forward axis, swung a little to the left, so
      the table reads in three dimensions before anyone touches the canvas. */
@@ -150,7 +151,9 @@ function drawCloud(index: number) {
   const col = cc.array as Float32Array
   for (let i = 0; i < f.count * 3; i++) {
     pos[i] = ints[i] * s
-    col[i] = cols[i] / 255
+    /* compress the capture's colours into the upper-mid tones: the wall is
+       bright enough that it would vanish on a pale ground */
+    col[i] = 0.06 + 0.56 * (cols[i] / 255)
   }
   cp.needsUpdate = true
   cc.needsUpdate = true
@@ -280,7 +283,7 @@ onMounted(async () => {
   task.value = st.task
 
   renderer = new THREE.WebGLRenderer({ canvas: el, antialias: true, alpha: true })
-  renderer.setClearColor(0x0c1018, 1)
+  renderer.setClearColor(0xdfeaf3, 1)
   scene = new THREE.Scene()
   camera = new THREE.PerspectiveCamera(60, 1, 0.01, 100)
 
@@ -288,7 +291,7 @@ onMounted(async () => {
   const cg = new THREE.BufferGeometry()
   cg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(maxPts * 3), 3))
   cg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(maxPts * 3), 3))
-  cloud = new THREE.Points(cg, new THREE.PointsMaterial({ size: 2.2, sizeAttenuation: false, vertexColors: true }))
+  cloud = new THREE.Points(cg, new THREE.PointsMaterial({ size: 2.6, sizeAttenuation: false, vertexColors: true }))
   cloud.frustumCulled = false
   scene.add(cloud)
 
@@ -305,6 +308,21 @@ onMounted(async () => {
   bones = new THREE.LineSegments(bg, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9 }))
   bones.frustumCulled = false
   scene.add(bones)
+
+  /* a ground plane under the cloud, so the figure reads in space rather than
+     floating in a void */
+  const ys: number[] = []
+  const first = m.frames[0]
+  const ints0 = new Int16Array(bin, first.offset, first.count * 3)
+  for (let i = 1; i < first.count * 3; i += 30) ys.push(ints0[i] * m.scale)
+  ys.sort((a, b) => a - b)
+  const floor = ys[Math.floor(ys.length * 0.08)] ?? 0
+  const span = Math.max(m.radius * 2.3, 2)
+  grid = new THREE.GridHelper(span, 28, 0x7d9cb6, 0xa8c0d4)
+  grid.position.set(m.center[0], floor, m.center[2])
+  ;(grid.material as THREE.Material).transparent = true
+  ;(grid.material as THREE.Material).opacity = 0.8
+  scene.add(grid)
 
   seed()
   resize()
@@ -446,7 +464,7 @@ onBeforeUnmount(() => {
   position: relative;
   border: 1px solid #e4e7ea;
   border-radius: 10px;
-  background: #0c1018;
+  background: #dfeaf3;
   overflow: hidden;
 }
 .viewer__canvas { display: block; width: 100%; aspect-ratio: 16 / 10; touch-action: none; outline: none; }
@@ -456,7 +474,7 @@ onBeforeUnmount(() => {
   bottom: 0.7rem;
   margin: 0;
   font-size: var(--fs-tick);
-  color: rgba(231, 237, 246, 0.55);
+  color: rgba(22, 25, 29, 0.4);
   pointer-events: none;
 }
 
