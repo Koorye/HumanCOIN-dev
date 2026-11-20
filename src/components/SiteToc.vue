@@ -94,9 +94,9 @@ function go(e: MouseEvent, id: string) {
 .toc {
   position: fixed;
   /* same left edge as the page container, not the viewport */
-  left: max(1.25rem, calc(50% - var(--shell-max) / 2));
+  left: max(1.25rem, calc(50% - var(--article-w) / 2 - var(--toc-w) - var(--toc-gap)));
   top: calc(var(--nav-h) + 2.8rem);
-  width: 240px;
+  width: var(--toc-w);
   z-index: 40;
   transition: opacity var(--dur-3) var(--ease), transform var(--dur-3) var(--ease);
 }

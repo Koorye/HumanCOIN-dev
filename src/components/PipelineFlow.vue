@@ -185,7 +185,7 @@ const running = computed(() => playing.value && !reduced.value)
         :height="H"
         role="img"
         aria-labelledby="pf-title pf-desc"
-        :style="{ minWidth: `${W}px` }"
+        :style="{ maxWidth: `${W}px` }"
       >
         <title id="pf-title">{{ t(PIPELINE.figTitle) }}</title>
         <desc id="pf-desc">{{ t(PIPELINE.figDesc) }}</desc>
@@ -285,14 +285,13 @@ const running = computed(() => playing.value && !reduced.value)
 /* ---- the figure ---- */
 .pf__scroll {
   width: 100%;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
+  overflow: visible;
   border-top: 1px solid var(--line-strong);
   border-bottom: 1px solid var(--line-strong);
   background: #fff;
 }
 .pf__scroll:focus-visible { outline: var(--focus); outline-offset: 2px; }
-.pf__svg { display: block; width: 100%; min-width: 1080px; height: auto; }
+.pf__svg { display: block; width: 100%; height: auto; }
 
 .pf__svg text {
   font-family: var(--ff-sans);

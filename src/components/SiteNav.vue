@@ -106,8 +106,9 @@ const ACTIONS = [
   align-items: center;
   justify-content: space-between;
   gap: 1.25rem;
-  width: min(100% - 2.5rem, var(--shell-max));
-  margin-inline: auto;
+  /* the bar runs from the contents column's left edge to the article's right */
+  width: min(100% - 2.5rem, calc(var(--article-w) + var(--toc-w) + var(--toc-gap)));
+  margin-left: max(1.25rem, calc(50% - var(--article-w) / 2 - var(--toc-w) - var(--toc-gap)));
 }
 
 .nav__brand { display: flex; align-items: center; flex: none; }

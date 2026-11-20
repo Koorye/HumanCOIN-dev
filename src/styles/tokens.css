@@ -106,6 +106,12 @@
 
   /* ---- Layout ---- */
   --shell-max: 1240px;
+  /* The article column, and the contents column that sits to its left. The
+     article is centred on the viewport; the contents is not part of that
+     measure. */
+  --article-w: 1000px;
+  --toc-w: 240px;
+  --toc-gap: 1.5rem;
   --shell-wide: 1440px;
   --prose-max: 68ch;
   --gap: clamp(0.9rem, 0.7rem + 0.9vw, 1.6rem);

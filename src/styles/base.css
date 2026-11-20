@@ -106,13 +106,8 @@ strong, b { font-weight: 640; color: var(--ink); }
 
 /* ---- Layout shell ---- */
 .shell {
-  width: min(100% - 2.5rem, var(--shell-max));
+  width: min(100% - 2.5rem, var(--article-w));
   margin-inline: auto;
-}
-/* Wide screens keep a gutter on the left of the container for the contents
-   column, so the article reads as one column beside it. */
-@media (min-width: 1181px) {
-  #main .shell, .foot .shell { padding-left: 248px; }
 }
 @media (max-width: 640px) {
   .shell { width: min(100% - 1.75rem, var(--shell-max)); }
