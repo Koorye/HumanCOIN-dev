@@ -375,7 +375,12 @@ const running = computed(() => playing.value && !reduced.value)
 
 <style scoped>
 .mono { font-family: var(--ff-mono); }
-.pf { margin: 0; }
+.pf {
+  margin: 0;
+  /* the drawing gains width to the right of the column, where the contents
+     column is not in the way, so its labels are not scaled down */
+}
+@media (min-width: 1600px) { .pf { margin-right: -180px; } }
 
 /* ---- transport ---- */
 .pf__bar {
@@ -421,12 +426,12 @@ const running = computed(() => playing.value && !reduced.value)
   fill: #5c636b;
   font-size: 11px;
 }
-.pf__input { font-size: 10.5px; fill: #6d747c; }
-.pf__head { font-size: 12.5px; font-weight: 650; fill: #101317; letter-spacing: -0.008em; }
-.pf__sub { font-size: 10px; fill: #6b727a; }
-.pf__chip-t { font-size: 11px; fill: #3a4048; font-weight: 500; }
-.pf__note { font-size: 10.5px; fill: #6d747c; letter-spacing: 0.04em; }
-.pf__ep { font-size: 11px; font-weight: 600; fill: #16191d; }
+.pf__input { font-size: 11.2px; fill: #6d747c; }
+.pf__head { font-size: 13.5px; font-weight: 650; fill: #101317; letter-spacing: -0.008em; }
+.pf__sub { font-size: 10.8px; fill: #6b727a; }
+.pf__chip-t { font-size: 11.6px; fill: #3a4048; font-weight: 500; }
+.pf__note { font-size: 11.2px; fill: #6d747c; letter-spacing: 0.04em; }
+.pf__ep { font-size: 11.6px; font-weight: 600; fill: #16191d; }
 
 .pf__card { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
 .pf__step { cursor: default; outline: none; }

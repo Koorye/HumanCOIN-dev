@@ -83,10 +83,10 @@ const frames = FRAME_MS_AXIS.map((ms, i) => ({
 
 /* ---- animation ---- */
 /** Progress marks inside the 0..1 cycle. */
-const AT_WRITE = 0.42
-const AT_SAVED = 0.55
+const AT_WRITE = 0.26
+const AT_SAVED = 0.42
 const AT_READ = 0.95
-const CYCLE_SECONDS = 16
+const CYCLE_SECONDS = 13
 
 const progress = ref(1)
 const playing = ref(false)
