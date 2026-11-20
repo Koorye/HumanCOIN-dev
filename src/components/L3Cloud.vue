@@ -198,13 +198,14 @@ function drawGaze() {
   }
   let max = 0
   for (let i = 0; i < grid.length; i++) if (grid[i] > max) max = grid[i]
+  /* warm ramp with alpha, because this now sits on top of the camera image */
   const img = hc.createImageData(HEAT_W, HEAT_H)
   for (let i = 0; i < grid.length; i++) {
     const v = max > 0 ? Math.pow(grid[i] / max, 0.7) : 0
-    img.data[i * 4] = 36 + 200 * v
-    img.data[i * 4 + 1] = 90 + 120 * (1 - v)
-    img.data[i * 4 + 2] = 160 + 70 * (1 - v)
-    img.data[i * 4 + 3] = 235 * v
+    img.data[i * 4] = 255
+    img.data[i * 4 + 1] = 196 + 20 * (1 - v) - 150 * v
+    img.data[i * 4 + 2] = 138 * (1 - v) + 30
+    img.data[i * 4 + 3] = 205 * v
   }
   hc.putImageData(img, 0, 0)
   ctx.imageSmoothingEnabled = true
@@ -217,14 +218,21 @@ function drawGaze() {
     if (i === 0) ctx.moveTo(x, y)
     else ctx.lineTo(x, y)
   }
-  ctx.strokeStyle = 'rgba(22,25,29,0.45)'
-  ctx.lineWidth = 1
+  ctx.strokeStyle = 'rgba(22,25,29,0.55)'
+  ctx.lineWidth = 3
+  ctx.stroke()
+  ctx.strokeStyle = 'rgba(255,255,255,0.92)'
+  ctx.lineWidth = 1.2
   ctx.stroke()
 
   const cx = sx[sx.length - 1] * w
   const cy = sy[sy.length - 1] * h
   ctx.beginPath()
-  ctx.arc(cx, cy, 3.5, 0, Math.PI * 2)
+  ctx.arc(cx, cy, 4.6, 0, Math.PI * 2)
+  ctx.fillStyle = 'rgba(255,255,255,0.95)'
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(cx, cy, 2.6, 0, Math.PI * 2)
   ctx.fillStyle = '#16191d'
   ctx.fill()
 }
@@ -559,12 +567,12 @@ onBeforeUnmount(() => {
       <div class="gaze">
         <div class="gaze__eye">
           <video ref="eyeEl" :src="EYE_SRC" muted playsinline preload="auto" />
-          <span class="gaze__tag mono">eye camera</span>
+          <canvas ref="gazeCanvas" class="gaze__overlay" aria-hidden="true" />
+          <span class="gaze__tag mono">scene camera · gaze overlay</span>
         </div>
-        <canvas ref="gazeCanvas" class="gaze__map" />
         <div class="gaze__keys mono">
           <span>gaze · last {{ WINDOW }} s</span>
-          <span class="gaze__heat">pseudo-colour heat = dwell</span>
+          <span class="gaze__heat">heat = dwell</span>
         </div>
       </div>
 
@@ -727,9 +735,8 @@ onBeforeUnmount(() => {
 
 .gaze {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   grid-template-rows: minmax(0, 1fr) auto;
-  gap: 0.4rem;
+  gap: 0.35rem;
   height: 330px;
   border: 1px solid #e4e7ea;
   border-radius: 10px;
@@ -737,6 +744,8 @@ onBeforeUnmount(() => {
 }
 .gaze__eye { position: relative; border-radius: 7px; overflow: hidden; background: #0c1018; min-height: 0; }
 .gaze__eye video { width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block; }
+/* the trajectory is drawn on the scene camera itself, in its own pixels */
+.gaze__overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .gaze__tag {
   position: absolute;
   left: 0.4rem;
@@ -744,8 +753,7 @@ onBeforeUnmount(() => {
   font-size: var(--fs-tick);
   color: rgba(255, 255, 255, 0.7);
 }
-.gaze__map { width: 100%; height: 100%; min-height: 0; border-radius: 7px; background: #f6f9fb; border: 1px solid #eef1f3; display: block; }
-.gaze__keys { grid-column: 1 / -1; display: flex; justify-content: space-between; font-size: var(--fs-tick); color: var(--ink-mute); }
+.gaze__keys { display: flex; justify-content: space-between; font-size: var(--fs-tick); color: var(--ink-mute); }
 .gaze__heat { color: var(--c-blue); }
 
 .side { display: grid; grid-template-rows: auto 1fr; gap: 0.55rem; min-width: 0; min-height: 0; }
