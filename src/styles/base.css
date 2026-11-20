@@ -126,27 +126,17 @@ strong, b { font-weight: 640; color: var(--ink); }
 }
 .section--tinted { background: var(--paper); }
 
+/* The head is one column: the title takes the full measure so it sets on a
+   single line, and the section's argument follows underneath it as body copy
+   rather than sitting in a rail beside the heading. */
 .section__head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
-  gap: var(--gap);
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: start;
   margin-bottom: clamp(1.1rem, 0.8rem + 1vw, 1.8rem);
 }
 .section__head--single { grid-template-columns: minmax(0, 1fr); }
-/* A head whose aside carries the section's argument rather than a standfirst:
-   a wider column and top alignment, so the paragraph sits beside the title
-   instead of pushing the figures down a band. */
-.section__head--aside-wide {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 32rem);
-  align-items: start;
-}
-@media (max-width: 1080px) {
-  .section__head--aside-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); }
-}
-@media (max-width: 900px) {
-  .section__head { grid-template-columns: minmax(0, 1fr); }
-}
 
 .section-num {
   display: flex;
@@ -171,6 +161,7 @@ strong, b { font-weight: 640; color: var(--ink); }
 
 .section__title { max-width: 38ch; }
 .section__aside {
+  max-width: 74ch;
   font-size: var(--fs-small);
   color: var(--ink-soft);
   line-height: var(--lh-loose);

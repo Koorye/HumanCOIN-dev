@@ -129,7 +129,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
 </template>
 
 <style scoped>
-.community { margin-top: clamp(1.5rem, 1.2rem + 2vw, 2.25rem); }
+.community { margin-top: 0.4rem; }
 
 /* The host institute occupies a row of its own above the grid, with no border
    so it reads as the lead mark rather than as another card. */
@@ -138,7 +138,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   justify-items: center;
   gap: 0.5rem;
   padding: 0.4rem 1rem 1rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.6rem;
 }
 .host img {
   max-height: 4.55rem;
@@ -157,16 +157,16 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 /* Six to a row, sized by the row rather than by how many partners load. The
    wall ends on a short row, and centring it closes the block instead of
    leaving a hole at the right edge. */
-.logos li { display: grid; width: calc((100% - 3.75rem) / 6); }
+.logos li { display: grid; width: calc((100% - 2.5rem) / 6); }
 .logos li.logos__break { flex: 0 0 100%; width: 100%; height: 0; }
-@media (max-width: 980px) { .logos li { width: calc((100% - 2.25rem) / 4); } }
-@media (max-width: 700px) { .logos li { width: calc((100% - 1.5rem) / 3); } }
-@media (max-width: 460px) { .logos li { width: calc((100% - 0.75rem) / 2); } }
+@media (max-width: 980px) { .logos li { width: calc((100% - 1.5rem) / 4); } }
+@media (max-width: 700px) { .logos li { width: calc((100% - 1rem) / 3); } }
+@media (max-width: 460px) { .logos li { width: calc((100% - 0.5rem) / 2); } }
 .logos__item {
   display: grid;
   grid-template-rows: auto auto;
@@ -174,8 +174,8 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   align-content: center;
   gap: 0.5rem;
   width: 100%;
-  height: 7.9rem;
-  padding: 0.7rem 0.6rem 0.6rem;
+  height: 7rem;
+  padding: 0.55rem 0.5rem 0.45rem;
   border-radius: var(--r-sm);
   transition: background var(--dur) var(--ease);
 }
@@ -185,7 +185,19 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   max-width: 100%;
   width: auto;
   object-fit: contain;
-  transition: transform var(--dur) var(--ease);
+  /* One ink for the whole wall: the marks keep their shape and internal
+     contrast, but lose their own colour so the grid reads as a texture rather
+     than as twenty competing brands. */
+  filter: grayscale(0.92) contrast(0.94) brightness(0.9);
+  opacity: 0.82;
+  mix-blend-mode: multiply;
+  transition: filter var(--dur) var(--ease), opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.logos__item:hover img,
+.host:hover img {
+  filter: grayscale(0.35) contrast(1) brightness(1);
+  opacity: 1;
 }
 .logos img.is-seal { max-height: 4.3rem; }
 .logos__item:hover img { transform: scale(1.04); }
