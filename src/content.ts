@@ -1028,7 +1028,7 @@ export const INSTALL = {
   },
   replay: { en: 'Run again', zh: '重新运行' },
   cta: { en: 'Explore the released episodes', zh: '浏览已发布片段' },
-  ctaHref: '#annotation',
+  ctaHref: 'https://flagopen.github.io/HumanCOIN-DataManager',
 } as const
 
 export const FOOTER = {

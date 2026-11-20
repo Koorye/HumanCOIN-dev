@@ -48,7 +48,10 @@ function type(from = 0) {
   typed.value = INSTALL.command.slice(0, from)
   printed.value = false
   if (from >= INSTALL.command.length) {
-    hold = window.setTimeout(() => (printed.value = true), 420)
+    hold = window.setTimeout(() => {
+      printed.value = true
+      scheduleLoop()
+    }, 420)
     return
   }
   // A steady cadence with a slightly longer beat after each space, which is
@@ -58,15 +61,32 @@ function type(from = 0) {
   timer = window.setTimeout(() => type(from + 1), beat)
 }
 
-function replay() {
-  type(0)
+/* The band loops on its own: once the slogan has printed, the terminal holds
+   for a beat and starts typing again, so a reader who arrives late still sees
+   the run. It only loops while the section is in view. */
+let loop = 0
+
+function scheduleLoop() {
+  clearTimeout(loop)
+  if (reduce() || !shown.value) return
+  loop = window.setTimeout(() => {
+    if (shown.value) type(0)
+  }, 4200)
 }
 
 watch(shown, (on) => {
-  if (on) type(0)
+  if (on) {
+    type(0)
+  } else {
+    clearTimeout(loop)
+    clearTimers()
+  }
 })
 
-onBeforeUnmount(clearTimers)
+onBeforeUnmount(() => {
+  clearTimeout(loop)
+  clearTimers()
+})
 </script>
 
 <template>
@@ -78,7 +98,12 @@ onBeforeUnmount(clearTimers)
         </p>
         <h2 class="install__title">{{ t(INSTALL.title) }}</h2>
         <p class="install__aside">{{ t(INSTALL.aside) }}</p>
-        <a class="install__cta" :href="INSTALL.ctaHref">{{ t(INSTALL.cta) }} →</a>
+        <a
+          class="install__cta"
+          :href="INSTALL.ctaHref"
+          target="_blank"
+          rel="noopener noreferrer"
+        >{{ t(INSTALL.cta) }} →</a>
       </div>
 
       <!-- The terminal is one object: chrome, prompt, typed line, then the
@@ -87,9 +112,6 @@ onBeforeUnmount(clearTimers)
         <div class="term__bar">
           <span class="term__dots" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="term__name mono">terminal · bash</span>
-          <button class="term__replay mono" type="button" @click="replay">
-            {{ t(INSTALL.replay) }}
-          </button>
         </div>
 
         <div class="term__body">
@@ -119,7 +141,7 @@ onBeforeUnmount(clearTimers)
   position: relative;
   background: var(--paper);
   color: var(--ink);
-  padding-block: clamp(3.5rem, 2.6rem + 4vw, 6.5rem);
+  padding-block: clamp(2rem, 1.6rem + 2vw, 3.4rem);
   border-top: 1px solid var(--line);
 }
 
@@ -215,29 +237,7 @@ onBeforeUnmount(clearTimers)
   letter-spacing: 0.06em;
   color: #8d949e;
 }
-.term__replay {
-  margin-left: auto;
-  font: inherit;
-  font-family: var(--ff-mono);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #9aa1ab;
-  background: none;
-  border: 1px solid #3a4048;
-  border-radius: var(--r-xs);
-  padding: 0.18rem 0.5rem;
-  cursor: pointer;
-  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
-}
-.term__replay:hover { color: #e6edf3; border-color: #6b737d; }
 
-.term__body {
-  padding: clamp(0.9rem, 0.7rem + 0.8vw, 1.35rem);
-  font-size: clamp(0.85rem, 0.78rem + 0.4vw, 1.05rem);
-  line-height: 1.7;
-  color: #dbe3ec;
-}
 .term__line { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
 .term__prompt { color: #7fd88f; user-select: none; }
 .term__cmd { color: #e9eff7; }
