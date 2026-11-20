@@ -23,7 +23,7 @@ import { COVER_CAROUSEL as C, TIER_PROVENANCE, type TierProvenance } from '@/dat
 import { COVER_TAKES_BY_TIER, type CoverTake } from '@/data/coverReels'
 import { useI18n } from '@/composables/useI18n'
 
-defineProps<{
+const props = defineProps<{
   activeId: string
   pinnedId: string
 }>()
@@ -82,6 +82,17 @@ function titleOf(take: CoverTake): string {
   return isZh.value ? take.title.zh : take.title.en
 }
 
+/**
+ * Only the card whose take is currently on show carries a media resource; the
+ * rest fall back to their poster. The strip is 96 cards deep once the track is
+ * doubled, so binding a `src` to every one of them makes the browser spin up
+ * ~40 concurrent decoders on load — enough to push a tab into an out-of-memory
+ * crash. Bound this way the strip costs a handful of decoders, as intended.
+ */
+function isLive(take: CoverTake): boolean {
+  return take.id === props.activeId
+}
+
 function onEnter(take: CoverTake, tier: TierProvenance) {
   emit('hover', take.id, tier)
 }
@@ -129,12 +140,12 @@ function onPick(take: CoverTake, tier: TierProvenance) {
             >
               <span class="card__frame">
                 <video
-                  :src="`real/${take.preview}`"
+                  :src="isLive(take) ? `real/${take.preview}` : undefined"
                   :poster="`real/${take.poster}`"
                   muted
                   loop
                   playsinline
-                  preload="metadata"
+                  preload="none"
                   autoplay
                 />
                 <span class="card__level mono">{{ row.tier.id }}</span>
