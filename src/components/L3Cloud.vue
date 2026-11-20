@@ -74,19 +74,17 @@ const WINDOW = 10 /* seconds of signal shown at once */
 const TRAIL = 3 /* seconds of gaze path drawn on the camera */
 
 const RGB = [
+  { key: 'left', src: 'real/l3/rgb-left.mp4', label: 'Headband · left' },
   { key: 'right', src: 'real/l3/rgb-right.mp4', label: 'Headband · right' },
-  { key: 'scene', src: 'real/l3/eye.mp4', label: 'Scene camera' },
   { key: 'wl', src: 'real/l3/rgb-wl.mp4', label: 'Left wrist' },
   { key: 'wr', src: 'real/l3/rgb-wr.mp4', label: 'Right wrist' },
 ]
 /* gaze is measured in the rectified headband-left frame, so that is the image
    the trajectory is drawn on */
-const GAZE_SRC = 'real/l3/rgb-left.mp4'
 const DEPTH_SRC = 'real/l3/depth.mp4'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
 const rgbEls = ref<HTMLVideoElement[]>([])
-const eyeEl = ref<HTMLVideoElement | null>(null)
 const depthEl = ref<HTMLVideoElement | null>(null)
 const gazeCanvas = ref<HTMLCanvasElement | null>(null)
 
@@ -98,6 +96,10 @@ const subtasks = ref<Subtask[]>([])
 const objects = ref<SceneObject[]>([])
 const task = ref('')
 const sigIndex = ref(0)
+let gx0 = 0
+let gx1 = 1
+let gy0 = 0
+let gy1 = 1
 
 const t = ref(0)
 const playing = ref(true)
@@ -114,36 +116,72 @@ const shownSub = computed(() => subtask.value ?? subtasks.value.find((s) => s.st
 /* ---------- sliding-window traces ---------- */
 const TW = 900
 const TH = 24
+const RH = 14
 
-function windowed(values: number[]): string {
+function windowed(values: number[], h = TH): string {
   const n = values.length
   const i1 = Math.min(n - 1, sigIndex.value)
   const i0 = Math.max(0, Math.round(sigIndex.value - WINDOW * (signals.value?.fps ?? 15)))
   const span = Math.max(1, i1 - i0)
   const pts: string[] = []
-  for (let i = i0; i <= i1; i++) pts.push(`${(((i - i0) / span) * TW).toFixed(1)},${((1 - values[i]) * TH).toFixed(1)}`)
+  for (let i = i0; i <= i1; i++) pts.push(`${(((i - i0) / span) * TW).toFixed(1)},${((1 - values[i]) * h).toFixed(1)}`)
   return pts.join(' ')
 }
 
-const gazeTraces = computed(() => {
-  const s = signals.value
-  if (!s) return []
-  return [
-    { key: 'x', label: 'Gaze X', color: '#6f5aa0', points: windowed(s.gazeX) },
-    { key: 'y', label: 'Gaze Y', color: '#6f5aa0', points: windowed(s.gazeY) },
-  ]
-})
+/* three modalities, three full-width bands; colour carries the group, so the
+   left and right arms, and the four scalp regions, stay legible when stacked */
+const REGION: Record<string, string> = {
+  F: '#33796f',
+  C: '#6f5aa0',
+  P: '#8a5a6e',
+  O: '#8a5a6e',
+  T: '#9a7b2e',
+}
+const regionOf = (name: string) => REGION[name.charAt(0)] ?? '#33796f'
 
-const banks = computed(() => {
+const bands = computed(() => {
   const s = signals.value
   if (!s) return []
-  const eegRows = s.eeg.map((v, i) => ({ label: s.eegNames[i] ?? `ch ${i + 1}`, points: windowed(v) }))
-  const half = Math.ceil(eegRows.length / 2)
   return [
-    { key: 'emgL', title: `EMG · left · ${s.channels.emgL} ch`, color: '#a8623c', rows: s.emgL.map((v, i) => ({ label: `${i + 1}`, points: windowed(v) })) },
-    { key: 'emgR', title: `EMG · right · ${s.channels.emgR} ch`, color: '#a8623c', rows: s.emgR.map((v, i) => ({ label: `${i + 1}`, points: windowed(v) })) },
-    { key: 'eegA', title: 'EEG · 1–8 of 128', color: '#33796f', rows: eegRows.slice(0, half) },
-    { key: 'eegB', title: 'EEG · 9–16 of 128', color: '#33796f', rows: eegRows.slice(half) },
+    {
+      key: 'emg',
+      title: `EMG · ${s.channels.emgL} left + ${s.channels.emgR} right`,
+      legend: [
+        { label: 'left', color: '#a8623c' },
+        { label: 'right', color: '#2f6f8f' },
+      ],
+      rows: [
+        ...s.emgL.map((v, i) => ({ label: `L${i + 1}`, color: '#a8623c', points: windowed(v, RH) })),
+        ...s.emgR.map((v, i) => ({ label: `R${i + 1}`, color: '#2f6f8f', points: windowed(v, RH) })),
+      ],
+    },
+    {
+      key: 'eeg',
+      title: 'EEG · 16 of 128',
+      legend: [
+        { label: 'frontal', color: '#33796f' },
+        { label: 'central', color: '#6f5aa0' },
+        { label: 'posterior', color: '#8a5a6e' },
+        { label: 'temporal', color: '#9a7b2e' },
+      ],
+      rows: s.eeg.map((v, i) => ({
+        label: s.eegNames[i] ?? `ch ${i + 1}`,
+        color: regionOf(s.eegNames[i] ?? 'F'),
+        points: windowed(v, RH),
+      })),
+    },
+    {
+      key: 'gaze',
+      title: 'Gaze · image x / y',
+      legend: [
+        { label: 'x', color: '#6f5aa0' },
+        { label: 'y', color: '#a8623c' },
+      ],
+      rows: [
+        { label: 'x', color: '#6f5aa0', points: windowed(s.gazeX, RH) },
+        { label: 'y', color: '#a8623c', points: windowed(s.gazeY, RH) },
+      ],
+    },
   ]
 })
 
@@ -170,19 +208,14 @@ function drawGaze() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   ctx.clearRect(0, 0, w, h)
 
-  /* the camera is painted with object-fit: cover, so the visible crop of the
-     frame is smaller than the box the canvas fills; gaze has to be mapped into
-     that crop or the dot sits off the thing it is looking at */
-  const vid = eyeEl.value
-  const vw = vid?.videoWidth || 16
-  const vh = vid?.videoHeight || 9
-  const scale = Math.max(w / vw, h / vh)
-  const paintW = vw * scale
-  const paintH = vh * scale
-  const ox = (w - paintW) / 2
-  const oy = (h - paintH) / 2
-  const px = (nx: number) => ox + nx * paintW
-  const py = (ny: number) => oy + ny * paintH
+  /* The exported eye_gaze x/y never leaves a 0.46–0.52 × 0.64–0.73 box over the
+     whole clip, so it is not a scene-camera gaze point: it is the tracker's own
+     frame. The plot is therefore fitted to the recorded range and labelled as
+     such, instead of being laid over a camera it does not belong to. */
+  const pad = 0.08
+  const px = (nx: number) => ((nx - gx0) / Math.max(gx1 - gx0, 1e-6)) * w
+  const py = (ny: number) => ((ny - gy0) / Math.max(gy1 - gy0, 1e-6)) * h
+  void pad
 
   if (!heatCanvas) {
     heatCanvas = document.createElement('canvas')
@@ -213,8 +246,8 @@ function drawGaze() {
   const grid = new Float32Array(HEAT_W * HEAT_H)
   /* the heat is cumulative: every sample so far, not just the visible trail */
   for (let i = 0; i <= i1; i++) {
-    const cx = Math.floor(g.x[i] * (HEAT_W - 1))
-    const cy = Math.floor(g.y[i] * (HEAT_H - 1))
+    const cx = Math.floor(((g.x[i] - gx0) / (gx1 - gx0)) * (HEAT_W - 1))
+    const cy = Math.floor(((g.y[i] - gy0) / (gy1 - gy0)) * (HEAT_H - 1))
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         const px = cx + dx
@@ -244,9 +277,8 @@ function drawGaze() {
   ctx.imageSmoothingEnabled = true
   ctx.save()
   ctx.filter = 'blur(6px)'
-  /* additive, so the dwell reads as light on the image rather than as a wash */
-  ctx.globalCompositeOperation = 'lighter'
-  ctx.drawImage(heatCanvas, ox, oy, paintW, paintH)
+  ctx.globalAlpha = 0.75
+  ctx.drawImage(heatCanvas, 0, 0, w, h)
   ctx.restore()
 
   ctx.beginPath()
@@ -256,22 +288,19 @@ function drawGaze() {
     if (i === 0) ctx.moveTo(x, y)
     else ctx.lineTo(x, y)
   }
-  ctx.strokeStyle = 'rgba(22,25,29,0.55)'
-  ctx.lineWidth = 3
-  ctx.stroke()
-  ctx.strokeStyle = 'rgba(255,255,255,0.92)'
-  ctx.lineWidth = 1.2
+  ctx.strokeStyle = 'rgba(52,42,92,0.85)'
+  ctx.lineWidth = 1.6
   ctx.stroke()
 
   const cx = px(sx[sx.length - 1])
   const cy = py(sy[sy.length - 1])
   ctx.beginPath()
-  ctx.arc(cx, cy, 4.6, 0, Math.PI * 2)
+  ctx.arc(cx, cy, 5, 0, Math.PI * 2)
   ctx.fillStyle = 'rgba(255,255,255,0.95)'
   ctx.fill()
   ctx.beginPath()
-  ctx.arc(cx, cy, 2.6, 0, Math.PI * 2)
-  ctx.fillStyle = '#16191d'
+  ctx.arc(cx, cy, 3, 0, Math.PI * 2)
+  ctx.fillStyle = '#3a2f6b'
   ctx.fill()
 }
 
@@ -416,7 +445,7 @@ function resize() {
 }
 
 function seek(to: number) {
-  const vids = [...rgbEls.value, eyeEl.value].filter(Boolean) as HTMLVideoElement[]
+  const vids = [...rgbEls.value].filter(Boolean) as HTMLVideoElement[]
   vids.forEach((v) => {
     if (Math.abs(v.currentTime - to) > 0.25) v.currentTime = to
   })
@@ -441,7 +470,7 @@ function loop(now: number) {
 }
 
 watch(playing, (on) => {
-  const vids = [...rgbEls.value, eyeEl.value].filter(Boolean) as HTMLVideoElement[]
+  const vids = [...rgbEls.value].filter(Boolean) as HTMLVideoElement[]
   vids.forEach((v) => {
     v.playbackRate = speed.value
     if (on) void v.play().catch(() => {})
@@ -450,7 +479,7 @@ watch(playing, (on) => {
   if (on) seek(t.value)
 })
 watch(speed, (s) => {
-  ;[...rgbEls.value, eyeEl.value].forEach((v) => { if (v) v.playbackRate = s })
+  ;[...rgbEls.value].forEach((v) => { if (v) v.playbackRate = s })
 })
 watch(t, (v) => seek(v))
 watch(
@@ -509,6 +538,18 @@ onMounted(async () => {
   buffer = bin
   signals.value = sig
   gaze2d.value = g2
+  {
+    const xs = g2.x
+    const ys = g2.y
+    const lo = (a: number[]) => Math.min(...a)
+    const hi = (a: number[]) => Math.max(...a)
+    const mx = (hi(xs) - lo(xs)) * 0.12
+    const my = (hi(ys) - lo(ys)) * 0.12
+    gx0 = lo(xs) - mx
+    gx1 = hi(xs) + mx
+    gy0 = lo(ys) - my
+    gy1 = hi(ys) + my
+  }
   steps.value = st.steps
   subtasks.value = st.subtasks ?? []
   objects.value = st.objects ?? []
@@ -580,7 +621,7 @@ onMounted(async () => {
   drawGaze()
   window.addEventListener('resize', resize)
   raf = requestAnimationFrame(loop)
-  ;[...rgbEls.value, eyeEl.value].forEach((v) => v && void v.play().catch(() => {}))
+  ;[...rgbEls.value].forEach((v) => v && void v.play().catch(() => {}))
 })
 
 onBeforeUnmount(() => {
@@ -602,7 +643,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <!-- transport sits above the panels it drives -->
     <div class="viewer__foot">
       <button class="viewer__play" type="button" @click="playing = !playing">
         {{ playing ? 'Pause' : 'Play' }}
@@ -611,10 +651,10 @@ onBeforeUnmount(() => {
         <button v-for="s in [1, 2, 4]" :key="s" type="button" :aria-pressed="speed === s" @click="speed = s">{{ s }}×</button>
       </div>
       <input v-model.number="t" class="viewer__range" type="range" min="0" :max="CLIP" step="0.033" aria-label="Time" />
-      <p class="viewer__read mono">frame {{ frame }} · {{ clock }} · window {{ WINDOW }} s</p>
+      <p class="viewer__read mono">frame {{ frame }} · {{ clock }}</p>
     </div>
 
-    <div class="viewer__grid">
+    <div class="viewer__top">
       <div class="viewer__stage">
         <canvas
           ref="canvas"
@@ -629,71 +669,50 @@ onBeforeUnmount(() => {
         <p class="viewer__help mono">drag to orbit · wheel zoom</p>
       </div>
 
-      <div class="cams">
-        <figure v-for="(c, i) in RGB" :key="c.key" class="cam">
-          <video
-            :ref="(el) => { if (el) rgbEls[i] = el as HTMLVideoElement }"
-            :src="c.src"
-            muted
-            playsinline
-            preload="auto"
-          />
-          <figcaption class="mono">{{ c.label }}</figcaption>
+      <div class="rail">
+        <figure class="rail__cell">
+          <video ref="depthEl" :src="DEPTH_SRC" muted playsinline preload="auto" />
+          <figcaption class="mono">Depth · pseudo-colour</figcaption>
         </figure>
+        <div class="rail__cell rail__cell--gaze">
+          <figcaption class="mono">Gaze · tracker frame · last {{ TRAIL }} s · fitted</figcaption>
+          <canvas ref="gazeCanvas" class="gaze__overlay" aria-hidden="true" />
+        </div>
       </div>
     </div>
 
-    <div class="viewer__grid2">
-      <div class="gaze">
-        <div class="gaze__eye">
-          <video ref="eyeEl" :src="GAZE_SRC" muted playsinline preload="auto" />
-          <canvas ref="gazeCanvas" class="gaze__overlay" aria-hidden="true" />
-          <span class="gaze__tag mono">headband · left · gaze overlay</span>
-        </div>
-        <div class="gaze__keys mono">
-          <span>gaze · last {{ WINDOW }} s</span>
-          <span class="gaze__heat">heat = dwell</span>
-        </div>
-      </div>
-
-      <figure class="cam cam--depth">
-        <video ref="depthEl" :src="DEPTH_SRC" muted playsinline preload="auto" />
-        <figcaption class="mono">Depth · headband left · pseudo-colour</figcaption>
+    <div class="cams">
+      <figure v-for="(c, i) in RGB" :key="c.key" class="cam">
+        <video
+          :ref="(el) => { if (el) rgbEls[i] = el as HTMLVideoElement }"
+          :src="c.src"
+          muted
+          playsinline
+          preload="auto"
+        />
+        <figcaption class="mono">{{ c.label }}</figcaption>
       </figure>
     </div>
 
-    <div class="signals">
-      <div class="signals__banks">
-        <div class="bank">
-          <p class="bank__title mono">Gaze (x / y)</p>
-          <div v-for="tr in gazeTraces" :key="tr.key" class="sig">
-            <span class="sig__label mono">{{ tr.label }}</span>
-            <svg class="sig__svg sig__svg--gaze" :viewBox="`0 0 ${TW} ${TH}`" preserveAspectRatio="none">
-              <polyline :points="tr.points" fill="none" :stroke="tr.color" stroke-width="1" vector-effect="non-scaling-stroke" />
-            </svg>
-          </div>
-          <p class="bank__title mono bank__title--gap">{{ banks[0]?.title }}</p>
-          <div v-for="row in banks[0]?.rows ?? []" :key="row.label" class="sig">
-            <span class="sig__label mono">{{ row.label }}</span>
-            <svg class="sig__svg" :viewBox="`0 0 ${TW} ${TH}`" preserveAspectRatio="none">
-              <polyline :points="row.points" fill="none" :stroke="banks[0].color" stroke-width="1" vector-effect="non-scaling-stroke" />
-            </svg>
-          </div>
-        </div>
-
-        <div v-for="b in banks.slice(1)" :key="b.key" class="bank">
-          <p class="bank__title mono">{{ b.title }}</p>
-          <div v-for="row in b.rows" :key="row.label" class="sig">
-            <span class="sig__label mono">{{ row.label }}</span>
-            <svg class="sig__svg" :viewBox="`0 0 ${TW} ${TH}`" preserveAspectRatio="none">
-              <polyline :points="row.points" fill="none" :stroke="b.color" stroke-width="1" vector-effect="non-scaling-stroke" />
+    <div class="bands">
+      <section v-for="band in bands" :key="band.key" class="band">
+        <header class="band__head">
+          <span class="band__title mono">{{ band.title }}</span>
+          <span class="band__legend mono">
+            <span v-for="l in band.legend" :key="l.label" class="band__key">
+              <i :style="{ background: l.color }" />{{ l.label }}
+            </span>
+          </span>
+        </header>
+        <div class="band__grid">
+          <div v-for="row in band.rows" :key="row.label" class="band__row">
+            <span class="band__label mono" :style="{ color: row.color }">{{ row.label }}</span>
+            <svg class="band__svg" :viewBox="`0 0 ${TW} ${RH}`" preserveAspectRatio="none">
+              <polyline :points="row.points" fill="none" :stroke="row.color" stroke-width="1" vector-effect="non-scaling-stroke" />
             </svg>
           </div>
         </div>
-      </div>
-      <p class="signals__note mono">
-        one window of {{ WINDOW }} s at the playhead · EMG 8 + 8 channels · EEG 16 of 128
-      </p>
+      </section>
     </div>
 
     <div class="anno">
@@ -932,4 +951,90 @@ onBeforeUnmount(() => {
   min-width: 17ch;
   text-align: right;
 }
+
+/* ---- row of its own: cloud beside a right rail of depth and gaze ---- */
+.viewer__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.72fr) minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: stretch;
+}
+@media (max-width: 900px) { .viewer__top { grid-template-columns: minmax(0, 1fr); } }
+
+.rail { display: grid; grid-template-rows: 1fr 1fr; gap: 0.5rem; min-width: 0; }
+.rail__cell {
+  position: relative;
+  margin: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #0c1018;
+  min-width: 0;
+}
+.rail__cell video { width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block; }
+.rail__cell figcaption {
+  padding: 0.2rem 0.4rem;
+  font-size: var(--fs-tick);
+  color: var(--ink-mute);
+  background: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rail__cell--gaze { grid-template-rows: auto 1fr; background: #fff; }
+.rail__cell--gaze figcaption {
+  padding: 0.2rem 0.4rem;
+  font-size: var(--fs-tick);
+  color: var(--ink-mute);
+  background: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rail__cell--gaze .gaze__overlay {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  pointer-events: none;
+  background-color: #fff;
+  background-image:
+    repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 40px);
+}
+
+.cams { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; margin-top: 0.5rem; }
+@media (max-width: 900px) { .cams { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---- three modality bands, white graph paper, no grey frame ---- */
+.bands { display: grid; gap: 0.5rem; margin-top: 0.5rem; }
+.band { background: #fff; border-radius: 9px; padding: 0.35rem 0 0.15rem; }
+.band__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.15rem 0.25rem;
+}
+.band__title {
+  font-size: var(--fs-tick);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.band__legend { display: flex; gap: 0.7rem; font-size: var(--fs-tick); color: var(--ink-mute); }
+.band__key { display: inline-flex; align-items: center; gap: 0.25rem; }
+.band__key i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+.band__grid {
+  background-image:
+    repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 14px);
+  background-position: 0 0;
+}
+.band__row { display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: center; gap: 0.3rem; }
+.band__label { font-size: 10px; text-align: right; opacity: 0.75; }
+.band__svg { width: 100%; min-width: 0; height: 14px; display: block; }
 </style>
