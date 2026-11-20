@@ -230,7 +230,7 @@ void inView
     <div class="mf__stage">
       <svg class="mf__svg" :viewBox="`0 0 ${W} ${H}`" role="img" :aria-label="t(FORMAT.figRead)">
         <!-- master clock: one rail, three frames named around the query -->
-        <text class="mf__name" x="0" :y="RAIL_Y + 3.5">master_index</text>
+        <text class="mf__name" x="0" :y="RAIL_Y + 3.5">Master Index</text>
         <text class="mf__hz mono" :x="RAIL_NAME_X" :y="RAIL_Y + 3.5">{{ FPS }} fps</text>
         <line class="mf__rail" :x1="X0" :x2="X1" :y1="RAIL_Y" :y2="RAIL_Y" />
 

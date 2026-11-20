@@ -133,13 +133,14 @@ export const MF_LANES: MfLane[] = [
     rateLabel: '30 fps',
     color: 'var(--c-blue)',
     mode: 'video',
-    startMs: 0,
+    /* the camera's own exposure clock, a few milliseconds off the master */
+    startMs: 11,
     periodS: periodS(30),
     dotRadius: 3.4,
     dims: null,
     note: {
-      en: 'Only timestamps live in the parquet; the nearest one names the frame to decode.',
-      zh: 'parquet 里只存时间戳；最近邻的那条给出要解码的帧。',
+      en: 'Its own exposure clock, a few milliseconds off the master: only timestamps live in the parquet, and the nearest one names the frame to decode.',
+      zh: '它跑自己的曝光时钟，与主时钟差几毫秒；parquet 里只存时间戳，最近邻的那条给出要解码的帧。',
     },
   },
 ]
