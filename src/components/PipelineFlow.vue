@@ -212,21 +212,20 @@ const GROUPS: Group[] = [
 const cols = GROUPS.map((g, i) => ({ g, x: X0 + i * PITCH, i }))
 
 /* ---- per-step detail, on hover or keyboard focus ---- */
-const scroller = ref<HTMLElement | null>(null)
-const tip = ref<{ x: number; y: number; text: string } | null>(null)
+/* The detail is written under the figure rather than floated over it, so the
+   drawing never covers the thing it is explaining. */
+const hovered = ref<{ label: string; detail: string } | null>(null)
 
-function showTip(e: Event, step: Step) {
-  const box = scroller.value?.getBoundingClientRect()
-  if (!box) return
-  const r = (e.currentTarget as SVGGElement).getBoundingClientRect()
-  tip.value = {
-    x: r.left - box.left + r.width / 2,
-    y: r.top - box.top,
-    text: t(step.detail),
-  }
+function showTip(_e: Event, step: Step) {
+  hovered.value = { label: t(step.label), detail: t(step.detail) }
 }
 function hideTip() {
-  tip.value = null
+  hovered.value = null
+}
+
+const hint: Bi = {
+  en: 'Hover or tab to a step to read what it does.',
+  zh: '悬停或用 Tab 选中某一步，可读取它的说明。',
 }
 
 const oneClock: Bi = { en: 'one clock', zh: '统一时钟' }
@@ -356,13 +355,15 @@ const running = computed(() => playing.value && !reduced.value)
         </g>
         <text class="pf__ep" :x="EP_X + EP_W / 2" :y="RULE_Y + 24" text-anchor="middle">{{ t(episodeLabel) }}</text>
       </svg>
-      <div
-        v-if="tip"
-        class="pf__tip"
-        :style="{ left: `${tip.x}px`, top: `${tip.y}px` }"
-        role="tooltip"
-      >{{ tip.text }}</div>
     </div>
+
+    <p class="pf__detail" aria-live="polite">
+      <template v-if="hovered">
+        <b>{{ hovered.label }}</b>
+        <span class="pf__detail-dash">—</span>{{ hovered.detail }}
+      </template>
+      <span v-else class="pf__detail-idle">{{ t(hint) }}</span>
+    </p>
 
     <figcaption class="pf__cap">
       <p class="pf__foot">{{ t(PF_FOOT) }}</p>
@@ -434,22 +435,19 @@ const running = computed(() => playing.value && !reduced.value)
 .pf__step:hover .pf__chip-t,
 .pf__step:focus-visible .pf__chip-t { fill: #16191d; }
 
-.pf__tip {
-  position: absolute;
-  transform: translate(-50%, calc(-100% - 10px));
-  width: max-content;
-  max-width: 260px;
-  padding: 0.55rem 0.65rem;
-  border: 1px solid #e4e7ea;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(20, 26, 33, 0.1);
+/* the reading line under the figure: fixed height, so hovering never shifts
+   the page */
+.pf__detail {
+  margin: 0.75rem 0 0;
+  min-height: 3.1em;
   font-size: var(--fs-micro);
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--ink-soft);
-  pointer-events: none;
-  z-index: 5;
+  max-width: 78ch;
 }
+.pf__detail b { font-weight: 600; color: var(--ink); }
+.pf__detail-dash { margin: 0 0.4em; color: var(--ink-mute); }
+.pf__detail-idle { color: var(--ink-mute); font-style: italic; }
 .pf__tint { fill: var(--accent, transparent); opacity: 0.11; }
 .pf__chip { fill: #fff; stroke: #e7eaed; stroke-width: 1; }
 .pf__dot { fill: var(--accent, #b4bcc4); }
