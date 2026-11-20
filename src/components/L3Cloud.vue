@@ -254,6 +254,7 @@ let drawn = -1
 let yaw = 0
 let pitch = 0
 let dist = 3
+let pan = 0.1
 let target = new THREE.Vector3()
 const drag = { active: false, x: 0, y: 0, pan: false }
 const refBase = { yaw: 0, pitch: 0, dist: 3 }
@@ -263,16 +264,35 @@ function seed() {
   const [cx, cy, cz] = meta.value.center
   const [fx, fy, fz] = meta.value.forward
   const r = Math.max(meta.value.radius, 0.25)
-  target = new THREE.Vector3(cx, cy - r * 0.16, cz)
+
   /* the capture's own opening view, kept as the reference every candidate
      preset is expressed against */
   const v = new THREE.Vector3(fx * -r * 1.9, fy * -r * 1.9 + r * 0.45, fz * -r * 1.9)
   refBase.yaw = Math.atan2(v.x, v.z)
   refBase.pitch = Math.asin(v.y / v.length())
   refBase.dist = v.length()
-  yaw = refBase.yaw + 0.34
-  pitch = refBase.pitch + 0.02
-  dist = refBase.dist * 0.58
+
+  /* aim at the hands rather than at the room: the work surface is what the
+     figure is about, and the wall reads as backdrop behind it */
+  let hx = 0
+  let hy = 0
+  let hz = 0
+  let n = 0
+  for (const f of meta.value.frames.slice(0, 8)) {
+    for (let i = 0; i < f.hands.length; i += 6) {
+      hx += f.hands[i]
+      hy += f.hands[i + 1]
+      hz += f.hands[i + 2]
+      n++
+    }
+  }
+  if (n) target = new THREE.Vector3(hx / n, hy / n - 0.06, hz / n)
+  else target = new THREE.Vector3(cx, cy - r * 0.16, cz)
+
+  yaw = refBase.yaw + 0.44
+  pitch = refBase.pitch + 0.14
+  dist = 1.3
+  pan = 0.12
   applyCamera()
 }
 
@@ -284,6 +304,9 @@ function applyCamera() {
     target.z + dist * Math.cos(pitch) * Math.cos(yaw),
   )
   camera.lookAt(target)
+  /* a small sideways offset of the camera, which slides the subject left in
+     the frame without turning the view */
+  if (pan) camera.translateX(pan)
 }
 
 function drawCloud(index: number) {
@@ -506,10 +529,11 @@ onMounted(async () => {
 
   /* dev-only handle, used to shoot candidate opening views for review */
   if (import.meta.env.DEV) {
-    ;(window as unknown as Record<string, unknown>).__l3cam = (dYaw: number, dPitch: number, dScale: number) => {
+    ;(window as unknown as Record<string, unknown>).__l3cam = (dYaw: number, dPitch: number, dScale: number, dPan = 0) => {
       yaw = refBase.yaw + dYaw
       pitch = Math.max(-1.4, Math.min(1.4, refBase.pitch + dPitch))
       dist = refBase.dist * dScale
+      pan = dPan
       applyCamera()
       renderer?.render(scene!, camera!)
     }
