@@ -16,9 +16,13 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { FORMAT } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import {
+  AXIS_END_MS,
   FPS,
   FRAME_MS,
+  FRAME_MS_AXIS,
+  laneBracket,
   MF_LANES,
+  WINDOW,
   QUERY_FRAME,
   SPAN_MS,
   WINDOW_FROM,
@@ -32,8 +36,8 @@ import {
 const { t } = useI18n()
 
 /* ---- geometry, in SVG user units ---- */
-const W = 660
-const H = 206
+const W = 736
+const H = 248
 const X0 = 168
 const X1 = 566
 const RAIL_Y = 34
@@ -41,7 +45,8 @@ const LANE_Y0 = 74
 const LANE_GAP = 36
 
 const span = X1 - X0
-const xOf = (ms: number) => X0 + (ms / SPAN_MS) * span
+const xOf = (ms: number) => X0 + (ms / AXIS_END_MS) * span
+const queryX = xOf(SPAN_MS)
 
 const windowFromX = xOf(WINDOW_FROM * SPAN_MS)
 
@@ -51,21 +56,29 @@ const lanes = MF_LANES.map((lane, i) => {
     i,
     lane,
     y: LANE_Y0 + i * LANE_GAP,
-    dots: laneSamples(lane).map((ms) => ({ ms, x: xOf(ms), inWindow: ms > WINDOW_FROM * SPAN_MS + 1e-6 })),
+    dots: laneSamples(lane, AXIS_END_MS).map((ms) => ({ ms, x: xOf(ms), inWindow: ms > SPAN_MS + WINDOW[0] * 1000 && ms <= SPAN_MS + 1e-6 })),
     written,
     rows: laneRows(lane),
     shape: laneShape(lane),
     nearX: xOf(nearestMs(lane)),
+    wrap: laneBracket(lane),
     file: `${lane.key.replace('observation.', 'obs.').replace('.images', '.imgs')}.parquet`,
   }
 })
 
 const RAIL_NAME_X = 96
-const frames = FRAME_MS.map((ms, i) => ({
+const hovered = ref<number | null>(null)
+const hoverNote = computed(() => {
+  const l = hovered.value === null ? null : lanes[hovered.value]
+  return l ? t(l.lane.note) : ''
+})
+
+const frames = FRAME_MS_AXIS.map((ms, i) => ({
   ms,
   x: xOf(ms),
-  /* the query sits on the last frame, so the ticks read n−2, n−1, n */
-  label: i === FRAME_MS.length - 1 ? 'n' : i === FRAME_MS.length - 2 ? 'n−1' : 'n−2',
+  /* the query sits on the frame marked n; earlier and later ticks are numbered
+     from it */
+  label: i === FRAME_MS.length - 1 ? 'n' : i === FRAME_MS.length - 2 ? 'n−1' : i === FRAME_MS.length - 3 ? 'n−2' : `n+${i - (FRAME_MS.length - 1)}`,
 }))
 
 /* ---- animation ---- */
@@ -232,21 +245,38 @@ void inView
           :class="{ 'is-on': queryOn }"
           :x="windowFromX"
           :y="LANE_Y0 - 9"
-          :width="X1 - windowFromX"
+          :width="queryX - windowFromX"
           :height="LANE_Y0 + LANE_GAP * (lanes.length - 1) - LANE_Y0 + 18"
         />
 
-        <g v-for="l in lanes" :key="l.lane.id">
+        <g
+          v-for="l in lanes"
+          :key="l.lane.id"
+          class="mf__lane"
+          @mouseenter="hovered = l.i"
+          @mouseleave="hovered = null"
+        >
+          <rect class="mf__hit" :x="0" :y="l.y - 15" :width="W" height="30" />
           <text class="mf__name" x="0" :y="l.y + 3.5">{{ t(l.lane.label) }}</text>
           <text class="mf__hz mono" :x="RAIL_NAME_X" :y="l.y + 3.5">{{ l.lane.rateLabel }}</text>
+          <rect
+            v-if="l.lane.mode === 'window'"
+            class="mf__lane-band"
+            :class="{ 'is-on': ((queryOn && rowOn(l.i)) || hovered === l.i) }"
+            :x="windowFromX"
+            :y="l.y - 8"
+            :width="X1 - windowFromX"
+            height="16"
+            :fill="l.lane.color"
+          />
           <line class="mf__axis" :x1="X0" :x2="X1" :y1="l.y" :y2="l.y" />
-          <text class="mf__mode-tag mono" :x="X1 + 8" :y="l.y + 3" text-anchor="start">{{ l.lane.mode }}</text>
+          <text class="mf__mode-tag mono" :x="X1 + 6" :y="l.y + 3" text-anchor="start">{{ l.lane.mode }}</text>
 
           <line
             v-for="(d, j) in l.dots"
             :key="j"
             class="mf__sample"
-            :class="{ 'is-in': queryOn && d.inWindow && rowOn(l.i) }"
+            :class="{ 'is-in': (queryOn || hovered === l.i) && d.inWindow && rowOn(l.i) }"
             :x1="d.x"
             :x2="d.x"
             :y1="l.y - l.lane.dotRadius * 2.4"
@@ -255,41 +285,51 @@ void inView
             :opacity="dotOn(d.ms) ? 0.85 : 0.14"
           />
 
+          <!-- nearest: ring the one reading that is taken -->
           <circle
-            v-if="queryOn && l.lane.mode === 'nearest' && rowOn(l.i)"
+            v-if="((queryOn && rowOn(l.i)) || hovered === l.i) && (l.lane.mode === 'nearest' || l.lane.mode === 'video')"
             class="mf__pick"
             :cx="l.nearX"
             :cy="l.y"
-            :r="3.4"
+            :r="4.6"
             :stroke="l.lane.color"
           />
+
+          <!-- interpolate: the two readings either side, joined through n -->
+          <g v-if="((queryOn && rowOn(l.i)) || hovered === l.i) && l.lane.mode === 'interpolate'" class="mf__interp" :stroke="l.lane.color">
+            <line :x1="xOf(l.wrap.lo)" :x2="queryX" :y1="l.y" :y2="l.y" />
+            <line :x1="queryX" :x2="xOf(l.wrap.hi)" :y1="l.y" :y2="l.y" />
+            <circle :cx="xOf(l.wrap.lo)" :cy="l.y" r="3" fill="#fff" :stroke="l.lane.color" />
+            <circle :cx="xOf(l.wrap.hi)" :cy="l.y" r="3" fill="#fff" :stroke="l.lane.color" />
+            <circle :cx="queryX" :cy="l.y" r="3.2" :fill="l.lane.color" stroke="#fff" />
+          </g>
         </g>
 
         <!-- the query instant, drawn through every lane -->
         <g class="mf__query" :class="{ 'is-on': queryOn }">
-          <line :x1="X1" :x2="X1" :y1="RAIL_Y" :y2="LANE_Y0 + LANE_GAP * (lanes.length - 1) + 12" />
-          <text :x="X1 - 5" :y="RAIL_Y - 13" text-anchor="end">{{ t(FORMAT.queryLabel) }}</text>
+          <line :x1="queryX" :x2="queryX" :y1="RAIL_Y" :y2="LANE_Y0 + LANE_GAP * (lanes.length - 1) + 12" />
+          <text :x="queryX - 5" :y="RAIL_Y - 13" text-anchor="end">{{ t(FORMAT.queryLabel) }}</text>
         </g>
 
         <!-- independent clocks: one bracket over the four lanes -->
         <path
           class="mf__brace"
-          :d="`M ${X1 + 42} ${LANE_Y0 - 9} q 7 0 7 7 V ${LANE_Y0 + LANE_GAP * (lanes.length - 1) + 3} q 0 7 -7 7`"
+          :d="`M ${X1 + 74} ${LANE_Y0 - 9} q 8 0 8 8 V ${LANE_Y0 + LANE_GAP * (lanes.length - 1) + 1} q 0 8 -8 8`"
         />
         <text
           class="mf__brace-label mono"
-          :x="X1 + 56"
+          :x="X1 + 92"
           :y="(LANE_Y0 + LANE_Y0 + LANE_GAP * (lanes.length - 1)) / 2"
-          :transform="`rotate(90 ${X1 + 56} ${(LANE_Y0 + LANE_Y0 + LANE_GAP * (lanes.length - 1)) / 2})`"
+          :transform="`rotate(90 ${X1 + 92} ${(LANE_Y0 + LANE_Y0 + LANE_GAP * (lanes.length - 1)) / 2})`"
           text-anchor="middle"
         >independent clocks</text>
       </svg>
 
+      <p class="mf__hint mf__hint--hover" aria-live="polite">{{ hoverNote || t(FORMAT.readHint) }}</p>
       <p class="mf__hint">{{ side === 'write' ? t(FORMAT.writeHint) : t(FORMAT.readHint) }}</p>
       <p class="mf__hint mf__hint--cap">{{ t(FORMAT.episodeNote) }}</p>
     </div>
 
-    <!-- everything that is not a timestamp: shapes, rows, files, modes -->
   </figure>
 </template>
 
@@ -404,7 +444,7 @@ void inView
 
 /* ---- svg ---- */
 .mf__svg { width: 100%; height: auto; display: block; }
-.mf__rail-label { font-size: 8.6px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); }
+.mf__rail-label { font-size: 8.8px; fill: #2b323a; font-weight: 400; font-family: var(--ff-sans); }
 .mf__rail-sub { display: none; }
 .mf__rail { stroke: var(--line-strong); stroke-width: 1.4; }
 .mf__tick { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 3; transition: stroke var(--dur) var(--ease); }
@@ -414,9 +454,9 @@ void inView
 .mf__band { fill: var(--c-amber); opacity: 0; transition: opacity 320ms var(--ease); }
 .mf__band.is-on { opacity: 0.1; }
 
-.mf__name { font-size: 8.6px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); letter-spacing: -0.005em; }
+.mf__name { font-size: 8.8px; fill: #2b323a; font-weight: 400; font-family: var(--ff-sans); letter-spacing: 0; }
 .mf__hz { font-size: 7.6px; fill: #6d747c; }
-.mf__mode-tag { font-size: 7.2px; fill: #8b929a; letter-spacing: 0.02em; }
+.mf__mode-tag { font-size: 7px; letter-spacing: 0.04em; fill: #8b929a; letter-spacing: 0.02em; }
 .mf__frame { font-size: 8.4px; fill: #16191d; }
 .mf__sample { stroke-width: 1; }
 .mf__sample.is-in { stroke-width: 1.2; }
@@ -493,6 +533,22 @@ void inView
 .mf__num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
 .mf__notes { margin: 0.5rem 0 0; }
 .mf__note { display: block; margin-top: 0.32rem; color: var(--ink-mute); line-height: 1.5; }
+.mf__hint--hover {
+  min-height: 1.9em;
+  margin-top: 0.7rem;
+  color: var(--ink);
+}
+.mf__note--hover {
+  min-height: 1.9em;
+  margin-top: 0.65rem;
+  color: var(--ink-soft);
+}
+.mf__lane { cursor: default; }
+.mf__hit { fill: transparent; }
+.mf__lane-band { opacity: 0; transition: opacity 260ms var(--ease); }
+.mf__lane-band.is-on { opacity: 0.14; }
+.mf__interp line { stroke-width: 1; stroke-dasharray: 2 2; opacity: 0.8; }
+.mf__interp circle { stroke-width: 1; }
 
 .mf__subhead {
   font-size: var(--fs-tick);

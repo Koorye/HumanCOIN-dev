@@ -23,6 +23,11 @@ export const EPISODE_SECONDS = EPISODE_FRAMES / FPS
 export const QUERY_SECONDS = QUERY_FRAME / FPS
 /** Width of the drawn span, in milliseconds. */
 export const SPAN_MS = ((QUERY_FRAME - FIRST_FRAME) / FPS) * 1000
+/** Frames drawn past the query, so the axis carries samples ahead of n. */
+export const TAIL_FRAMES = 3
+/** Right edge of the drawn axis, in milliseconds. */
+export const AXIS_END_MS = SPAN_MS + (TAIL_FRAMES * 1000) / FPS
+
 /** Read window, in seconds: everything in `(t - 1/30, t]`. */
 export const WINDOW: [number, number] = [-1 / FPS, 0]
 /** Where the read window opens, as a fraction of the drawn span. */
@@ -104,6 +109,23 @@ export const MF_LANES: MfLane[] = [
     },
   },
   {
+    id: 'hand',
+    key: 'observation.hand_pose',
+    label: { en: 'Finger pose', zh: '手指姿态' },
+    hz: 200,
+    rateLabel: '200 Hz',
+    color: 'var(--c-teal)',
+    mode: 'interpolate',
+    startMs: 0,
+    periodS: periodS(200),
+    dotRadius: 2.6,
+    dims: 48,
+    note: {
+      en: 'interpolate: the readings either side of the frame are blended to the frame instant, so no reading is dropped and none is duplicated.',
+      zh: 'interpolate：帧时刻前后的两条读数按时间比例混合到该时刻，既不丢点也不重复。',
+    },
+  },
+  {
     id: 'rgb',
     key: 'observation.images.head_rgb',
     label: { en: 'Head camera', zh: '头部相机' },
@@ -123,14 +145,26 @@ export const MF_LANES: MfLane[] = [
 ]
 
 /** Sample times for one feature, in ms from the left edge of the drawn span. */
-export function laneSamples(lane: MfLane): number[] {
+export function laneSamples(lane: MfLane, untilMs = SPAN_MS): number[] {
   const out: number[] = []
   for (let i = 0; ; i++) {
     const ms = lane.startMs + i * lane.periodS * 1000
-    if (ms > SPAN_MS + 1e-6) break
+    if (ms > untilMs + 1e-6) break
     out.push(ms)
   }
   return out
+}
+
+/** The two readings an interpolating read blends across the query instant. */
+export function laneBracket(lane: MfLane): { lo: number; hi: number } {
+  const samples = laneSamples(lane, AXIS_END_MS)
+  let lo = -1
+  let hi = Number.POSITIVE_INFINITY
+  for (const ms of samples) {
+    if (ms <= SPAN_MS + 1e-6) lo = Math.max(lo, ms)
+    else hi = Math.min(hi, ms)
+  }
+  return { lo, hi }
 }
 
 /** Sample times inside the read window at the query frame. */
@@ -167,6 +201,12 @@ export function laneFileRows(lane: MfLane): number {
 /** Master-clock frame timestamps inside the drawn span, in ms. */
 export const FRAME_MS = Array.from(
   { length: QUERY_FRAME - FIRST_FRAME + 1 },
+  (_, i) => (i * 1000) / FPS,
+)
+
+/** The same, carried past the query so the axis does not stop at n. */
+export const FRAME_MS_AXIS = Array.from(
+  { length: QUERY_FRAME - FIRST_FRAME + 1 + TAIL_FRAMES },
   (_, i) => (i * 1000) / FPS,
 )
 
