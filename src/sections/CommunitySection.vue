@@ -72,6 +72,8 @@ const nameOf = (id: string) => NAMES[id] ?? { en: id, zh: id }
  * more room and the row keeps the same optical weight.
  */
 const SEALS = new Set(['pku', 'ustc', 'thu', 'fudan', 'beihang'])
+/** The seal that closes the university band; the wall breaks the line after it. */
+const LAST_UNIVERSITY = 'beihang'
 const lead = computed(() => partners.value.find((p) => p.id === LEAD_ID) ?? null)
 const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
 </script>
@@ -95,7 +97,8 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
         </a>
 
         <ul class="logos">
-          <li v-for="p in rest" :key="p.id">
+          <template v-for="p in rest" :key="p.id">
+          <li>
             <component
               :is="p.url ? 'a' : 'div'"
               class="logos__item"
@@ -115,6 +118,10 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
               <span class="logos__name">{{ p.src ? (isZh ? nameOf(p.id).zh : nameOf(p.id).en) : nameOf(p.id).en }}</span>
             </component>
           </li>
+          <!-- The university row is its own band: the five seals take the first
+               line, and the companies start again below them. -->
+          <li v-if="p.id === LAST_UNIVERSITY" class="logos__break" aria-hidden="true" />
+          </template>
         </ul>
       </div>
     </div>
@@ -152,10 +159,11 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   justify-content: center;
   gap: 0.75rem;
 }
-/* Five to a row, sized by the row rather than by how many partners load. The
+/* Six to a row, sized by the row rather than by how many partners load. The
    wall ends on a short row, and centring it closes the block instead of
    leaving a hole at the right edge. */
-.logos li { display: grid; width: calc((100% - 3rem) / 5); }
+.logos li { display: grid; width: calc((100% - 3.75rem) / 6); }
+.logos li.logos__break { flex: 0 0 100%; width: 100%; height: 0; }
 @media (max-width: 980px) { .logos li { width: calc((100% - 2.25rem) / 4); } }
 @media (max-width: 700px) { .logos li { width: calc((100% - 1.5rem) / 3); } }
 @media (max-width: 460px) { .logos li { width: calc((100% - 0.75rem) / 2); } }
@@ -166,20 +174,20 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   align-content: center;
   gap: 0.5rem;
   width: 100%;
-  height: 8.4rem;
+  height: 7.9rem;
   padding: 0.7rem 0.6rem 0.6rem;
   border-radius: var(--r-sm);
   transition: background var(--dur) var(--ease);
 }
 .logos__item:hover { background: var(--surface-2); }
 .logos img {
-  max-height: 3rem;
+  max-height: 2.6rem;
   max-width: 100%;
   width: auto;
   object-fit: contain;
   transition: transform var(--dur) var(--ease);
 }
-.logos img.is-seal { max-height: 5.6rem; }
+.logos img.is-seal { max-height: 4.3rem; }
 .logos__item:hover img { transform: scale(1.04); }
 /* Companies whose mark has not been supplied yet are set as a wordmark, so the
    wall keeps one cell size and no placeholder graphic is invented. */
