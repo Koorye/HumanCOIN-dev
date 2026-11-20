@@ -1,100 +1,120 @@
 <script setup lang="ts">
 /**
- * The processing framework, as one connected figure.
+ * The processing pipeline, after Figure 7 of the report.
  *
- * Seven pathways run left to right: what the sensor emits, two per-modality
- * processing modules, then a single shared contract — temporal calibration,
- * spatial calibration, a quality gate and query fusion — before an output field
- * exists.
+ * Five chains, one per physics: streams enter the group that handles their
+ * noise (synchronization and calibration, geometry and motion, gaze,
+ * electrophysiology), annotation consumes the rest last, and everything meets
+ * on one clock before an episode is written. Each chain is a fixed sequence, so
+ * the drawing is a column of steps rather than a free-form graph.
  *
- * That contract is drawn once, not once per lane, because it is one contract.
- * A lane that fails the gate leaves on the side branch instead of being
- * silently averaged into the rest, and the output boxes sit downstream of the
- * gate so the drawing itself says that nothing reaches a field unchecked.
- *
- * Geometry is fixed in user units; the figure is wider than the text column, so
- * it scrolls sideways on narrow screens rather than shrinking its labels below
- * the reading floor.
+ * The skin follows the reference architecture figure: white cards on a hairline
+ * border, muted secondary type, dashed connectors — no fills, no colour coding,
+ * nothing that competes with the labels.
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { PIPELINE } from '@/content'
+import type { Bi } from '@/content'
 import { useI18n } from '@/composables/useI18n'
-import { PF_FOOT, PF_LANES, PF_NODES, PF_PROV, PF_STAGES } from '@/data/pipelineFlow'
+import { PF_FOOT, PF_LANES, PF_PROV } from '@/data/pipelineFlow'
 
 const { t } = useI18n()
 
-const W = 1188
-const H = 852
+/* ---- geometry, in user units ---- */
+const W = 1220
+const COL_W = 190
+const PITCH = 228
+const X0 = 10
+const HEAD_Y = 34
+const HEAD_H = 66
+const STEP_Y = 128
+const STEP_H = 34
+const STEP_GAP = 72
+const RULE_Y = 356
+const EP_X = 1136
+const EP_W = 74
+const H = 410
 
-/* ---- columns: raw | module A | module B | bus | contract | reject | bus | fields ---- */
-const RAW_X = 12
-const RAW_END = 170
-const A_X = 186
-const A_W = 170
-const B_X = 372
-const B_W = 170
-const B_END = B_X + B_W
-const BUS1 = 564
-const CH_X = 586
-const CH_W = 190
-const CH_END = CH_X + CH_W
-const REJ_X = 810
-const REJ_W = 142
-const BUS2 = 968
-const OUT_X = 990
-const OUT_W = 180
-
-/* ---- rows ---- */
-const LANE_Y0 = 130
-const LANE_GAP = 88
-const LANE_H = 74
-const CH_Y0 = 130
-const CH_GAP = 150
-const CH_H = 100
-const REJ_H = 58
-
-const HEAD_RULE = 92
-const LEGEND_Y = 114
-/** Dashed key sits after the M/E/R/A legend line, in the same reading row. */
-const LEG_KEY_X = 640
-const BUS_TOP = 140
-
-const lanes = PF_LANES.map((lane, i) => {
-  const y = LANE_Y0 + i * LANE_GAP
-  return { lane, i, y, mid: y + LANE_H / 2 }
-})
-
-const chain = PF_NODES.filter((n) => !n.branch).map((node, i) => {
-  const y = CH_Y0 + i * CH_GAP
-  return { node, i, y, mid: y + CH_H / 2 }
-})
-const reject = PF_NODES.find((n) => n.branch)!
-/** Hung off the quality gate, so rejection is visibly a gate outcome. */
-const qc = chain.find((c) => c.node.id === 'qc')!
-const last = chain[chain.length - 1]
-const rejY = qc.mid - REJ_H / 2
-
-const BUS_BOTTOM = LANE_Y0 + (lanes.length - 1) * LANE_GAP + LANE_H + 8
-const FOOT_RULE = BUS_BOTTOM + 32
-
-const stageX = [RAW_X, A_X, CH_X, OUT_X]
-
-/** The shared contract is one layer, so it is drawn inside one pale panel. */
-const panelY = chain[0].y - 16
-const panelH = chain[chain.length - 1].y + CH_H + 16 - panelY
-
-/** Per-lane glyph, drawn in a 22×22 box at the lane origin. */
-const GLYPHS: Record<string, string> = {
-  geometry: 'M2 3h13l4 4v12H2z M11 3v5h5 M4 16l4-4 3 3 3-4 4 5',
-  gaze: 'M0.5 11s4.4-7 10.5-7 10.5 7 10.5 7-4.4 7-10.5 7S0.5 11 0.5 11Z M11 11a2.8 2.8 0 1 0 .01 0Z',
-  hand: 'M6.5 20.5 3.5 15c-1-2.2 1-3.8 2.8-2.2L7.5 14V6.2c0-2.2 2.8-2.2 2.8 0v6-8.4c0-2.2 2.8-2.2 2.8 0v8.4-6.2c0-2.2 2.8-2.2 2.8 0v7.2c0 4.2-2.6 7.3-5.6 7.3Z',
-  eeg: 'M8.2 6.4c-1-3-4.8-2.6-5.4.4-2 .5-2.1 4.6-.2 6.2-1.4 2.4.2 5.9 2.6 5.9.6 3 4.4 3 5 .5V6.4Z M13.8 6.4c1-3 4.8-2.6 5.4.4 2 .5 2.1 4.6.2 6.2 1.4 2.4-.2 5.9-2.6 5.9-.6 3-4.4 3-5 .5V6.4Z M4 6.2c0 2 1.4 2.7 2.7 2.7',
-  emg: 'M2 14.6l3.8-7.8 4 2-1.4 3.4c2.7-2.8 6-2.1 8 0 2 2.7.7 6-2.1 7.3-4.8 2-10-.8-12.3-2.8Z M6.6 6.8 5.2 3.8l2.6-1.4L11.2 6l-.7 2.7',
-  audio: 'M7.6 2.6h5.4v11.6a3.5 3.5 0 1 1-2.1-3.2V4.8H7.6Z M15.4 11.6a5 5 0 0 1-6.4 4.7',
-  semantic: 'M4 2h9.6l4.4 4.4v13.6H4Z M13.6 2v4.8h4.4 M7.2 10.8h7 M7.2 14.2h7 M7.2 17.6h4',
+interface Group {
+  id: string
+  icon: string
+  inputs: Bi
+  title: Bi
+  steps: Bi[]
 }
 
-/* ---- transport ---- */
+const ICONS: Record<string, string> = {
+  camera: 'M2.5 6h3L7 4h6l1.5 2h3v9h-15z M10 8.2a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2Z',
+  depth: 'M10 2.6 17 6.4v7.2L10 17.4 3 13.6V6.4z M3 6.4 10 10.2l7-3.8 M10 10.2v7.2',
+  eye: 'M1 10s3.7-5.4 9-5.4S19 10 19 10s-3.7 5.4-9 5.4S1 10 1 10Z M10 10a2.4 2.4 0 1 0 .01 0Z',
+  wave: 'M1 10h2.6l2-5.2 3 10.4 2.8-8.2 1.8 3h5.8',
+  video: 'M2.5 5.5h10.5v9H2.5z M13 9l4.5-2.6v7.2L13 11z',
+  doc: 'M4 2.5h8l4 4v11H4z M12 2.5v4.2h4.2 M7 10.5h6.5 M7 13.6h6.5',
+}
+
+const GROUPS: Group[] = [
+  {
+    id: 'sync',
+    icon: 'camera',
+    inputs: { en: 'head RGB · wrist RGB', zh: '头部 RGB · 腕部 RGB' },
+    title: { en: 'Synchronize + calibrate', zh: '同步与标定' },
+    steps: [
+      { en: 'clock offsets', zh: '时钟偏移' },
+      { en: 'intrinsics', zh: '相机内参' },
+      { en: 'eye calibration', zh: '眼动标定' },
+    ],
+  },
+  {
+    id: 'geometry',
+    icon: 'depth',
+    inputs: { en: 'depth · 6-DoF pose', zh: '深度 · 6-DoF 位姿' },
+    title: { en: 'Geometry + motion', zh: '几何与运动' },
+    steps: [
+      { en: 'FoundationStereo', zh: 'FoundationStereo' },
+      { en: 'point cloud', zh: '点云' },
+      { en: '6-DoF pose · hand reconstruction', zh: '6-DoF 位姿 · 手部重建' },
+    ],
+  },
+  {
+    id: 'gaze',
+    icon: 'eye',
+    inputs: { en: 'gaze', zh: '注视' },
+    title: { en: 'Gaze', zh: '注视' },
+    steps: [
+      { en: 'L3 acquire', zh: 'L3 采集' },
+      { en: 'L1/L2 EgoM2P', zh: 'L1/L2 EgoM2P' },
+    ],
+  },
+  {
+    id: 'ephys',
+    icon: 'wave',
+    inputs: { en: 'EMG · EEG', zh: '肌电 · 脑电' },
+    title: { en: 'Electrophysiology', zh: '电生理' },
+    steps: [
+      { en: 'band-pass', zh: '带通滤波' },
+      { en: 'notch', zh: '陷波' },
+      { en: 'bad-channel interpolation', zh: '坏道插值' },
+    ],
+  },
+  {
+    id: 'annot',
+    icon: 'video',
+    inputs: { en: 'video', zh: '视频' },
+    title: { en: 'Annotation', zh: '标注' },
+    steps: [
+      { en: 'action phases', zh: '动作阶段' },
+      { en: 'subgoals + events', zh: '子目标与事件' },
+      { en: 'human review', zh: '人工复核' },
+    ],
+  },
+]
+
+const cols = GROUPS.map((g, i) => ({ g, x: X0 + i * PITCH, i }))
+
+const oneClock: Bi = { en: 'one clock', zh: '统一时钟' }
+const episodeLabel: Bi = { en: 'episode', zh: '片段' }
+
+/* ---- transport: the flow pauses when the figure leaves the viewport ---- */
 const playing = ref(false)
 const reduced = ref(false)
 const root = ref<HTMLElement | null>(null)
@@ -158,195 +178,65 @@ const running = computed(() => playing.value && !reduced.value)
         <title id="pf-title">{{ t(PIPELINE.figTitle) }}</title>
         <desc id="pf-desc">{{ t(PIPELINE.figDesc) }}</desc>
         <defs>
-          <marker
-            id="pf-arrow"
-            viewBox="0 0 8 8"
-            refX="7"
-            refY="4"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M0 0L8 4L0 8Z" fill="#a7aeb6" />
-          </marker>
-          <marker
-            id="pf-arrow-rej"
-            viewBox="0 0 8 8"
-            refX="7"
-            refY="4"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M0 0L8 4L0 8Z" fill="#c2b0a8" />
+          <marker id="pf-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0L8 4L0 8Z" fill="#9aa1a9" />
           </marker>
         </defs>
 
-        <!-- stage headers -->
-        <g v-for="(s, i) in PF_STAGES" :key="s.n">
-          <text class="pf__stage-n" :x="stageX[i]" y="30">{{ s.n }}</text>
-          <text class="pf__stage-t" :x="stageX[i]" y="55">{{ t(s.title) }}</text>
-          <text class="pf__stage-s" :x="stageX[i]" y="74">{{ t(s.sub) }}</text>
-        </g>
-        <path class="pf__rule" :d="`M${RAW_X} ${HEAD_RULE}H${W - 14}`" />
+        <!-- one column per chain -->
+        <g v-for="c in cols" :key="c.g.id" class="pf__col">
+          <!-- what arrives -->
+          <text class="pf__input" :x="c.x" :y="18">{{ t(c.g.inputs) }}</text>
 
-        <!-- legend -->
-        <text class="pf__legend" :x="RAW_X" :y="LEGEND_Y">{{ t(PIPELINE.figLegend) }}</text>
-        <path class="pf__key" :d="`M${LEG_KEY_X} ${LEGEND_Y - 4}h30`" />
-        <text class="pf__legend" :x="LEG_KEY_X + 40" :y="LEGEND_Y">
-          {{ t(PIPELINE.figKeyDashed) }}
-        </text>
-
-        <!-- the two buses: pre-contract, and post-contract -->
-        <path class="pf__bus" :d="`M${BUS1} ${BUS_TOP}V${BUS_BOTTOM}`" />
-        <path class="pf__bus pf__bus--live" :d="`M${BUS2} ${BUS_TOP}V${BUS_BOTTOM}`" />
-
-        <!-- lanes -->
-        <g v-for="l in lanes" :key="l.lane.id" class="pf__lane" :class="`is-${l.lane.tone}`">
-          <path class="pf__lanerule" :d="`M${RAW_X} ${l.y + LANE_H + 8}H${B_END}`" />
-
-          <g class="pf__glyph" :transform="`translate(${RAW_X} ${l.y + 2})`" aria-hidden="true">
-            <path :d="GLYPHS[l.lane.id]" />
+          <!-- the chain's header -->
+          <rect class="pf__card" :x="c.x" :y="HEAD_Y" :width="COL_W" :height="HEAD_H" rx="9" />
+          <g class="pf__glyph" :transform="`translate(${c.x + 14} ${HEAD_Y + 13})`" aria-hidden="true">
+            <path :d="ICONS[c.g.icon]" />
           </g>
-          <text class="pf__lane-t" :x="RAW_X + 32" :y="l.y + 16">
-            {{ String(l.i + 1).padStart(2, '0') }} / {{ t(l.lane.title) }}
-          </text>
-          <text
-            v-for="(r, j) in l.lane.raw"
-            :key="j"
-            class="pf__raw"
-            :x="RAW_X"
-            :y="l.y + 42 + j * 16"
-          >
-            {{ r }}
-          </text>
+          <text class="pf__head" :x="c.x + 14" :y="HEAD_Y + 56">{{ t(c.g.title) }}</text>
 
-          <path class="pf__arrow" :d="`M${RAW_END} ${l.mid - 5}H${A_X - 6}`" />
-
-          <g class="pf__mod">
-            <rect :x="A_X" :y="l.y" :width="A_W" :height="LANE_H" rx="9" />
-            <text class="pf__mod-t" :x="A_X + 12" :y="l.y + 20">{{ t(l.lane.a.title) }}</text>
-            <text
-              v-for="(v, j) in l.lane.a.lines"
-              :key="j"
-              class="pf__mod-l"
-              :x="A_X + 12"
-              :y="l.y + 40 + j * 16"
-            >
-              {{ v }}
-            </text>
+          <!-- the steps, in the order they run -->
+          <path class="pf__link" :d="`M${c.x + COL_W / 2} ${HEAD_Y + HEAD_H + 2}V${STEP_Y - 6}`" />
+          <g v-for="(s, k) in c.g.steps" :key="k" class="pf__step">
+            <rect class="pf__chip" :x="c.x + 16" :y="STEP_Y + k * STEP_GAP" :width="COL_W - 32" :height="STEP_H" rx="8" />
+            <circle class="pf__dot" :cx="c.x + 30" :cy="STEP_Y + k * STEP_GAP + STEP_H / 2" r="2.4" />
+            <text class="pf__chip-t" :x="c.x + 40" :y="STEP_Y + k * STEP_GAP + STEP_H / 2 + 3.6">{{ t(s) }}</text>
+            <path
+              v-if="k < c.g.steps.length - 1"
+              class="pf__link pf__link--live"
+              :d="`M${c.x + COL_W / 2} ${STEP_Y + k * STEP_GAP + STEP_H + 2}V${STEP_Y + (k + 1) * STEP_GAP - 6}`"
+              :style="{ animationDelay: `${k * 0.18}s` }"
+            />
           </g>
 
-          <path class="pf__arrow" :d="`M${A_X + A_W + 6} ${l.mid - 5}H${B_X - 6}`" />
-
-          <g class="pf__mod">
-            <rect :x="B_X" :y="l.y" :width="B_W" :height="LANE_H" rx="9" />
-            <text class="pf__mod-t" :x="B_X + 12" :y="l.y + 20">{{ t(l.lane.b.title) }}</text>
-            <text
-              v-for="(v, j) in l.lane.b.lines"
-              :key="j"
-              class="pf__mod-l"
-              :x="B_X + 12"
-              :y="l.y + 40 + j * 16"
-            >
-              {{ v }}
-            </text>
-          </g>
-
-          <path class="pf__arrow" :d="`M${B_END + 6} ${l.mid - 5}H${BUS1 - 4}`" />
-          <circle class="pf__junction" :cx="BUS1" :cy="l.mid - 5" r="3" />
-
-          <!-- fields are fed from the post-gate bus, so nothing skips the contract -->
+          <!-- every chain lands on the shared clock -->
           <path
-            class="pf__arrow pf__arrow--live"
-            :d="`M${BUS2 + 6} ${l.mid - 5}H${OUT_X - 6}`"
-            :style="{ animationDelay: `${l.i * 0.24}s` }"
-          />
-          <g class="pf__out">
-            <rect :x="OUT_X" :y="l.y" :width="OUT_W" :height="LANE_H" rx="9" />
-            <text class="pf__out-t" :x="OUT_X + 12" :y="l.y + 20">
-              {{ t(PIPELINE.fields) }}
-            </text>
-            <text
-              v-for="(v, j) in l.lane.out"
-              :key="j"
-              class="pf__out-l"
-              :x="OUT_X + 12"
-              :y="l.y + 40 + j * 16"
-            >
-              {{ v }}
-            </text>
-          </g>
-        </g>
-
-        <!-- lanes → the shared contract -->
-        <path class="pf__arrow" :d="`M${BUS1 + 6} ${lanes[0].mid - 5}H${CH_X - 6}`" />
-
-        <!-- the shared contract, drawn once, inside one pale panel -->
-        <rect class="pf__panel" :x="CH_X - 16" :y="panelY" :width="CH_W + 32" :height="panelH" rx="14" />
-        <g v-for="(c, i) in chain" :key="c.node.id" class="pf__chain">
-          <rect :x="CH_X" :y="c.y" :width="CH_W" :height="CH_H" rx="9" />
-          <text class="pf__chain-t" :x="CH_X + 12" :y="c.y + 21">{{ t(c.node.title) }}</text>
-          <text
-            v-for="(v, j) in c.node.lines"
-            :key="j"
-            class="pf__chain-l"
-            :x="CH_X + 12"
-            :y="c.y + 41 + j * 16"
-          >
-            {{ v }}
-          </text>
-          <path
-            v-if="i < chain.length - 1"
-            class="pf__arrow pf__arrow--live"
-            :d="`M${CH_X + CH_W / 2} ${c.y + CH_H + 3}V${c.y + CH_GAP - 4}`"
-            :style="{ animationDelay: `${i * 0.32}s` }"
+            class="pf__link pf__link--drop"
+            :d="`M${c.x + COL_W / 2} ${STEP_Y + (c.g.steps.length - 1) * STEP_GAP + STEP_H + 2}V${RULE_Y - 8}`"
           />
         </g>
 
-        <!-- what the gate rejects leaves here, instead of being averaged in -->
-        <path
-          class="pf__arrow pf__arrow--rej"
-          :d="`M${CH_END + 6} ${qc.mid - 5}H${REJ_X - 6}`"
-        />
-        <g class="pf__chain pf__chain--rej">
-          <rect :x="REJ_X" :y="rejY" :width="REJ_W" :height="REJ_H" rx="9" />
-          <text class="pf__chain-t" :x="REJ_X + 12" :y="rejY + 20">
-            {{ t(reject.title) }}
-          </text>
-          <text class="pf__chain-l" :x="REJ_X + 12" :y="rejY + 36">{{ reject.lines[0] }}</text>
+        <!-- one clock, then the episode -->
+        <path class="pf__rule" :d="`M${X0} ${RULE_Y}H${EP_X - 8}`" />
+        <text class="pf__note" :x="X0" :y="RULE_Y + 22">{{ t(oneClock) }}</text>
+        <path class="pf__rule-arrow" :d="`M${EP_X - 14} ${RULE_Y - 4}l6 4-6 4`" />
+
+        <rect class="pf__card" :x="EP_X" :y="RULE_Y - 34" :width="EP_W" :height="68" rx="9" />
+        <g class="pf__glyph" :transform="`translate(${EP_X + (EP_W - 20) / 2} ${RULE_Y - 24})`" aria-hidden="true">
+          <path :d="ICONS.doc" />
         </g>
-
-        <!-- the contract's own output, onto the post-gate bus -->
-        <path
-          class="pf__arrow pf__arrow--live"
-          :d="`M${CH_END + 6} ${last.mid - 5}H${BUS2 - 4}`"
-        />
-
-        <!-- provenance footer -->
-        <path class="pf__rule" :d="`M${RAW_X} ${FOOT_RULE}H${W - 14}`" />
-        <text class="pf__foot-t" :x="RAW_X" :y="FOOT_RULE + 26">
-          {{ t(PIPELINE.provTitle) }}
-        </text>
-        <text
-          v-for="(p, i) in PF_PROV"
-          :key="i"
-          class="pf__foot-l"
-          :x="RAW_X"
-          :y="FOOT_RULE + 48 + i * 19"
-        >
-          {{ p }}
-        </text>
+        <text class="pf__ep" :x="EP_X + EP_W / 2" :y="RULE_Y + 24" text-anchor="middle">{{ t(episodeLabel) }}</text>
       </svg>
     </div>
 
     <figcaption class="pf__cap">
       <p class="pf__foot">{{ t(PF_FOOT) }}</p>
+      <p v-for="(line, i) in PF_PROV" :key="i" class="pf__prov mono">{{ line }}</p>
     </figcaption>
 
-    <!-- what each pathway contributes, in prose -->
+    <!-- what each chain contributes, in prose -->
     <div class="pf__lanes">
-      <article v-for="l in PF_LANES" :key="l.id" class="pf__lanecard" :class="`is-${l.tone}`">
+      <article v-for="l in PF_LANES" :key="l.id" class="pf__lanecard">
         <h4 class="pf__lanecard-t">{{ t(l.title) }}</h4>
         <p class="pf__lanecard-p">{{ t(l.prose) }}</p>
         <p v-if="l.method" class="pf__lanecard-m mono">{{ l.method }}</p>
@@ -393,79 +283,46 @@ const running = computed(() => playing.value && !reduced.value)
   overscroll-behavior-x: contain;
   border-top: 1px solid var(--line-strong);
   border-bottom: 1px solid var(--line-strong);
-  background: var(--paper);
+  background: #fff;
 }
 .pf__scroll:focus-visible { outline: var(--focus); outline-offset: 2px; }
 .pf__svg { display: block; width: 100%; min-width: 1080px; height: auto; }
 
-/* text */
 .pf__svg text {
   font-family: var(--ff-sans);
   fill: #7f868f;
   font-size: 11px;
-  letter-spacing: 0.005em;
 }
-.pf__stage-n { font-size: 10.5px; font-weight: 600; fill: #a6acb4; letter-spacing: 0.16em; }
-.pf__stage-t { font-size: 15px; font-weight: 600; fill: #16191d; letter-spacing: -0.012em; }
-.pf__stage-s { font-size: 11px; fill: #8c939b; }
-.pf__legend { font-size: 11px; fill: #8c939b; }
-.pf__lane-t { font-size: 12.5px; font-weight: 600; fill: #1b1f24; }
-.pf__raw { font-size: 10.8px; fill: #8c939b; }
-.pf__mod-t { font-size: 12px; font-weight: 600; fill: #16191d; }
-.pf__mod-l, .pf__out-l, .pf__chain-l { font-size: 10.8px; fill: #7f868f; }
-.pf__out-t, .pf__chain-t { font-size: 12px; font-weight: 600; fill: #16191d; }
-.pf__foot-t { font-size: 11.5px; font-weight: 600; fill: #16191d; letter-spacing: 0.06em; }
-.pf__foot-l { font-size: 10.8px; fill: #8c939b; }
+.pf__input { font-size: 10.5px; fill: #9aa1a9; }
+.pf__head { font-size: 12.5px; font-weight: 600; fill: #16191d; letter-spacing: -0.008em; }
+.pf__chip-t { font-size: 11px; fill: #596069; }
+.pf__note { font-size: 10.5px; fill: #9aa1a9; letter-spacing: 0.04em; }
+.pf__ep { font-size: 11px; font-weight: 600; fill: #16191d; }
 
-/* strokes */
-.pf__rule { fill: none; stroke: #e8ebee; stroke-width: 1; }
-.pf__lanerule { fill: none; stroke: #f1f3f5; stroke-width: 1; }
-.pf__key { fill: none; stroke: #b9c0c7; stroke-width: 1; stroke-dasharray: 4 4; }
-.pf__arrow { fill: none; stroke: #ccd2d8; stroke-width: 1; stroke-linejoin: round; stroke-dasharray: 4 4; marker-end: url(#pf-arrow); }
-.pf__arrow--rej { stroke: #c8b6ae; stroke-dasharray: 3 4; marker-end: url(#pf-arrow-rej); }
-.pf__bus { fill: none; stroke: #dfe3e7; stroke-width: 1.2; }
-.pf__bus--live { stroke: #cfd6dc; }
-.pf__junction { fill: #c2c9d0; }
-
-/* lane accent, so a row reads as one pathway */
-.pf__lane.is-blue { --pf: var(--c-blue); }
-.pf__lane.is-teal { --pf: var(--c-teal); }
-.pf__lane.is-rose { --pf: var(--c-rose); }
-.pf__lane.is-violet { --pf: var(--c-violet); }
-.pf__lane.is-amber { --pf: var(--c-amber); }
-.pf__lane.is-slate { --pf: var(--c-slate); }
-.pf__lane.is-ink { --pf: var(--ink-soft); }
-
-.pf__lane .pf__lane-t { fill: #1b1f24; }
+.pf__card { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
+.pf__chip { fill: #fff; stroke: #e7eaed; stroke-width: 1; }
+.pf__dot { fill: #b4bcc4; }
 .pf__glyph path {
   fill: none;
   stroke: #9aa3ad;
-  stroke-width: 1.4;
+  stroke-width: 1.35;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.pf__mod rect { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
-.pf__chain rect { fill: #fff; stroke: #dfe3e7; stroke-width: 1; }
-.pf__panel { fill: #f7f8f9; stroke: none; }
-.pf__chain--rej rect { fill: #fbfbfa; stroke: #d9cfc9; stroke-width: 1; }
-.pf__out rect { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
+.pf__link { fill: none; stroke: #ccd2d8; stroke-width: 1; stroke-dasharray: 4 4; marker-end: url(#pf-arrow); }
+.pf__link--drop { marker-end: none; }
+.pf__rule { fill: none; stroke: #a8b0b8; stroke-width: 1.2; }
+.pf__rule-arrow { fill: none; stroke: #9aa1a9; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ---- flow motion: dash travel along the post-contract connectors ---- */
-.pf__arrow--live {
-  stroke: #aeb8c2;
-  stroke-dasharray: 5 4;
-  animation: pf-travel 2.6s linear infinite;
-  animation-play-state: paused;
-}
-.pf[data-running='true'] .pf__arrow--live { animation-play-state: running; }
-@keyframes pf-travel {
-  to { stroke-dashoffset: -36; }
-}
+/* ---- the flow reads as motion, but only while the figure is in view ---- */
+.pf__link--live { animation: pf-flow 2.4s linear infinite; animation-play-state: paused; }
+.pf[data-running='true'] .pf__link--live { animation-play-state: running; }
+@keyframes pf-flow { to { stroke-dashoffset: -32; } }
 @media (prefers-reduced-motion: reduce) {
-  .pf__arrow--live { animation: none; }
+  .pf__link--live { animation: none; }
 }
 
-/* ---- caption + per-lane prose ---- */
+/* ---- caption + per-chain prose ---- */
 .pf__cap { margin: 0.85rem 0 0; }
 .pf__foot {
   margin: 0;
@@ -474,11 +331,17 @@ const running = computed(() => playing.value && !reduced.value)
   color: var(--ink-soft);
   max-width: 84ch;
 }
+.pf__prov {
+  margin: 0.5rem 0 0;
+  font-size: var(--fs-tick);
+  color: var(--ink-mute);
+  line-height: 1.6;
+}
 
 .pf__lanes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
-  gap: 1.1rem 1.75rem;
+  gap: 1rem;
   margin-top: 1.5rem;
   padding-top: 1.35rem;
   border-top: 1px solid var(--line);

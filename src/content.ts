@@ -921,12 +921,12 @@ export const PIPELINE = {
   },
   figKicker: { en: 'Figure 03 / Processing framework', zh: '图 03 / 处理框架' },
   figTitle: {
-    en: 'Four-stage framework from native multimodal input to unified episodes',
-    zh: '从原生多模态输入到统一片段的四阶段框架',
+    en: 'Five chains, one clock, one episode',
+    zh: '五条链路，一个时钟，一个片段',
   },
   figDesc: {
-    en: 'Seven signal pathways flow left to right through per-modality processing, then one shared temporal calibration, spatial calibration, quality gate and query fusion, and out into episode fields with provenance.',
-    zh: '七条信号通路自左向右经过逐模态处理，再经过共享的时间校准、空间校准、质量门控与查询融合，输出带溯源的片段字段。',
+    en: 'Each stream enters the group that handles its own physics — synchronization and calibration, geometry and motion, gaze, electrophysiology — the groups align on one clock, and annotation runs last before an episode is written.',
+    zh: '每条信号流进入处理其自身物理特性的分组——同步与标定、几何与运动、注视、电生理——各组对齐到同一时钟，标注最后执行，随后写出一个片段。',
   },
   figScrollAria: {
     en: 'Full framework diagram; scroll horizontally',
