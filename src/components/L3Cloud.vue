@@ -9,6 +9,7 @@
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import * as THREE from 'three'
+import FigCaption from '@/components/FigCaption.vue'
 
 interface FrameMeta {
   frame: number
@@ -92,6 +93,11 @@ const eyeEl = ref<HTMLVideoElement | null>(null)
 const gazeCanvas = ref<HTMLCanvasElement | null>(null)
 
 const meta = ref<CloudMeta | null>(null)
+/** Figure 4's caption: one recorded episode, named by its dataset. */
+const episodeTitle = computed(() => {
+  const id = meta.value?.dataset ?? 'L3-003'
+  return { en: `One recorded episode · ${id}`, zh: `一段已录制片段 · ${id}` }
+})
 const signals = ref<Signals | null>(null)
 const gaze2d = ref<Gaze2D | null>(null)
 const steps = ref<Step[]>([])
@@ -127,8 +133,26 @@ function windowed(values: number[], h = TH): string {
   const i1 = Math.min(n - 1, sigIndex.value)
   const i0 = Math.max(0, Math.round(sigIndex.value - WINDOW * (signals.value?.fps ?? 15)))
   const span = Math.max(1, i1 - i0)
+  /* Auto-gain on the visible window: a quiet channel is scaled to its own range
+     so the trace shows texture instead of lying flat on the baseline. That makes
+     amplitudes incomparable across lanes, which the dense bands say out loud. */
+  let lo = Infinity
+  let hi = -Infinity
+  for (let i = i0; i <= i1; i++) {
+    const v = values[i]
+    if (Number.isFinite(v)) {
+      if (v < lo) lo = v
+      if (v > hi) hi = v
+    }
+  }
+  if (!Number.isFinite(lo) || !Number.isFinite(hi)) { lo = 0; hi = 1 }
+  const range = Math.max(hi - lo, 1e-6)
   const pts: string[] = []
-  for (let i = i0; i <= i1; i++) pts.push(`${(((i - i0) / span) * TW).toFixed(1)},${((1 - values[i]) * h).toFixed(1)}`)
+  for (let i = i0; i <= i1; i++) {
+    const raw = Number.isFinite(values[i]) ? (values[i] - lo) / range : 0.5
+    const y = (1 - (0.12 + raw * 0.76)) * h
+    pts.push(`${(((i - i0) / span) * TW).toFixed(1)},${y.toFixed(1)}`)
+  }
   return pts.join(' ')
 }
 
@@ -147,35 +171,67 @@ const bands = computed(() => {
   const s = signals.value
   if (!s) return []
   const Hz = RH
-  const hz = Math.round(RH / 4)
-  const row = (label: string, v: number[], color: string, h = Hz) => ({ label, color, points: windowed(v, h) })
+  /* The two electrophysiology bands are pressed to two thirds of their old lane
+     height; at this density the per-lane label column is replaced by group
+     labels, and each trace is drawn as a filled ribbon so the eye reads
+     envelope rather than hairline. */
+  const hz = Math.max(3, Math.round((RH / 4) * (2 / 3)))
+
+  const makeRow = (label: string, v: number[], color: string, h: number, group: string) => {
+    const points = windowed(v, h)
+    return { label, color, group, points, area: `0,${h} ${points} ${TW},${h}`, groupStart: false }
+  }
+  /* Group starts get a label; the rest keep the column blank. With `once`, a
+     region is labelled only the first time it appears in the stack. */
+  const withStarts = (rows: ReturnType<typeof makeRow>[], once = false) => {
+    const seen = new Set<string>()
+    return rows.map((r, i) => {
+      const first = i === 0 || (once ? !seen.has(r.group) : rows[i - 1]!.group !== r.group)
+      seen.add(r.group)
+      return { ...r, groupStart: first }
+    })
+  }
+
+  const REGION_LABEL: Record<string, string> = {
+    F: 'frontal', C: 'central', P: 'posterior', O: 'posterior', T: 'temporal',
+  }
+
   return [
     {
       key: 'gaze',
       rowH: Hz,
+      dense: false,
+      note: '',
       title: 'Gaze · x / y',
       legend: [
         { label: 'x', color: '#6f5aa0' },
         { label: 'y', color: '#a8623c' },
       ],
-      rows: [row('x', s.gazeX, '#6f5aa0'), row('y', s.gazeY, '#a8623c')],
+      rows: [
+        makeRow('x', s.gazeX, '#6f5aa0', Hz, ''),
+        makeRow('y', s.gazeY, '#a8623c', Hz, ''),
+      ],
     },
     {
       key: 'emg',
       rowH: hz,
+      dense: true,
+      note: 'lane auto-scaled',
       title: `EMG · ${s.channels.emgL} left + ${s.channels.emgR} right`,
       legend: [
         { label: 'left', color: '#a8623c' },
         { label: 'right', color: '#2f6f8f' },
       ],
-      rows: [
-        ...s.emgL.map((v, i) => row(`L${i + 1}`, v, '#a8623c', hz)),
-        ...s.emgR.map((v, i) => row(`R${i + 1}`, v, '#2f6f8f', hz)),
-      ],
+      rows: withStarts([
+        ...s.emgL.map((v, i) => makeRow(`L${i + 1}`, v, '#a8623c', hz, 'left')),
+        ...s.emgR.map((v, i) => makeRow(`R${i + 1}`, v, '#2f6f8f', hz, 'right')),
+      ]),
     },
     {
       key: 'eeg',
       rowH: hz,
+      dense: true,
+      note: 'lane auto-scaled',
       title: 'EEG · 16 of 128',
       legend: [
         { label: 'frontal', color: '#33796f' },
@@ -183,7 +239,14 @@ const bands = computed(() => {
         { label: 'posterior', color: '#8a5a6e' },
         { label: 'temporal', color: '#9a7b2e' },
       ],
-      rows: s.eeg.map((v, i) => row(s.eegNames[i] ?? `ch ${i + 1}`, v, regionOf(s.eegNames[i] ?? 'F'), hz)),
+      rows: withStarts(
+        s.eeg.map((v, i) => {
+          const name = s.eegNames[i] ?? 'F'
+          const key = name.charAt(0)
+          return makeRow(name, v, regionOf(name), hz, REGION_LABEL[key] ?? 'frontal')
+        }),
+        true,
+      ),
     },
   ]
 })
@@ -638,15 +701,16 @@ onBeforeUnmount(() => {
 
 <template>
   <figure class="viewer">
-    <div class="viewer__bar">
-      <p class="viewer__kicker mono">Figure 04 / one recorded episode · {{ meta?.dataset ?? 'L3-003' }}</p>
-      <div class="viewer__layers">
-        <label v-for="(_, key) in layers" :key="key" class="viewer__check">
-          <input v-model="layers[key]" type="checkbox" />
-          <span>{{ { cloud: 'Point cloud', hands: 'Hands', bones: 'Bones', axes: 'Head / wrists' }[key] }}</span>
-        </label>
-      </div>
-    </div>
+    <FigCaption n="04" :title="episodeTitle">
+      <template #action>
+        <div class="viewer__layers">
+          <label v-for="(_, key) in layers" :key="key" class="viewer__check">
+            <input v-model="layers[key]" type="checkbox" />
+            <span>{{ { cloud: 'Point cloud', hands: 'Hands', bones: 'Bones', axes: 'Head / wrists' }[key] }}</span>
+          </label>
+        </div>
+      </template>
+    </FigCaption>
 
     <div class="viewer__foot">
       <button class="viewer__play" type="button" @click="playing = !playing">
@@ -703,22 +767,30 @@ onBeforeUnmount(() => {
     <div class="bands">
       <section v-for="band in bands" :key="band.key" class="band">
         <header class="band__head">
-          <span class="band__title mono">{{ band.title }}</span>
+          <span class="band__title mono">{{ band.title }}<em v-if="band.note" class="band__note">{{ band.note }}</em></span>
           <span class="band__legend mono">
             <span v-for="l in band.legend" :key="l.label" class="band__key">
               <i :style="{ background: l.color }" />{{ l.label }}
             </span>
           </span>
         </header>
-        <div class="band__grid">
+        <div class="band__grid" :class="{ 'band__grid--dense': band.dense }">
           <div v-for="row in band.rows" :key="row.label" class="band__row">
-            <span class="band__label mono" :style="{ color: row.color }">{{ row.label }}</span>
+            <span
+              v-if="!band.dense || row.groupStart"
+              class="band__label mono"
+              :class="{ 'band__label--group': band.dense }"
+              :style="{ color: row.color }"
+            >{{ band.dense ? row.group : row.label }}</span>
+            <span v-else class="band__label" aria-hidden="true" />
             <svg
               class="band__svg"
               :style="{ height: `${band.rowH}px` }"
               :viewBox="`0 0 ${TW} ${band.rowH}`"
               preserveAspectRatio="none"
+              aria-hidden="true"
             >
+              <polygon :points="row.area" :fill="row.color" fill-opacity="0.16" stroke="none" />
               <polyline :points="row.points" fill="none" :stroke="row.color" stroke-width="1" vector-effect="non-scaling-stroke" />
             </svg>
           </div>
@@ -786,20 +858,6 @@ onBeforeUnmount(() => {
 .mono { font-family: var(--ff-mono); }
 .viewer { margin: 0; }
 
-.viewer__bar {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 0.6rem;
-}
-.viewer__kicker {
-  margin: 0;
-  font-size: var(--fs-tick);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
 .viewer__layers { display: flex; gap: 0.85rem; }
 .viewer__check { display: inline-flex; align-items: center; gap: 0.3rem; font-size: var(--fs-tick); color: var(--ink-soft); cursor: pointer; }
 .viewer__check input { accent-color: var(--c-blue); }
@@ -1127,14 +1185,35 @@ onBeforeUnmount(() => {
 .band__legend { display: flex; gap: 0.7rem; font-size: var(--fs-tick); color: var(--ink-mute); }
 .band__key { display: inline-flex; align-items: center; gap: 0.25rem; }
 .band__key i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.band__note {
+  margin-left: 0.6rem;
+  font-style: normal;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ink-mute);
+  opacity: 0.75;
+}
 
 .band__grid {
   background-image:
     repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 56px),
     repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 5px);
 }
+.band__grid--dense {
+  /* three-pixel lanes: the horizontal ruling is doubled so a lane still reads as
+     a row rather than as a band of colour */
+  background-image:
+    repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 3px);
+}
 .band__row { display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: center; gap: 0.3rem; }
 .band__label { font-size: 8px; text-align: right; opacity: 0.8; }
+.band__label--group {
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
 .band__svg { width: 100%; min-width: 0; display: block; }
 
 /* the camera that sits under the trajectory, inside the same cell */

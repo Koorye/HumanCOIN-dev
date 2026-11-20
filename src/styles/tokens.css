@@ -106,12 +106,21 @@
 
   /* ---- Layout ---- */
   --shell-max: 1240px;
+  /* The masthead's translucent ground; overridden for the night palette. */
+  --nav-bg: rgba(255, 255, 255, 0.88);
   /* The article column, and the contents column that sits to its left. The
      article is centred on the viewport; the contents is not part of that
-     measure. */
-  --article-w: 1180px;
-  --toc-w: 240px;
-  --toc-gap: 1.5rem;
+     measure. The two only fit side by side on a wide viewport, so the article
+     gives up width before the contents is dropped: it runs the full 1180px
+     measure from ~1680 up, then shrinks smoothly to a 880px floor at 1360.
+     496px is the room the gutter takes — 2 × (20px margin + 208px column +
+     20px gap) — so at the floor the column still clears the article. */
+  --article-w: clamp(860px, 100vw - 560px, 1040px);
+  /* The page's own side margin: it opens up with the viewport so wide screens
+     keep a generous gutter instead of a slab running to the edges. */
+  --page-gutter: clamp(1.5rem, 5vw, 6rem);
+  --toc-w: 208px;
+  --toc-gap: 1.25rem;
   --shell-wide: 1440px;
   --prose-max: 68ch;
   --gap: clamp(0.9rem, 0.7rem + 0.9vw, 1.6rem);
@@ -153,6 +162,77 @@
   /* ---- Focus ---- */
   --focus: 2px solid var(--c-blue);
   --focus-offset: 2px;
+}
+
+/* ============================================================
+   Night palette
+   ------------------------------------------------------------
+   The switch resolves to <html data-theme="dark">. Only colour tokens
+   change; type, spacing and layout are shared with the light sheet.
+   Figures and dense instrument panels keep a light paper plate (see
+   dark.css), so their existing inks and chart palettes stay legible.
+   ============================================================ */
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #0b131b;
+  --surface: #101b25;
+  --surface-2: #15232f;
+  --line: #22313e;
+  --line-strong: #34495a;
+  --ink: #e9eff5;
+  --ink-body: #c4d2dd;
+  --ink-soft: #9bafbe;
+  --ink-mute: #7e95a5;
+
+  --nav-bg: rgba(11, 19, 27, 0.86);
+
+  --c-blue: #8cbce2;
+  --c-teal: #7fc9c2;
+  --c-violet: #b6a4de;
+  --c-amber: #d9ad7c;
+  --c-rose: #d9a1a9;
+  --c-slate: #9db3c3;
+
+  --t-blue: #182a3a;
+  --t-teal: #15302f;
+  --t-violet: #241f38;
+  --t-rose: #33232b;
+  --t-amber: #30281e;
+
+  --p-1: #8cbce2;
+  --p-2: #7fc0c9;
+  --p-3: #a8c8e2;
+  --p-4: #d9ad7c;
+  --p-5: #d9a1a9;
+  --p-6: #9db3c3;
+  --p-7: #7d96a8;
+  --p-8: #5e7484;
+
+  --seq-0: #0f1a24;
+  --seq-1: #142433;
+  --seq-2: #1c3346;
+  --seq-3: #294b63;
+  --seq-4: #3b6888;
+  --seq-5: #5689ad;
+  --seq-6: #83b4d8;
+
+  --div-neg: #d9a1a9;
+  --div-pos: #8cbce2;
+
+  --e-1: 0 1px 2px rgba(0, 0, 0, 0.38), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --e-2: 0 2px 6px rgba(0, 0, 0, 0.35), 0 10px 28px rgba(0, 0, 0, 0.32);
+  --e-3: 0 6px 16px rgba(0, 0, 0, 0.4), 0 24px 60px rgba(0, 0, 0, 0.42);
+  --e-night: 0 18px 60px rgba(0, 0, 0, 0.55);
+
+  --focus: 2px solid var(--c-blue);
+}
+
+
+@media (max-width: 1359px) {
+  :root {
+    --article-w: 1040px;
+  }
 }
 
 /* Fonts, self-hosted: Jost carries the body, Montserrat the display sizes —

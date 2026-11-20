@@ -81,7 +81,12 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
 <template>
   <section id="community" class="section">
     <div class="shell">
-      <SectionHead :num="COMMUNITY.num" :kicker="COMMUNITY.kicker" :title="COMMUNITY.title" />
+      <SectionHead
+        :num="COMMUNITY.num"
+        :kicker="COMMUNITY.kicker"
+        :title="COMMUNITY.title"
+        :aside="COMMUNITY.aside"
+      />
 
       <div class="community">
         <!-- the host institute, on its own row above the collaborators -->
@@ -141,7 +146,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   margin-bottom: 0.6rem;
 }
 .host img {
-  max-height: 3.3rem;
+  max-height: 4.2rem;
   width: auto;
   object-fit: contain;
   transition: transform var(--dur) var(--ease);
@@ -174,14 +179,14 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   align-content: center;
   gap: 0.5rem;
   width: 100%;
-  height: 7rem;
+  height: 8.2rem;
   padding: 0.55rem 0.5rem 0.45rem;
   border-radius: var(--r-sm);
   transition: background var(--dur) var(--ease);
 }
 .logos__item:hover { background: var(--surface-2); }
 .logos img {
-  max-height: 2.6rem;
+  max-height: 2.2rem;
   max-width: 100%;
   width: auto;
   object-fit: contain;
@@ -195,7 +200,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
 }
 .logos__item:hover img,
 .host:hover img { opacity: 1; }
-.logos img.is-seal { max-height: 4.3rem; }
+.logos img.is-seal { max-height: 5.4rem; }
 .logos__item:hover img { transform: scale(1.04); }
 /* Companies whose mark has not been supplied yet are set as a wordmark, so the
    wall keeps one cell size and no placeholder graphic is invented. */

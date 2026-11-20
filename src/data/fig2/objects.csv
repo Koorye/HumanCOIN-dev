@@ -1,0 +1,636 @@
+category,name,unit,L3,L2_estimated,L1,zh
+,box,annotation occurrences,13848.17,47519.9,119507.814,盒子
+,bottle,annotation occurrences,11512.236,38148.921,72244.254,瓶子
+,rack,annotation occurrences,17026.343,52701.769,32454.822,置物架
+,paper,annotation occurrences,9166.967,29663.844,43258.824,纸张
+,pen,annotation occurrences,10551.527,33407.421,35056.793,笔
+,cloth,annotation occurrences,5174.941,18050.469,50512.926,布料
+,cup,annotation occurrences,4107.924,14729.779,48120.142,杯子
+,bag,annotation occurrences,643.421,4104.993,43494.636,袋子
+,tray,annotation occurrences,2898.242,10274.008,31585.644,托盘
+,cabinet,annotation occurrences,8681.564,26415.008,7406.328,柜子
+,towel,annotation occurrences,1061,4723.67,30813.406,毛巾
+,card,annotation occurrences,5444.156,16983.005,13010.742,卡片
+,book,annotation occurrences,2685.944,9199.117,22825.723,书籍
+,table,annotation occurrences,673.57,3480.556,29196.94,桌子
+,plate,annotation occurrences,1397.785,5435.529,24843.501,盘子
+,cable,annotation occurrences,2007.421,7127.708,22108.931,线缆
+,bowl,annotation occurrences,1210.682,4822.366,23806.389,碗
+,keyboard,annotation occurrences,2576,8648.85,18417,键盘
+,bin,annotation occurrences,2514.447,8381.056,16754.28,垃圾桶
+,lid,annotation occurrences,1244.467,4812.64,21584.78,盖子
+,basket,annotation occurrences,748.411,3333.635,21768.066,篮子
+,mouse,annotation occurrences,2121,7181.55,16371,鼠标
+,shirt,annotation occurrences,606,2887.093,21381.867,衬衫
+,folder,annotation occurrences,2273,7553.287,14685.734,文件夹
+,package,annotation occurrences,1197.457,4515.626,18465.092,包裹
+,pad,annotation occurrences,2956.222,9413.15,10889.669,垫子
+,brush,annotation occurrences,606,2749.0,18619.994,刷子
+,tissue,annotation occurrences,37.421,1062.008,18994.92,纸巾
+,tape,annotation occurrences,1735.887,5826.919,12385.133,胶带
+,part,annotation occurrences,3929.156,11977.417,3798.984,零件
+,spoon,annotation occurrences,758,3056.76,15655.208,勺子
+,scissors,annotation occurrences,1212,4250.464,12289.273,剪刀
+,eraser,annotation occurrences,1661.046,5416.676,8670.737,橡皮擦
+,sponge,annotation occurrences,455,1985.664,12413.275,海绵
+,pliers,annotation occurrences,2636.914,8079.515,3375.457,钳子
+,pot,annotation occurrences,3143.325,9491.412,1228.752,锅
+,comb,annotation occurrences,454,1876.982,10299.638,梳子
+,chair,annotation occurrences,0,586.757,11735.141,椅子
+,screwdriver,annotation occurrences,1673.719,5286.434,5305.553,螺丝刀
+,monitor,annotation occurrences,2918.802,8781.205,496.01,显示器
+,stapler,annotation occurrences,1061,3491.641,6172.819,订书机
+,rope,annotation occurrences,303,1356.862,8957.237,绳子
+,drawer,annotation occurrences,299.364,1339.429,8826.72,抽屉
+,vase,annotation occurrences,2207.811,6635.835,248.005,花瓶
+,object,annotation occurrences,112.262,745.429,8172.889,物体
+,can,annotation occurrences,236.195,138.892,8606.105,罐头罐
+,whiteboard,annotation occurrences,2058.129,6205.389,620.012,白板
+,chopsticks,annotation occurrences,1571.662,4810.807,1916.401,筷子
+,glasses,annotation occurrences,1160.037,3645.258,3302.974,眼镜
+,label,annotation occurrences,149.682,801.326,7045.594,标签
+,kettle,annotation occurrences,1234.878,3848.363,2874.602,水壶
+,shoe,annotation occurrences,0,368.625,7372.509,鞋子
+,clip,annotation occurrences,336.785,1300.633,5805.569,夹子
+,screw,annotation occurrences,340.421,1309.649,5767.744,螺丝
+,nut,annotation occurrences,1086.513,3403.759,2884.372,螺母
+,roll,annotation occurrences,1421.98,4344.851,1578.213,卷筒
+,cart,annotation occurrences,0,349.461,6989.229,手推车
+,container,annotation occurrences,187.103,872.441,6222.668,容器
+,flower,annotation occurrences,1609.083,4831.758,90.184,花朵
+,cable tie,annotation occurrences,935.513,2934.488,2558.96,扎带
+,dustpan,annotation occurrences,0,4669.8,1341.481,簸箕
+,snack,annotation occurrences,0,276.187,5523.745,零食
+,candy,annotation occurrences,673.57,2146.966,2525.141,糖果
+,sink,annotation occurrences,0,249.132,4982.644,水槽
+,detergent,annotation occurrences,0,230.532,4610.636,清洁剂
+,refrigerator,annotation occurrences,0,217.004,4340.086,冰箱
+,jar,annotation occurrences,224.523,847.173,3472.069,罐子
+,rod,annotation occurrences,0,415.036,3810.257,杆件
+,hanger,annotation occurrences,0,200.095,4001.897,衣架
+,knife,annotation occurrences,0,193.331,3866.622,刀具
+,mirror,annotation occurrences,0,190.513,3810.257,镜子
+,hook,annotation occurrences,336.785,1134.357,2480.049,挂钩
+,stamp,annotation occurrences,0,186.567,3731.346,印章
+,wrench,annotation occurrences,598.729,1860.441,1285.116,扳手
+,board,annotation occurrences,37.421,281.356,3381.885,板材
+,band,annotation occurrences,0,175.294,3505.887,带子
+,frame,annotation occurrences,561.308,1749.307,1307.662,框架
+,clipboard,annotation occurrences,898.093,2694.842,11.273,写字板夹
+,pillow,annotation occurrences,0,160.076,3201.518,枕头
+,note,annotation occurrences,224.523,790.808,2344.774,便条
+,wall,annotation occurrences,748.411,2257.069,236.732,墙面
+,bed,annotation occurrences,0,148.803,2976.059,床
+,pants,annotation occurrences,0,148.239,2964.786,裤子
+,cosmetics,annotation occurrences,0,0,2885.875,化妆品
+,handle,annotation occurrences,74.841,346.835,2446.23,把手
+,keycap,annotation occurrences,710.99,2132.97,0,键帽
+,faucet,annotation occurrences,0,133.021,2660.416,水龙头
+,caliper,annotation occurrences,673.57,2020.709,0,游标卡尺
+,base,annotation occurrences,374.205,1173.344,1014.565,底座
+,bucket,annotation occurrences,0,120.057,2401.138,水桶
+,washing machine,annotation occurrences,0,113.293,2265.863,洗衣机
+,necklace,annotation occurrences,0,0,2356.046,项链
+,basin,annotation occurrences,0,112.166,2243.317,盆
+,bread,annotation occurrences,0,106.529,2130.588,面包
+,curtain,annotation occurrences,0,105.966,2119.315,窗帘
+,door,annotation occurrences,0,104.838,2096.769,门
+,earring,annotation occurrences,0,0,2141.86,耳环
+,battery,annotation occurrences,0,100.329,2006.585,电池
+,squeegee,annotation occurrences,0,98.075,1961.493,刮水器
+,blanket,annotation occurrences,0,96.384,1927.674,毯子
+,weight plate,annotation occurrences,0,0,1972.766,杠铃片
+,lipstick,annotation occurrences,0,0,1961.493,口红
+,dumbbell,annotation occurrences,0,0,1916.401,哑铃
+,trash,annotation occurrences,0,90.747,1814.945,垃圾
+,ink,annotation occurrences,0,90.184,1803.672,墨水
+,plant,annotation occurrences,336.785,1035.719,507.283,植物
+,block,annotation occurrences,224.523,719.225,913.109,积木块
+,remote control,annotation occurrences,0,83.42,1668.397,遥控器
+,ball,annotation occurrences,0,83.42,1668.397,球
+,water,annotation occurrences,0,83.42,1668.397,水
+,ring,annotation occurrences,37.421,188.354,1521.848,戒指
+,envelope,annotation occurrences,0,82.856,1657.124,信封
+,tube,annotation occurrences,0,82.856,1657.124,管子
+,drink,annotation occurrences,149.682,501.466,1048.384,饮料
+,fork,annotation occurrences,0,78.911,1578.213,叉子
+,bed sheet,annotation occurrences,0,77.22,1544.394,床单
+,vacuum cleaner,annotation occurrences,0,72.147,1442.938,吸尘器
+,ashtray,annotation occurrences,0,0,1476.756,烟灰缸
+,glue,annotation occurrences,0,65.383,1307.662,胶水
+,food,annotation occurrences,0,65.383,1307.662,食物
+,bench,annotation occurrences,0,63.692,1273.843,长凳
+,broom,annotation occurrences,0,63.692,1273.843,扫帚
+,pump,annotation occurrences,0,62.001,1240.024,泵
+,piece,annotation occurrences,0,61.438,1228.752,小块
+,beverage,annotation occurrences,0,60.874,1217.479,饮品
+,strap,annotation occurrences,0,59.747,1194.933,绑带
+,straw,annotation occurrences,0,59.183,1183.66,吸管
+,powder,annotation occurrences,0,59.183,1183.66,粉末
+,scoop,annotation occurrences,0,57.492,1149.841,舀勺
+,bracelet,annotation occurrences,0,0,1172.387,手链
+,refill,annotation occurrences,37.421,160.735,969.474,替换芯
+,cylinder,annotation occurrences,149.682,475.538,529.829,圆柱体
+,debris,annotation occurrences,0,54.674,1093.476,碎屑
+,bracket,annotation occurrences,74.841,264.542,800.379,支架
+,bubble wrap,annotation occurrences,0,51.856,1037.111,气泡膜
+,tape dispenser,annotation occurrences,0,51.292,1025.838,胶带切割器
+,cat litter,annotation occurrences,0,0,1070.93,猫砂
+,barrel,annotation occurrences,0,49.601,992.02,桶
+,liquid,annotation occurrences,0,49.601,992.02,液体
+,fan,annotation occurrences,0,49.037,980.747,风扇
+,belt,annotation occurrences,0,49.037,980.747,皮带
+,potato,annotation occurrences,0,46.219,924.382,土豆
+,charger,annotation occurrences,0,46.219,924.382,充电器
+,device,annotation occurrences,37.421,151.153,777.834,设备
+,plastic wrap,annotation occurrences,0,45.655,913.109,保鲜膜
+,mask,annotation occurrences,0,43.965,879.29,口罩
+,dropper,annotation occurrences,0,43.965,879.29,滴管
+,soap,annotation occurrences,0,43.401,868.017,肥皂
+,dishwasher,annotation occurrences,0,43.401,868.017,洗碗机
+,flashlight,annotation occurrences,0,43.401,868.017,手电筒
+,treadmill,annotation occurrences,0,0,901.836,跑步机
+,mop,annotation occurrences,0,41.146,822.925,拖把
+,pillowcase,annotation occurrences,0,41.146,822.925,枕套
+,key,annotation occurrences,0,40.019,800.379,钥匙
+,scanner,annotation occurrences,0,39.455,789.106,扫描仪
+,circuit board,annotation occurrences,0,39.455,789.106,电路板
+,pill,annotation occurrences,187.103,564.69,67.638,药片
+,hand sanitizer,annotation occurrences,0,38.892,777.834,免洗洗手液
+,tong,annotation occurrences,0,38.328,766.561,夹钳
+,toy,annotation occurrences,0,37.764,755.288,玩具
+,kit,annotation occurrences,74.841,247.633,462.191,套件
+,microwave,annotation occurrences,0,37.201,744.015,微波炉
+,toothpaste,annotation occurrences,0,0,777.834,牙膏
+,glove,annotation occurrences,37.421,142.135,597.466,手套
+,tablet,annotation occurrences,187.103,561.872,11.273,平板电脑
+,hair,annotation occurrences,0,36.073,721.469,头发
+,gripper,annotation occurrences,187.103,561.308,0,夹持器
+,lint roller,annotation occurrences,0,35.51,710.196,粘毛滚筒
+,cushion,annotation occurrences,0,35.51,710.196,靠垫
+,toiletries,annotation occurrences,0,34.946,698.923,洗漱用品
+,tweezers,annotation occurrences,0,34.946,698.923,镊子
+,nail clipper,annotation occurrences,0,0,698.923,指甲剪
+,equipment,annotation occurrences,0,33.255,665.104,器材
+,shoelace,annotation occurrences,0,32.692,653.831,鞋带
+,lamp,annotation occurrences,0,32.128,642.558,台灯
+,pan,annotation occurrences,0,31.564,631.285,平底锅
+,laptop,annotation occurrences,37.421,135.935,473.464,笔记本电脑
+,machine,annotation occurrences,0,30.437,608.739,机器
+,polish,annotation occurrences,0,29.873,597.466,抛光剂
+,hole punch,annotation occurrences,0,29.873,597.466,打孔器
+,cutlery,annotation occurrences,0,29.31,586.193,餐具
+,sofa,annotation occurrences,0,28.746,574.92,沙发
+,lanyard,annotation occurrences,0,28.182,563.647,挂绳
+,lighter,annotation occurrences,0,28.182,563.647,打火机
+,hard drive,annotation occurrences,0,28.182,563.647,硬盘
+,noodle,annotation occurrences,0,27.619,552.375,面条
+,strainer,annotation occurrences,0,27.619,552.375,滤网
+,casing,annotation occurrences,0,27.055,541.102,外壳
+,cotton swab,annotation occurrences,0,27.055,541.102,棉签
+,power strip,annotation occurrences,0,25.928,518.556,插线板
+,umbrella,annotation occurrences,0,25.364,507.283,雨伞
+,disc,annotation occurrences,0,24.8,496.01,圆盘
+,socket,annotation occurrences,0,24.8,496.01,插座
+,hat,annotation occurrences,0,24.8,496.01,帽子
+,staple,annotation occurrences,0,24.8,496.01,订书钉
+,shower head,annotation occurrences,0,24.8,496.01,花洒喷头
+,power bank,annotation occurrences,37.421,129.735,349.461,充电宝
+,bar,annotation occurrences,74.841,234.669,202.913,条状物
+,crumb,annotation occurrences,0,24.237,484.737,碎屑颗粒
+,water dispenser,annotation occurrences,0,23.673,473.464,饮水机
+,peeler,annotation occurrences,0,23.11,462.191,削皮器
+,mattress,annotation occurrences,0,23.11,462.191,床垫
+,connector,annotation occurrences,0,21.982,439.645,连接器
+,shampoo,annotation occurrences,0,0,450.918,洗发水
+,tie,annotation occurrences,0,21.419,428.372,领带
+,housing,annotation occurrences,0,21.419,428.372,壳体
+,sign,annotation occurrences,0,21.419,428.372,标牌
+,robotic arm,annotation occurrences,112.262,336.785,0,机械臂
+,chart,annotation occurrences,112.262,336.785,0,图表
+,shuttlecock,annotation occurrences,0,0,439.645,羽毛球
+,palette,annotation occurrences,0,20.855,417.099,调色盘
+,stationery,annotation occurrences,0,20.855,417.099,文具
+,ladle,annotation occurrences,0,20.855,417.099,汤勺
+,lip gloss,annotation occurrences,0,0,428.372,唇彩
+,hose,annotation occurrences,0,20.291,405.826,软管
+,calendar,annotation occurrences,0,20.291,405.826,日历
+,file,annotation occurrences,0,20.291,405.826,文件
+,power supply,annotation occurrences,0,19.728,394.553,电源
+,module,annotation occurrences,0,19.728,394.553,模块
+,railing,annotation occurrences,0,19.164,383.28,栏杆
+,coat,annotation occurrences,0,19.164,383.28,外套
+,printer,annotation occurrences,0,19.164,383.28,打印机
+,suitcase,annotation occurrences,0,18.6,372.007,行李箱
+,barbell,annotation occurrences,0,0,383.28,杠铃
+,kettlebell,annotation occurrences,0,0,372.007,壶铃
+,apron,annotation occurrences,0,17.473,349.461,围裙
+,floor,annotation occurrences,0,17.473,349.461,地板
+,ketchup,annotation occurrences,0,17.473,349.461,番茄酱
+,nail,annotation occurrences,0,16.909,338.188,钉子
+,headphones,annotation occurrences,0,16.909,338.188,耳机
+,needle,annotation occurrences,0,16.346,326.916,针
+,nozzle,annotation occurrences,0,16.346,326.916,喷嘴
+,shell,annotation occurrences,0,16.346,326.916,外壳
+,scale,annotation occurrences,0,16.346,326.916,秤
+,garbage,annotation occurrences,0,16.346,326.916,垃圾
+,waste,annotation occurrences,0,15.782,315.643,废弃物
+,racket,annotation occurrences,0,0,326.916,球拍
+,leaf,annotation occurrences,37.421,120.153,157.821,叶片
+,spatula,annotation occurrences,0,14.655,293.097,锅铲
+,jacket,annotation occurrences,0,14.655,293.097,夹克
+,juice,annotation occurrences,0,14.655,293.097,果汁
+,watch,annotation occurrences,0,14.655,293.097,手表
+,sleeve,annotation occurrences,0,14.091,281.824,袖子
+,spray,annotation occurrences,0,14.091,281.824,喷雾剂
+,post,annotation occurrences,0,14.091,281.824,柱子
+,lemon slice,annotation occurrences,37.421,112.262,146,柠檬片
+,jigger,annotation occurrences,37.421,112.262,146,量酒器
+,mint sprig,annotation occurrences,37.421,112.262,146,薄荷枝
+,tag,annotation occurrences,0,13.528,270.551,吊牌
+,grinder,annotation occurrences,0,13.528,270.551,研磨机
+,hammer,annotation occurrences,0,13.528,270.551,锤子
+,bike,annotation occurrences,0,0,281.824,自行车
+,stove,annotation occurrences,0,12.964,259.278,炉灶
+,terminal,annotation occurrences,0,12.4,248.005,端子
+,baseboard,annotation occurrences,0,12.4,248.005,踢脚板
+,yogurt,annotation occurrences,0,12.4,248.005,酸奶
+,washer,annotation occurrences,37.421,117.334,101.457,垫圈
+,egg,annotation occurrences,0,11.837,236.732,鸡蛋
+,windowsill,annotation occurrences,0,11.837,236.732,窗台
+,stirrer,annotation occurrences,0,11.837,236.732,搅拌棒
+,pitcher,annotation occurrences,37.421,116.771,90.184,水罐
+,pastry,annotation occurrences,0,11.273,225.459,糕点
+,ruler,annotation occurrences,0,11.273,225.459,尺子
+,tableware,annotation occurrences,0,11.273,225.459,餐具
+,milk,annotation occurrences,0,10.709,214.186,牛奶
+,hoodie,annotation occurrences,0,10.709,214.186,连帽衫
+,floss,annotation occurrences,0,0,214.186,牙线
+,funnel,annotation occurrences,0,10.146,202.913,漏斗
+,whistle,annotation occurrences,0,0,202.913,哨子
+,accessory,annotation occurrences,0,9.582,191.64,配件
+,ginger,annotation occurrences,0,9.582,191.64,生姜
+,orange,annotation occurrences,0,9.582,191.64,橙子
+,filter,annotation occurrences,0,9.582,191.64,过滤器
+,fastener,annotation occurrences,0,9.582,191.64,紧固件
+,collar,annotation occurrences,0,9.018,180.367,衣领
+,film,annotation occurrences,0,9.018,180.367,薄膜
+,vest,annotation occurrences,0,9.018,180.367,背心
+,scraper,annotation occurrences,0,9.018,180.367,刮刀
+,chessboard,annotation occurrences,0,8.455,169.094,棋盘
+,computer,annotation occurrences,0,8.455,169.094,电脑
+,dress,annotation occurrences,0,8.455,169.094,连衣裙
+,model,annotation occurrences,0,8.455,169.094,模型
+,tomato,annotation occurrences,0,8.455,169.094,番茄
+,counter,annotation occurrences,0,8.455,169.094,台面
+,sausage,annotation occurrences,0,8.455,169.094,香肠
+,paperclip,annotation occurrences,0,8.455,169.094,回形针
+,jewelry,annotation occurrences,0,0,169.094,首饰
+,coffee machine,annotation occurrences,0,7.891,157.821,咖啡机
+,lead,annotation occurrences,0,7.891,157.821,引线
+,cube,annotation occurrences,0,7.891,157.821,立方体
+,stopper,annotation occurrences,0,7.891,157.821,塞子
+,garlic,annotation occurrences,0,7.891,157.821,大蒜
+,almond,annotation occurrences,0,7.891,157.821,杏仁
+,newspaper,annotation occurrences,37.421,112.825,11.273,报纸
+,cuticle pusher,annotation occurrences,0,0,157.821,死皮推棒
+,puff,annotation occurrences,0,7.327,146.548,粉扑
+,letter,annotation occurrences,0,7.327,146.548,信件
+,grain,annotation occurrences,0,7.327,146.548,谷物
+,pipe,annotation occurrences,0,7.327,146.548,管道
+,roller,annotation occurrences,0,7.327,146.548,滚轮
+,chassis,annotation occurrences,0,7.327,146.548,底盘
+,cucumber,annotation occurrences,0,7.327,146.548,黄瓜
+,cutter,annotation occurrences,0,7.327,146.548,切割器
+,basketball,annotation occurrences,0,0,146.548,篮球
+,sweatshirt,annotation occurrences,0,6.764,135.275,卫衣
+,residue,annotation occurrences,0,6.764,135.275,残留物
+,core,annotation occurrences,0,6.764,135.275,芯体
+,switch,annotation occurrences,0,6.764,135.275,开关
+,petal,annotation occurrences,0,6.764,135.275,花瓣
+,token,annotation occurrences,0,6.764,135.275,代币
+,spring,annotation occurrences,0,6.764,135.275,弹簧
+,colander,annotation occurrences,0,6.764,135.275,滤水篮
+,wok,annotation occurrences,0,6.764,135.275,炒锅
+,seal,annotation occurrences,0,6.764,135.275,密封件
+,eyeliner,annotation occurrences,0,0,135.275,眼线笔
+,foil,annotation occurrences,0,6.2,124.002,锡箔纸
+,pepper,annotation occurrences,0,6.2,124.002,辣椒
+,headband,annotation occurrences,0,6.2,124.002,头带
+,motor,annotation occurrences,0,6.2,124.002,电机
+,bathrobe,annotation occurrences,0,6.2,124.002,浴袍
+,wallet,annotation occurrences,0,6.2,124.002,钱包
+,shovel,annotation occurrences,0,5.636,112.729,铲子
+,showerhead,annotation occurrences,0,5.636,112.729,花洒
+,coffee,annotation occurrences,0,5.636,112.729,咖啡
+,generator,annotation occurrences,0,5.636,112.729,发电机
+,lotion,annotation occurrences,0,5.636,112.729,乳液
+,seed,annotation occurrences,0,5.636,112.729,种子
+,cream,annotation occurrences,0,5.636,112.729,面霜
+,cone,annotation occurrences,0,5.636,112.729,锥体
+,anvil,annotation occurrences,0,5.073,101.457,铁砧
+,first aid kit,annotation occurrences,0,5.073,101.457,急救箱
+,flier,annotation occurrences,0,5.073,101.457,传单
+,sweater,annotation occurrences,0,5.073,101.457,毛衣
+,pulley,annotation occurrences,0,5.073,101.457,滑轮
+,light string,annotation occurrences,0,5.073,101.457,灯串
+,cake,annotation occurrences,0,5.073,101.457,蛋糕
+,blender,annotation occurrences,0,5.073,101.457,搅拌机
+,peanut,annotation occurrences,0,5.073,101.457,花生
+,rotor,annotation occurrences,0,5.073,101.457,转子
+,teapot,annotation occurrences,0,5.073,101.457,茶壶
+,banknote,annotation occurrences,0,5.073,101.457,纸币
+,herb,annotation occurrences,0,5.073,101.457,香草
+,hub,annotation occurrences,0,5.073,101.457,轮毂
+,eggshell,annotation occurrences,0,5.073,101.457,蛋壳
+,blush,annotation occurrences,0,0,101.457,腮红
+,divider,annotation occurrences,0,4.509,90.184,分隔板
+,coil,annotation occurrences,0,4.509,90.184,线圈
+,toothpick,annotation occurrences,0,4.509,90.184,牙签
+,paintbrush,annotation occurrences,0,4.509,90.184,画笔
+,bean,annotation occurrences,0,4.509,90.184,豆子
+,croissant,annotation occurrences,0,4.509,90.184,牛角包
+,fruit,annotation occurrences,0,4.509,90.184,水果
+,cleaning agent,annotation occurrences,0,4.509,90.184,清洁剂
+,nib,annotation occurrences,0,4.509,90.184,笔尖
+,notepad,annotation occurrences,0,4.509,90.184,记事本
+,portafilter,annotation occurrences,0,4.509,90.184,咖啡粉碗手柄
+,scalpel,annotation occurrences,0,4.509,90.184,手术刀
+,sock,annotation occurrences,0,4.509,90.184,袜子
+,locker,annotation occurrences,0,4.509,90.184,储物柜
+,gel,annotation occurrences,0,4.509,90.184,凝胶
+,adapter,annotation occurrences,0,4.509,90.184,适配器
+,brooch,annotation occurrences,0,0,90.184,胸针
+,carrot,annotation occurrences,0,3.946,78.911,胡萝卜
+,reflector,annotation occurrences,0,3.946,78.911,反光板
+,tamper,annotation occurrences,0,3.946,78.911,压粉器
+,lens,annotation occurrences,0,3.946,78.911,镜头
+,net,annotation occurrences,0,3.946,78.911,网
+,onion,annotation occurrences,0,3.946,78.911,洋葱
+,cleaning supplies,annotation occurrences,0,3.946,78.911,清洁用品
+,dust,annotation occurrences,0,3.946,78.911,灰尘
+,electric drill,annotation occurrences,0,3.946,78.911,电钻
+,menu,annotation occurrences,0,3.946,78.911,菜单
+,router,annotation occurrences,0,3.946,78.911,路由器
+,spool,annotation occurrences,0,3.946,78.911,线轴
+,peg,annotation occurrences,0,3.946,78.911,木钉
+,filler,annotation occurrences,0,3.946,78.911,填充料
+,turntable,annotation occurrences,0,3.946,78.911,转盘
+,steamer,annotation occurrences,0,3.946,78.911,蒸汽机
+,toilet,annotation occurrences,0,3.946,78.911,马桶
+,conditioner,annotation occurrences,0,0,78.911,护发素
+,nipple,annotation occurrences,0,0,78.911,奶嘴
+,dispenser,annotation occurrences,0,3.382,67.638,分配器
+,keychain,annotation occurrences,0,3.382,67.638,钥匙扣
+,plug,annotation occurrences,0,3.382,67.638,插头
+,chalk,annotation occurrences,0,3.382,67.638,粉笔
+,compressor,annotation occurrences,0,3.382,67.638,压缩机
+,engine,annotation occurrences,0,3.382,67.638,发动机
+,headboard,annotation occurrences,0,3.382,67.638,床头板
+,paint,annotation occurrences,0,3.382,67.638,颜料
+,stuffing,annotation occurrences,0,3.382,67.638,填充物
+,wristband,annotation occurrences,0,3.382,67.638,腕带
+,cpu,annotation occurrences,0,3.382,67.638,处理器
+,oil,annotation occurrences,0,3.382,67.638,油
+,usb drive,annotation occurrences,0,3.382,67.638,U盘
+,lace,annotation occurrences,0,3.382,67.638,花边
+,coin,annotation occurrences,0,3.382,67.638,硬币
+,lock,annotation occurrences,0,3.382,67.638,锁
+,apple,annotation occurrences,0,3.382,67.638,苹果
+,buckle,annotation occurrences,0,3.382,67.638,搭扣
+,pin,annotation occurrences,0,2.818,56.365,销钉
+,starter,annotation occurrences,0,2.818,56.365,启动器
+,medicine,annotation occurrences,0,2.818,56.365,药品
+,clove,annotation occurrences,0,2.818,56.365,丁香
+,pedal,annotation occurrences,0,2.818,56.365,踏板
+,express waybill,annotation occurrences,0,2.818,56.365,快递面单
+,granules,annotation occurrences,0,2.818,56.365,颗粒物
+,handcart,annotation occurrences,0,2.818,56.365,手推货车
+,hay,annotation occurrences,0,2.818,56.365,干草
+,matchbox,annotation occurrences,0,2.818,56.365,火柴盒
+,ribbon,annotation occurrences,0,2.818,56.365,丝带
+,rose,annotation occurrences,0,2.818,56.365,玫瑰
+,gear,annotation occurrences,0,2.818,56.365,齿轮
+,photo,annotation occurrences,0,2.818,56.365,照片
+,alarm,annotation occurrences,0,2.818,56.365,闹钟
+,tea,annotation occurrences,0,2.818,56.365,茶叶
+,mouthwash,annotation occurrences,0,0,56.365,漱口水
+,eyeshadow,annotation occurrences,0,0,56.365,眼影
+,bangle,annotation occurrences,0,0,56.365,手镯
+,handkerchief,annotation occurrences,0,0,45.092,手帕
+,vegetable,annotation occurrences,0,0,45.092,蔬菜
+,ornament,annotation occurrences,0,0,45.092,装饰品
+,picture,annotation occurrences,0,0,45.092,图片
+,rice,annotation occurrences,0,0,45.092,米饭
+,chain,annotation occurrences,0,0,45.092,链条
+,utensil,annotation occurrences,0,0,45.092,器具
+,bead,annotation occurrences,0,0,45.092,珠子
+,fries,annotation occurrences,0,0,45.092,薯条
+,map,annotation occurrences,0,0,45.092,地图
+,ingredient,annotation occurrences,0,0,45.092,食材
+,insole,annotation occurrences,0,0,45.092,鞋垫
+,iron,annotation occurrences,0,0,45.092,熨斗
+,main unit,annotation occurrences,0,0,45.092,主机
+,cage,annotation occurrences,0,0,45.092,笼子
+,shredder,annotation occurrences,0,0,45.092,碎纸机
+,sauce,annotation occurrences,0,0,45.092,酱料
+,appliance,annotation occurrences,0,0,45.092,电器
+,bandage,annotation occurrences,0,0,45.092,绷带
+,butter,annotation occurrences,0,0,45.092,黄油
+,cabbage,annotation occurrences,0,0,45.092,卷心菜
+,compass,annotation occurrences,0,0,45.092,指南针
+,stator,annotation occurrences,0,0,45.092,定子
+,tile,annotation occurrences,0,0,45.092,瓷砖
+,timer,annotation occurrences,0,0,45.092,计时器
+,pegs,annotation occurrences,0,0,45.092,木钉
+,facial cleanser,annotation occurrences,0,0,45.092,洗面奶
+,hula hoop,annotation occurrences,0,0,45.092,呼啦圈
+,lip balm,annotation occurrences,0,0,45.092,润唇膏
+,mascara,annotation occurrences,0,0,45.092,睫毛膏
+,skirt,annotation occurrences,0,0,33.819,裙子
+,mushroom,annotation occurrences,0,0,33.819,蘑菇
+,diffuser,annotation occurrences,0,0,33.819,扩散器
+,cooler,annotation occurrences,0,0,33.819,冷却器
+,crossbar,annotation occurrences,0,0,33.819,横杆
+,grille,annotation occurrences,0,0,33.819,格栅
+,bulb,annotation occurrences,0,0,33.819,灯泡
+,oven,annotation occurrences,0,0,33.819,烤箱
+,support,annotation occurrences,0,0,33.819,支撑件
+,whisk,annotation occurrences,0,0,33.819,打蛋器
+,bathtub,annotation occurrences,0,0,33.819,浴缸
+,camisole,annotation occurrences,0,0,33.819,吊带背心
+,cardigan,annotation occurrences,0,0,33.819,开衫
+,flowerpot,annotation occurrences,0,0,33.819,花盆
+,gasket,annotation occurrences,0,0,33.819,密封垫片
+,hairband,annotation occurrences,0,0,33.819,发带
+,hairpin,annotation occurrences,0,0,33.819,发夹
+,humidifier,annotation occurrences,0,0,33.819,加湿器
+,jelly,annotation occurrences,0,0,33.819,果冻
+,knot,annotation occurrences,0,0,33.819,绳结
+,latch,annotation occurrences,0,0,33.819,门闩
+,disk,annotation occurrences,0,0,33.819,磁盘
+,schoolbag,annotation occurrences,0,0,33.819,书包
+,sepal,annotation occurrences,0,0,33.819,花萼
+,spinner,annotation occurrences,0,0,33.819,旋转器
+,sportswear,annotation occurrences,0,0,33.819,运动服
+,wool,annotation occurrences,0,0,33.819,羊毛
+,sterilizer,annotation occurrences,0,0,33.819,消毒器
+,track,annotation occurrences,0,0,33.819,轨道
+,tripod,annotation occurrences,0,0,33.819,三脚架
+,window,annotation occurrences,0,0,33.819,窗户
+,stepper,annotation occurrences,0,0,33.819,踏步机
+,pendant,annotation occurrences,0,0,33.819,吊坠
+,diaper,annotation occurrences,0,0,33.819,尿布
+,grip strengthener,annotation occurrences,0,0,33.819,握力器
+,backrest,annotation occurrences,0,0,22.546,靠背
+,badge,annotation occurrences,0,0,22.546,徽章
+,banana,annotation occurrences,0,0,22.546,香蕉
+,bookend,annotation occurrences,0,0,22.546,书立
+,button,annotation occurrences,0,0,22.546,纽扣
+,clothespin,annotation occurrences,0,0,22.546,晾衣夹
+,decoration,annotation occurrences,0,0,22.546,装饰物
+,painting,annotation occurrences,0,0,22.546,绘画作品
+,duster,annotation occurrences,0,0,22.546,除尘掸
+,filling,annotation occurrences,0,0,22.546,馅料
+,receipt,annotation occurrences,0,0,22.546,收据
+,wheel,annotation occurrences,0,0,22.546,轮子
+,brace,annotation occurrences,0,0,22.546,撑杆
+,yam,annotation occurrences,0,0,22.546,山药
+,album,annotation occurrences,0,0,22.546,相册
+,balloon,annotation occurrences,0,0,22.546,气球
+,camera,annotation occurrences,0,0,22.546,相机
+,cardstock,annotation occurrences,0,0,22.546,卡纸
+,care solution,annotation occurrences,0,0,22.546,护理液
+,cigarette butt,annotation occurrences,0,0,22.546,烟头
+,corn kernels,annotation occurrences,0,0,22.546,玉米粒
+,correction fluid,annotation occurrences,0,0,22.546,修正液
+,daliyuan pie,annotation occurrences,0,0,22.546,达利园派
+,earplug,annotation occurrences,0,0,22.546,耳塞
+,electric griddle,annotation occurrences,0,0,22.546,电饼铛
+,express delivery slip,annotation occurrences,0,0,22.546,快递单
+,fire extinguisher,annotation occurrences,0,0,22.546,灭火器
+,grinding trough,annotation occurrences,0,0,22.546,研磨槽
+,lampshade,annotation occurrences,0,0,22.546,灯罩
+,mortar,annotation occurrences,0,0,22.546,研钵
+,pestle,annotation occurrences,0,0,22.546,研杵
+,pillar,annotation occurrences,0,0,22.546,立柱
+,radish,annotation occurrences,0,0,22.546,萝卜
+,scarf,annotation occurrences,0,0,22.546,围巾
+,slips,annotation occurrences,0,0,22.546,纸条
+,syrup,annotation occurrences,0,0,22.546,糖浆
+,television,annotation occurrences,0,0,22.546,电视机
+,thermometer,annotation occurrences,0,0,22.546,温度计
+,vanity,annotation occurrences,0,0,22.546,梳妆台
+,washbasin,annotation occurrences,0,0,22.546,洗脸盆
+,zucchini,annotation occurrences,0,0,22.546,西葫芦
+,makeup,annotation occurrences,0,0,22.546,化妆品
+,blood lancet,annotation occurrences,0,0,22.546,采血针
+,comedone extractor,annotation occurrences,0,0,22.546,粉刺针
+,concealer,annotation occurrences,0,0,22.546,遮瑕膏
+,perfume,annotation occurrences,0,0,22.546,香水
+,scoreboard,annotation occurrences,0,0,22.546,记分牌
+,sunscreen,annotation occurrences,0,0,22.546,防晒霜
+,wig,annotation occurrences,0,0,22.546,假发
+,adhesive backing,annotation occurrences,0,0,11.273,背胶
+,blower,annotation occurrences,0,0,11.273,吹风机
+,air column,annotation occurrences,0,0,11.273,气柱袋
+,clock,annotation occurrences,0,0,11.273,时钟
+,armchair,annotation occurrences,0,0,11.273,扶手椅
+,backboard,annotation occurrences,0,0,11.273,背板
+,skewer,annotation occurrences,0,0,11.273,竹签
+,barrier,annotation occurrences,0,0,11.273,隔离栏
+,bedding,annotation occurrences,0,0,11.273,床上用品
+,bell,annotation occurrences,0,0,11.273,铃铛
+,bitter melon,annotation occurrences,0,0,11.273,苦瓜
+,blueprint,annotation occurrences,0,0,11.273,蓝图
+,bow,annotation occurrences,0,0,11.273,蝴蝶结
+,bubble mailer,annotation occurrences,0,0,11.273,气泡快递袋
+,calyx,annotation occurrences,0,0,11.273,花萼
+,cauliflower,annotation occurrences,0,0,11.273,花椰菜
+,cereal,annotation occurrences,0,0,11.273,谷物早餐
+,chicken essence seasoning,annotation occurrences,0,0,11.273,鸡精调味料
+,chicken-flavor essence,annotation occurrences,0,0,11.273,鸡味精
+,chive,annotation occurrences,0,0,11.273,韭菜
+,cola,annotation occurrences,0,0,11.273,可乐
+,corkboard,annotation occurrences,0,0,11.273,软木公告板
+,corner guard,annotation occurrences,0,0,11.273,护角
+,date slices,annotation occurrences,0,0,11.273,枣片
+,dice,annotation occurrences,0,0,11.273,骰子
+,dishcloth,annotation occurrences,0,0,11.273,洗碗布
+,doormat,annotation occurrences,0,0,11.273,门垫
+,dummy,annotation occurrences,0,0,11.273,假人模型
+,expander,annotation occurrences,0,0,11.273,扩胸器
+,eyelash,annotation occurrences,0,0,11.273,睫毛
+,fragrance sachet,annotation occurrences,0,0,11.273,香包
+,freezer,annotation occurrences,0,0,11.273,冷冻柜
+,french press body,annotation occurrences,0,0,11.273,法压壶壶身
+,game controller,annotation occurrences,0,0,11.273,游戏手柄
+,gauze,annotation occurrences,0,0,11.273,纱布
+,globe,annotation occurrences,0,0,11.273,地球仪
+,goggles,annotation occurrences,0,0,11.273,护目镜
+,gourd,annotation occurrences,0,0,11.273,葫芦
+,graffiti,annotation occurrences,0,0,11.273,涂鸦
+,ham,annotation occurrences,0,0,11.273,火腿
+,hardboard,annotation occurrences,0,0,11.273,硬纸板
+,headset,annotation occurrences,0,0,11.273,头戴式耳机
+,helmet,annotation occurrences,0,0,11.273,头盔
+,hotels,annotation occurrences,0,0,11.273,酒店（场所）
+,hygrometer,annotation occurrences,0,0,11.273,湿度计
+,i o shield,annotation occurrences,0,0,11.273,主板I/O挡板
+,ice maker,annotation occurrences,0,0,11.273,制冰机
+,induction cooker,annotation occurrences,0,0,11.273,电磁炉
+,inner layer,annotation occurrences,0,0,11.273,内层材料
+,insecticide aerosol,annotation occurrences,0,0,11.273,杀虫喷雾剂
+,keyhole,annotation occurrences,0,0,11.273,锁孔
+,keypad,annotation occurrences,0,0,11.273,数字键盘
+,lettuce,annotation occurrences,0,0,11.273,生菜
+,line,annotation occurrences,0,0,11.273,线条
+,linen,annotation occurrences,0,0,11.273,亚麻织物
+,lotus root,annotation occurrences,0,0,11.273,莲藕
+,luffa,annotation occurrences,0,0,11.273,丝瓜
+,grid,annotation occurrences,0,0,11.273,网格
+,mold,annotation occurrences,0,0,11.273,模具
+,microphone,annotation occurrences,0,0,11.273,麦克风
+,microscope,annotation occurrences,0,0,11.273,显微镜
+,monosodium glutamate,annotation occurrences,0,0,11.273,味精
+,mosquito repellent,annotation occurrences,0,0,11.273,驱蚊剂
+,nba special issue,annotation occurrences,0,0,11.273,NBA特刊
+,oat toast,annotation occurrences,0,0,11.273,燕麦吐司
+,parcel,annotation occurrences,0,0,11.273,包裹
+,peach,annotation occurrences,0,0,11.273,桃子
+,pickled mustard tuber slices,annotation occurrences,0,0,11.273,榨菜片
+,pigment,annotation occurrences,0,0,11.273,颜料
+,hole,annotation occurrences,0,0,11.273,孔洞
+,houses,annotation occurrences,0,0,11.273,房屋（场所）
+,skeleton,annotation occurrences,0,0,11.273,骨架
+,pulp mold,annotation occurrences,0,0,11.273,纸浆模具
+,raisin,annotation occurrences,0,0,11.273,葡萄干
+,sachima,annotation occurrences,0,0,11.273,沙琪玛
+,safe,annotation occurrences,0,0,11.273,保险柜
+,salt,annotation occurrences,0,0,11.273,盐
+,sensor,annotation occurrences,0,0,11.273,传感器
+,guide,annotation occurrences,0,0,11.273,导向件
+,shoebox,annotation occurrences,0,0,11.273,鞋盒
+,skimmer,annotation occurrences,0,0,11.273,漏勺
+,soap dispenser,annotation occurrences,0,0,11.273,皂液器
+,soybean paste,annotation occurrences,0,0,11.273,豆瓣酱
+,speaker,annotation occurrences,0,0,11.273,扬声器
+,spork,annotation occurrences,0,0,11.273,勺叉两用餐具
+,stain,annotation occurrences,0,0,11.273,污渍
+,kitchenware,annotation occurrences,0,0,11.273,厨具
+,story,annotation occurrences,0,0,11.273,故事文本
+,suction head,annotation occurrences,0,0,11.273,吸头
+,sugar-free pickled mustard tubers,annotation occurrences,0,0,11.273,无糖榨菜
+,suit,annotation occurrences,0,0,11.273,西装
+,syringe,annotation occurrences,0,0,11.273,注射器
+,tail,annotation occurrences,0,0,11.273,尾部
+,test instrument,annotation occurrences,0,0,11.273,测试仪器
+,thermostat,annotation occurrences,0,0,11.273,恒温器
+,thumbtack,annotation occurrences,0,0,11.273,图钉
+,transformer,annotation occurrences,0,0,11.273,变压器
+,velcro,annotation occurrences,0,0,11.273,魔术贴
+,vinegar,annotation occurrences,0,0,11.273,醋
+,body wash samples,annotation occurrences,0,0,11.273,沐浴露试用装
+,mannequin head,annotation occurrences,0,0,11.273,假人头模
+,pacifier,annotation occurrences,0,0,11.273,安抚奶嘴
+,baby supplies,annotation occurrences,0,0,11.273,婴儿用品

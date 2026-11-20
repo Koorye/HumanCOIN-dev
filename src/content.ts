@@ -29,7 +29,7 @@ export interface NavItem {
 
 export const NAV: NavItem[] = [
   { id: 'abstract', label: { en: 'Abstract', zh: '摘要' } },
-  { id: 'overview', num: '01', label: { en: 'Introduction', zh: '引言' } },
+  { id: 'overview', num: '01', label: { en: 'Motivation', zh: '研究动机' } },
   {
     id: 'data',
     num: '02',
@@ -55,6 +55,7 @@ export const NAV: NavItem[] = [
     children: [{ id: 'pipeline-framework', label: { en: 'Five chains', zh: '五条链路' } }],
   },
   { id: 'community', num: '07', label: { en: 'Collaboration', zh: '合作机构' } },
+  { id: 'release', label: { en: 'The release', zh: '发布内容' } },
   { id: 'install', label: { en: 'Start', zh: '开始使用' } },
   { id: 'cite', label: { en: 'Cite', zh: '引用' } },
   { id: 'license', label: { en: 'License', zh: '许可' } },
@@ -128,14 +129,14 @@ export const ABSTRACT = {
   title: { en: 'Abstract', zh: '摘要' },
   body: {
     en: [
-      'First-person manipulation datasets treat the observation–action pair as the atom, and compress the intent behind an action into a policy’s weights. HumanCOIN records that intent instead: 12,500 hours of egocentric manipulation with three tiers of proxies along the pathway from decision to effect.',
-      'L1 (10,000 h) infers gaze from headband video, so the eye reaches the target before the hand moves. L2 (2,000 h) adds 8 + 8 channels of forearm EMG, so load expectations are readable before execution completes. L3 (500 h) adds scalp EEG, and in its controlled subset measures gaze, hand pose and finger kinematics directly. Every tier inherits the proxies below it.',
-      'Alongside the proxies the corpus carries multi-view RGB, metric depth and point clouds, 6-DoF head and wrist pose, and step-level action and object annotation, across 38 scene classes, 99 task verbs and 635 object classes. Clocks and calibration ship with the data, so any read rate can be re-aligned.',
+      'First-person manipulation datasets treat the observation–action pair as the atomic unit, compressing the generation of an action into a policy’s weights. The intent state behind the action is therefore unobservable. Human motor control tells a different story: intent mediates between observation and action and leaves measurable traces along an **intent pathway** from decision to effect — gaze reaches the target before the hand, muscle load builds before contact, cortical activity precedes the motor command.',
+      'HumanCOIN records that pathway instead of modelling around it: **12,500 hours** of egocentric manipulation across **38 scene classes**, in three tiers of proxies. **L1, attention (10,000 h)**, infers gaze from headband video so the next object of attention is exposed before the hand moves. **L2, exertion (2,000 h)**, records 8 + 8 channels of forearm surface EMG so load expectations are readable before execution completes. **L3, cognition (500 h)**, records scalp EEG and, in its controlled subset, measures gaze, hand pose and finger kinematics directly. Each tier inherits every proxy of the tiers below it.',
+      'Alongside the proxies the corpus carries multi-view RGB, metric depth and point clouds, 6-DoF head and wrist pose, and step-level action and object annotation over **99 task verbs and 635 object classes**. Clock and calibration data ship with the release, so any read rate can be re-aligned — making the process behind each visual–action pair available for modelling at dataset scale.',
     ],
     zh: [
-      '现有的第一人称操作数据集以"观测—动作"对为原子单元，把动作背后的意图压缩进策略网络的权重里。HumanCOIN 反过来把意图记录下来：12,500 小时的自我中心操作数据，沿"决策到执行"的通路设置三层代理量。',
-      'L1（10,000 小时）从头环视频估计注视，眼睛在手动之前抵达目标；L2（2,000 小时）加入双前臂各 8 通道表面肌电，接触之前的负荷预期因此可读；L3（500 小时）加入头皮脑电，并在其受控子集里直接测量注视、手部位姿与手指运动学。每一层都继承下层的全部代理量。',
-      '围绕这些代理量，数据集还提供多视角 RGB、米制深度与点云、头与腕的 6 自由度位姿，以及步级的动作与物体标注，覆盖 38 个场景类别、99 个任务动词与 635 个物体类别。时钟与标定随数据一同发布，任意读取速率都可以重新对齐。',
+      '现有的第一人称操作数据集以“观测—动作”对为原子单元，把一个动作的产生压缩进策略网络的权重，**动作背后的意图状态因此不可观测**。人类运动控制给出的却是另一幅图景：意图在观测与动作之间起中介作用，并沿一条从决策到执行的**意图通路**留下可测量的痕迹——视线先于手部抵达目标，肌肉负荷先于接触建立，皮层活动先于运动指令。',
+      'HumanCOIN 记录这条通路，而不是绕开它做建模：**12,500 小时**的自我中心操作数据，覆盖 **38 个场景类别**，按代理量分为三层。**L1 注意层（10,000 小时）**从头环视频估计注视，使下一个注意对象在手动之前显现；**L2 用力层（2,000 小时）**记录双前臂各 8 通道表面肌电，使负荷预期在动作完成之前可读；**L3 认知层（500 小时）**记录头皮脑电，并在其受控子集里直接测量注视、手部位姿与手指运动学。每一层都继承其下各层的全部代理量。',
+      '除代理量之外，数据集还提供多视角 RGB、米制深度与点云、头与腕的 6 自由度位姿，以及步级的动作与物体标注，覆盖 **99 个任务动词与 635 个物体类别**。时钟与标定数据随版本一同发布，任意读取速率都可以重新对齐——使每一个“视觉—动作”对背后的过程都能在数据集尺度上被建模。',
     ],
   },
 } as const
@@ -145,8 +146,8 @@ export const OVERVIEW = {
   kicker: { en: 'Motivation', zh: '研究动机' },
   title: { en: 'Seeing the action is not the same as understanding the manipulation.', zh: '看见动作，不等于理解操作。' },
   lead: {
-    en: 'A camera records the consequences of a decision: the fingers close, the object lifts, the wrist rotates. It does not record the decision itself. The three clips below stop at the moment that difference matters, and read the signal that carries it.',
-    zh: '相机记录的是决策的结果：手指收拢、物体抬起、手腕转动。它记录不到决策本身。下面三段片段停在这个差别变得重要的那一刻，并读出承载它的信号。',
+    en: 'A camera records the consequences of a decision: the fingers close, the object lifts, the wrist rotates. It does not record the decision itself. Both routes that put something in the middle of o → a either fold it into weights or predict it — neither reads it off the operator.',
+    zh: '相机记录的是决策的结果：手指收拢、物体抬起、手腕转动。它记录不到决策本身。把东西放进 o → a 中间的两种做法，要么把它折进权重，要么去预测它——都没能把它从操作者身上读出来。',
   },
   points: [
     { n: '01', t: { en: 'Where the eyes go', zh: '注视落点' }, d: { en: 'The eyes settle on the object before the hand starts to move, naming the target ahead of the reach.', zh: '手还没动，视线已经落在目标上，先于伸展动作给出候选目标。' } },
@@ -229,8 +230,8 @@ export const ACQUISITION = {
   kicker: { en: 'Intent proxies', zh: '意图代理量' },
   title: { en: 'Three stations on the intent pathway.', zh: '意图通路上的三个站点。' },
   aside: {
-    en: 'Downwards, the pyramid widens: more scenes, more hours, more everyday variation. Upwards, it narrows: fewer hours, but the signals move inwards — where the eyes fall on the world, how the muscles execute, what the cortex is doing. Every tier shares the same task ontology.',
-    zh: '向下，金字塔变宽：场景更多、时长更长、日常变化更丰富。向上，它收窄：时长更短，但信号来源向内推进——眼睛落向世界哪里，肌肉如何执行，皮层正在做什么。三层共享同一套任务本体。',
+    en: 'Each tier is the tier below plus its instruments: L1 carries the headband cameras from which **gaze is estimated**; L2 adds forearm surface EMG and the wrist views; L3 adds EEG and the controlled-setting eye tracker and motion capture that **measure gaze and hand pose directly**. The kits step **1 → 3 → 7**, so measurement depth and scene coverage read together rather than trade off.',
+    zh: '每一层都是下一层加上自己的仪器：L1 带头环相机，**注视由其画面估计**；L2 加入前臂表面肌电与双腕视角；L3 加入脑电，以及受控设置里的眼动仪与动作捕捉，**直接实测注视与手部位姿**。三套装备依次为 **1 → 3 → 7** 件，测量深度与场景覆盖因此可以一起读，而不是互相取舍。',
   },
   tierAxis: { en: 'Measurement density', zh: '测量密度' },
   scaleAxis: { en: 'Scene coverage and volume', zh: '场景覆盖与规模' },
@@ -368,12 +369,12 @@ export const DATA = {
   title: { en: 'Depth for signal, breadth for the world.', zh: '深度取信号，广度取世界。' },
   body: {
     en: [
-      'The corpus is cut twice: by signal depth, and by the places people actually work. The 12,500 hours fall into three tiers — 10,000, 2,000 and 500 — and each deeper tier carries every modality of the one before it. The deeper the tier, the smaller its share and the larger the part recorded under a controlled protocol: all of L1 is open, 60% of L2, 30% of L3.',
-      'Breadth runs the other way. L1 reaches all 38 scene classes, in five zones plus a residual class; L3 narrows to the nine that can carry a fixed desk, a cap and an eye tracker. Between them sit 99 task verbs with a short head and a long tail, and 635 object classes that grow from a name at L1 into a measured record — colour, shape, size, material, weight — at L2 and L3.',
+      'The corpus is cut twice: by **signal depth**, and by **the places people actually work**. (a) sets hours against depth — 10,000, 2,000 and 500, 80 / 16 / 4% of the release, solid for open collection and hatched for controlled; (b) sets episode length the same way, in ten-second bins to 300 s, with the median falling at 80–90 s for L1 and 50–60 s for L2 and L3.',
+      'Breadth runs the other way. (c) counts it: L1 reaches 38/38, L2 21/38, L3 9/38 — and (d) draws the **scene vocabulary** in zone order, stacked by the tier that records each class. (e) and (f) plot all 99 task verbs and all 635 object classes as **rank–frequency curves**, one line per tier, each ranked within its own counts. Two cuts, two needs: measure deeply where the instrument can go, stay wide where it cannot.',
     ],
     zh: [
-      '语料被切分两次：一次按信号深度，一次按人真正工作的地方。12,500 小时分为三层——10,000、2,000 与 500——每加深一层，都保留前一层的全部模态。层级越深，占比越小，受控协议所占的比例越大：L1 全部开放采集，L2 为 60%，L3 为 30%。',
-      '广度则朝相反方向展开。L1 覆盖全部 38 个场景类别（五个区域加一个残余类），L3 收窄到能容纳固定工位、脑电帽与眼动仪的 9 类。两者之间是 99 个任务动词——头短尾长——与 635 个物体类别：在 L1 只是一个名称，到 L2 与 L3 成为带颜色、形状、尺寸、材质与重量的实测记录。',
+      '语料被切分两次：一次按**信号深度**，一次按**人真正工作的地方**。(a) 把时长放在深度轴上——10,000、2,000 与 500 小时，占全库 80 / 16 / 4%，实心为开放采集，斜纹为受控采集；(b) 以同样方式呈现片段长度，10 秒一档、到 300 秒，中位数落在 L1 的 80–90 秒与 L2、L3 的 50–60 秒。',
+      '广度则朝相反方向展开。(c) 数出覆盖：L1 达到 38/38 个场景类别，L2 为 21/38，L3 为 9/38；(d) 把**场景词表**按区域顺序画出，条形按记录该类的层级堆叠。(e)(f) 把全部 99 个任务动词与全部 635 个物体类别画成**秩–频曲线**，每层一条，各自在本层内排序。两种切法回答不同的问题：在仪器到得了的地方测得更深，在到不了的地方保持足够宽。',
     ],
   },
   depthTitle: { en: 'Three tiers, two settings', zh: '三层深度，两种采集' },
@@ -383,7 +384,7 @@ export const DATA = {
     zh: '时长为发布计划：10,000 / 2,000 / 500 小时，占全库 80 / 16 / 4%。外环把每层时长拆分为开放与受控采集；两张照片为采集方式的示意重建，并非语料画面。',
   },
   statsTitle: { en: 'The distribution, in six panels', zh: '六个面板看分布' },
-  statsAside: { en: 'hours · episodes · scenes · verbs · objects', zh: '小时 · 片段 · 场景 · 动词 · 物体' },
+  statsAside: { en: 'hours · length · coverage · scenes · verbs · objects', zh: '时长 · 长度 · 覆盖 · 场景 · 动词 · 物体' },
   sceneTitle: { en: '38 scene classes, five zones and a residual', zh: '38 个场景类别，五个区域加一个残余类' },
   sceneAside: { en: '38 classes · 5 zones + residual', zh: '38 类 · 5 区域 + 残余' },
   sceneNote: {
@@ -409,8 +410,8 @@ export const ANNOTATION = {
   kicker: { en: 'Annotation and inspection', zh: '标注与查看' },
   title: { en: 'One moment, seven kinds of evidence.', zh: '一个时刻，七种证据。' },
   body: {
-    en: 'A processed L3 episode, opened. One moment of it is covered by the four headband views, the two wrist views, the third-person camera and the reconstructed depth map, plus gaze, head and wrist 6-DoF pose, glove finger kinematics, surface EMG and EEG — each arriving at its own rate. Over that same moment sits the annotator’s own step sequence, with the action, the hand in use and the objects each step touches.',
-    zh: '打开一段处理完成的 L3 片段。同一时刻由四路头环视角、两路腕部视角、第三人称相机与重建深度图覆盖，另有注视、头与腕 6 自由度位姿、手套手指运动学、表面肌电与脑电——各自以自己的速率到达。同一时刻上还叠着标注者自己的步骤序列，含动作、所用手与每步涉及的物体。',
+    en: 'A recorded L3 episode, at one moment. The point cloud holds the scene in metric space, head and hands in one frame; six panels sit beside it: four camera views, the depth map, the gaze view. Gaze, EMG and EEG run as bands beneath, on one clock, so eye, forearm and cortex read against the frame and against each other.\n\nUnder the bands, the annotation strip gives the task, its subtasks, the current action and the objects it touches, on that same timeline. Every band keeps its native rate; the playhead is what they share.',
+    zh: '打开一段已录制的 L3 片段，停在某一时刻。点云以米制坐标承载场景，头部与双手落在同一坐标系中；旁边是六个画面——四路相机、深度图与眼动相机视角。画面下方，注视、肌电与脑电以条带形式共用同一时钟，眼、前臂与皮层因此既能对照画面，也能互相对照。\n\n条带下方是标注条，给出任务、子任务、当前动作与该步骤涉及的物体，全部落在同一条时间轴上。每条条带保留自己的原生采样率，共享的只有移动的播放头。',
   },
   loading: { en: 'Loading recording…', zh: '正在载入录制…' },
   loadingData: { en: 'Loading signals…', zh: '正在载入信号…' },
@@ -870,18 +871,18 @@ export const FORMAT = {
   title: { en: 'Keep the native rate. Align on demand.', zh: '保留原始节奏，按需对齐。' },
   body: {
     en: [
-      'Sensors run at different rates. Resampling everything onto the slowest channel destroys the high-frequency detail the physiological signals exist to provide, and pre-synchronising the corpus is lossy and permanent.',
-      'So each feature keeps its own parquet file, timestamps and sampling grid, and a master index holds one row per frame. Alignment is decided per feature at query time, not baked into storage — so one episode answers a nearest-neighbour pose query and a windowed EEG query without degrading either.',
+      'Sensors run at different rates — gaze 200 Hz, pose 120 Hz, EMG 2,000 Hz, EEG up to 1,000 Hz — and **the rate is part of the signal**. Resampling onto the slowest channel would destroy the **high-frequency detail** these signals exist for.',
+      'So each feature keeps its own parquet file, timestamps and sampling grid, and a **master index** holds one row per frame. Alignment happens per feature at **query time** — nearest sample, interpolation or a window — not in storage, so one episode answers a pose query and an EEG query without degrading either.',
     ],
     zh: [
-      '各传感器采样率不同。把所有信号重采样到最慢通道，恰好摧毁生理信号存在的意义——高频细节；预先同步整份数据有损且不可逆。',
-      '因此每个特征各持一份 parquet、时间戳与采样栅格，主索引按帧记录一行。对齐在查询时按特征决定，不写入存储——同一段 episode 既能以最近邻回答位姿，又能以窗口回答脑电，两者都不被降级。',
+      '各传感器采样率不同——注视 200 Hz、位姿 120 Hz、肌电 2,000 Hz、脑电最高 1,000 Hz——**速率本身就是信号的一部分**。重采样到最慢通道，会摧毁这些信号存在所依赖的**高频细节**。',
+      '因此每个特征各持一份 parquet、时间戳与采样栅格，**主索引**按帧记录一行。对齐在**查询时**按特征决定——最近邻、插值或窗口——而不是写入存储，因此同一段 episode 既能回答位姿查询，也能回答脑电查询，两者都不被降级。',
     ],
   },
 
   /* ---- animated write / read figure ---- */
   figRead: { en: 'Read: the master clock drives every lookup', zh: '读取：主时钟驱动每一次查找' },
-  figKicker: { en: 'Figure 05 / Write, store, read', zh: '图 05 / 写入、落盘、读取' },
+  figKicker: { en: 'Figure 06 / Write, store, read', zh: '图 06 / 写入、落盘、读取' },
   stepWrite: { en: 'Writing', zh: '写入中' },
   stepSaved: { en: 'On disk', zh: '已落盘' },
   stepRead: { en: 'Querying frame %n', zh: '查询第 %n 帧' },
@@ -954,15 +955,15 @@ export const PIPELINE = {
   title: { en: 'Many streams, one spatiotemporal reference.', zh: '多条信号流，汇入一个时空参考。' },
   aside: {
     en: [
-      'Six measured signals plus the annotation layer each keep their native rate, passing a pair of modules chosen for that modality; nothing is resampled to make the columns line up.',
-      'They then meet one shared contract — explicit clock, explicit coordinate frame, quality gate, query-time fusion. Outputs keep their provenance, so a signal that fails the gate is quarantined rather than averaged into the rest.',
+      'Six measured streams and the annotation layer each keep their **native rate**, passing a pair of modules chosen for that modality; **nothing is resampled** to make the columns line up.',
+      'They meet **one contract** — explicit clock, explicit coordinate frame, quality gate, query-time fusion — and every output carries its **provenance**, so a stream that fails the gate is quarantined rather than averaged into the rest.',
     ],
     zh: [
-      '六路实测信号加一层标注，各自保留原生采样率，经一对为该模态选定的模块处理；不会为了对齐列宽而重采样。',
-      '随后汇入同一份契约——显式时钟、显式坐标系、质量门控与查询时融合。输出保留溯源，通不过门控的信号会被隔离，而不会被平均进其余数据。',
+      '六路实测信号与标注层各自保留**原生采样率**，经一对为该模态选定的模块处理；**不会为了对齐列宽而重采样**。',
+      '随后汇入**同一份契约**——显式时钟、显式坐标系、质量门控与查询时融合——每个输出都携带**溯源**，通不过门控的流会被隔离，而不会被平均进其余数据。',
     ],
   },
-  figKicker: { en: 'Figure 03 / Processing framework', zh: '图 03 / 处理框架' },
+  figKicker: { en: 'Figure 07 / Processing framework', zh: '图 07 / 处理框架' },
   figTitle: {
     en: 'Five chains, one clock, one episode',
     zh: '五条链路，一个时钟，一个片段',
@@ -1021,14 +1022,18 @@ export const COMMUNITY = {
   num: '07',
   kicker: { en: 'Community', zh: '生态' },
   title: { en: 'Collaborating institutions', zh: '合作机构' },
+  aside: {
+    en: 'The wall lists the institutions behind the corpus; the release is open too. **Acquisition software**, a browser and downloader for released episodes, and a **client library** ship with the data: code under Apache-2.0, documentation and data under the **CC BY-NC 4.0 research licence**. Browse, download, or take the acquisition stack to a new scene.',
+    zh: '这面墙列出的是参与建设语料的机构；这份发布数据的生态同样开放。**采集软件**、已发布片段的浏览器与下载器，以及可直接使用的**客户端库**随数据一同发布：代码采用 Apache-2.0，文档与数据采用 **CC BY-NC 4.0 研究许可**。可以先浏览、再下载，也可以把采集栈带到新的场景。',
+  },
 } as const
 
 export const INSTALL = {
   kicker: { en: 'Get started', zh: '开始使用' },
   title: { en: 'One line to install. One episode to begin.', zh: '一行安装，一段 episode 即刻开始。' },
   aside: {
-    en: 'The client reads the release in place: no resampling, no pre-synchronised copy. Point it at an episode and every stream arrives at its own rate.',
-    zh: '客户端直接读取发布数据：不做重采样，也不预先生成同步副本。指定一段 episode，各条信号便以各自原生采样率到达。',
+    en: 'The install adds the **reader, downloader and preview tools**: **no resampling**, no pre-synchronised copy. Start from the released episodes in the browser, then point the client at the ones you need.',
+    zh: '安装会加入**读取器、下载器与预览工具**：**不做重采样**，也不预先生成同步副本。先从浏览器里的已发布片段开始，再让客户端读取你需要的那几段。',
   },
   /** Typed into the terminal one character at a time. */
   command: 'pip install humancoin',
@@ -1061,6 +1066,11 @@ export const FOOTER = {
     zh: '通讯作者：Zhongyuan Wang、Guocai Yao。数据获取与合作：',
   },
   rights: { en: 'Public-facing research outline.', zh: '对外研究说明。' },
+  learnMore: { en: 'Learn more — read the report', zh: '了解更多 — 阅读报告' },
+  learnMoreAria: {
+    en: 'Read the report on arXiv (opens in a new tab)',
+    zh: '在 arXiv 上阅读报告（将在新标签页打开）',
+  },
 } as const
 
 export const UI = {

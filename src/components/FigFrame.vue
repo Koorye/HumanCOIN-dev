@@ -3,12 +3,12 @@
  * A journal figure frame: number, title, optional aside, the plot, and a note.
  *
  * Every chart in the site is wrapped in this, so figure numbering, the rule
- * under the head and caption typography are decided once. The number is
- * display-serif and the title sans — the same split a printed paper uses to
- * separate a figure caption from running prose.
+ * under the head and caption typography are decided once. The caption itself
+ * is `FigCaption`, the same bar the hand-drawn figures use.
  */
 import type { Bi } from '@/content'
 import { useI18n } from '@/composables/useI18n'
+import FigCaption from '@/components/FigCaption.vue'
 
 withDefaults(
   defineProps<{
@@ -23,16 +23,12 @@ withDefaults(
   }>(),
   {},
 )
-const { t, isZh } = useI18n()
+const { t } = useI18n()
 </script>
 
 <template>
   <figure class="fig" v-reveal>
-    <figcaption class="fig__head">
-      <span class="fig__n">{{ isZh ? '图' : 'Figure' }} {{ n }}</span>
-      <span class="fig__title">{{ t(title) }}</span>
-      <span v-if="aside" class="fig__aside">{{ t(aside) }}</span>
-    </figcaption>
+    <FigCaption :n="n" :title="title" :aside="aside" />
 
     <slot />
 

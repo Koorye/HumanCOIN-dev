@@ -6,6 +6,28 @@
     <title>HumanCOIN — A 12,500-Hour Dataset for Human Intent in Egocentric Manipulation</title>
     <meta name="description" content="HumanCOIN is a three-tier egocentric dataset that pairs visible manipulation with hidden human signals — gaze, surface EMG, EEG, glove kinematics and head-mounted multi-view video — under one spatiotemporal reference." />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      /* Resolve the colour theme before the first paint: stored choice, else
+         the system preference. Kept inline so a slow bundle never flashes the
+         wrong ground. The app's useTheme() takes over once Vue mounts. */
+      ;(() => {
+        try {
+          const stored = localStorage.getItem('humancoin-theme')
+          const mode = stored === 'light' || stored === 'dark' ? stored : 'system'
+          const dark =
+            mode === 'dark' ||
+            (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          const theme = dark ? 'dark' : 'light'
+          document.documentElement.dataset.theme = theme
+          document.documentElement.dataset.themeMode = mode
+          document.documentElement.style.colorScheme = theme
+          const meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', dark ? '#0b131b' : '#ffffff')
+        } catch {
+          /* no storage / no matchMedia: the light default is fine */
+        }
+      })()
+    </script>
     <meta property="og:type" content="website" />
     <meta property="og:title" content="HumanCOIN — A 12,500-Hour Dataset for Human Intent in Egocentric Manipulation" />
     <meta property="og:description" content="From visible action to hidden signals: a three-tier dataset for embodied manipulation research." />

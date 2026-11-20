@@ -2,6 +2,7 @@
 import { PIPELINE } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import SectionHead from '@/components/SectionHead.vue'
+import RichText from '@/components/RichText.vue'
 import PipelineFlow from '@/components/PipelineFlow.vue'
 
 const { list } = useI18n()
@@ -20,7 +21,7 @@ const { list } = useI18n()
              starts a band higher instead of sitting below two paragraphs. -->
         <template #aside>
           <div class="pl__lead">
-            <p v-for="(p, i) in list(PIPELINE.aside)" :key="i">{{ p }}</p>
+            <p v-for="(p, i) in list(PIPELINE.aside)" :key="i"><RichText :text="p" /></p>
           </div>
         </template>
       </SectionHead>

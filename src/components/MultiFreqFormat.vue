@@ -15,6 +15,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { FORMAT } from '@/content'
 import { useI18n } from '@/composables/useI18n'
+import FigCaption from '@/components/FigCaption.vue'
 import {
   AXIS_END_MS,
   FPS,
@@ -35,8 +36,11 @@ import {
 
 const { t } = useI18n()
 
-/* ---- geometry, in SVG user units ---- */
-const W = 736
+/* ---- geometry, in SVG user units ----
+   The width hugs the ink: the right-most mark is the mode label at X1 + 92 =
+   658, so 690 leaves a hairline of slack instead of the ~80 units of empty
+   field that used to make the figure stop short of the column edge. */
+const W = 668
 const H = 248
 const X0 = 168
 const X1 = 566
@@ -68,10 +72,6 @@ const lanes = MF_LANES.map((lane, i) => {
 
 const RAIL_NAME_X = 96
 const hovered = ref<number | null>(null)
-const hoverNote = computed(() => {
-  const l = hovered.value === null ? null : lanes[hovered.value]
-  return l ? t(l.lane.note) : ''
-})
 
 const frames = FRAME_MS_AXIS.map((ms, i) => ({
   ms,
@@ -200,18 +200,19 @@ void inView
 
 <template>
   <figure ref="root" class="mf">
-    <div class="mf__bar">
-      <p class="mf__kicker mono">{{ t(FORMAT.figKicker) }}</p>
-      <button
-        v-if="canAnimate"
-        type="button"
-        class="mf__play mono"
-        :aria-label="t(FORMAT.playback)"
-        @click="toggle"
-      >
-        {{ playing ? t(FORMAT.pause) : phase === 'aligned' ? t(FORMAT.replay) : t(FORMAT.playback) }}
-      </button>
-    </div>
+    <FigCaption n="06" :title="{ en: 'Write, store, read', zh: '写入、落盘、读取' }">
+      <template #action>
+        <button
+          v-if="canAnimate"
+          type="button"
+          class="mf__play mono"
+          :aria-label="t(FORMAT.playback)"
+          @click="toggle"
+        >
+          {{ playing ? t(FORMAT.pause) : phase === 'aligned' ? t(FORMAT.replay) : t(FORMAT.playback) }}
+        </button>
+      </template>
+    </FigCaption>
 
     <!-- the four stages, read left to right above the timeline -->
     <ol class="mf__steps">
@@ -325,9 +326,6 @@ void inView
         >independent clocks</text>
       </svg>
 
-      <p class="mf__hint mf__hint--hover" aria-live="polite">{{ hoverNote || t(FORMAT.readHint) }}</p>
-      <p class="mf__hint">{{ side === 'write' ? t(FORMAT.writeHint) : t(FORMAT.readHint) }}</p>
-      <p class="mf__hint mf__hint--cap">{{ t(FORMAT.episodeNote) }}</p>
     </div>
 
   </figure>
@@ -341,29 +339,13 @@ void inView
   /* bar, the four stages, the timeline at full width, then the cards */
   display: block;
 }
-.mf__bar {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 0.55rem;
-  border-bottom: 1px solid #e4e7ea;
-  margin-bottom: 1rem;
-}
-.mf__kicker {
-  margin: 0;
-  font-size: var(--fs-tick);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
 .mf__play {
   border: 0;
   border-bottom: 1px solid var(--line-strong);
   background: none;
   padding: 0 0 0.1rem;
-  font-size: var(--fs-tick);
+  font-size: var(--fs-micro);
+  line-height: 1.1;
   color: var(--ink-soft);
   cursor: pointer;
 }
@@ -490,8 +472,7 @@ void inView
 .mf__query text { font-family: var(--ff-mono); font-size: 7.6px; fill: var(--ink); }
 .mf__band-label { font-size: 7.6px; fill: var(--ink-soft); }
 
-.mf__hint { margin: 0.7rem 0 0; font-size: var(--fs-micro); color: var(--ink-mute); min-height: 1.4em; }
-.mf__hint--cap { margin-top: 0.4rem; color: var(--ink-mute); }
+
 
 /* ---- returned item ---- */
 .mf__out {
@@ -533,16 +514,7 @@ void inView
 .mf__num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
 .mf__notes { margin: 0.5rem 0 0; }
 .mf__note { display: block; margin-top: 0.32rem; color: var(--ink-mute); line-height: 1.5; }
-.mf__hint--hover {
-  min-height: 1.9em;
-  margin-top: 0.7rem;
-  color: var(--ink);
-}
-.mf__note--hover {
-  min-height: 1.9em;
-  margin-top: 0.65rem;
-  color: var(--ink-soft);
-}
+
 .mf__lane { cursor: default; }
 .mf__hit { fill: transparent; }
 .mf__lane-band { opacity: 0; transition: opacity 260ms var(--ease); }

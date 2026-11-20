@@ -39,7 +39,7 @@ onMounted(() => {
 <template>
   <section id="annotation" class="section">
     <div class="shell">
-      <SectionHead :num="ANNOTATION.num" :kicker="ANNOTATION.kicker" :title="ANNOTATION.title" />
+      <SectionHead :num="ANNOTATION.num" :kicker="ANNOTATION.kicker" :title="ANNOTATION.title" :aside="ANNOTATION.body" />
 
       <div ref="host" class="host">
         <L3Cloud v-if="visible" />

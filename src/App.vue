@@ -21,6 +21,7 @@ const DataSection = defineAsyncComponent(() => import('@/sections/DataSection.vu
 const FormatSection = defineAsyncComponent(() => import('@/sections/FormatSection.vue'))
 const PipelineSection = defineAsyncComponent(() => import('@/sections/PipelineSection.vue'))
 const CommunitySection = defineAsyncComponent(() => import('@/sections/CommunitySection.vue'))
+const ReleaseSection = defineAsyncComponent(() => import('@/sections/ReleaseSection.vue'))
 const InstallSection = defineAsyncComponent(() => import('@/sections/InstallSection.vue'))
 </script>
 
@@ -40,6 +41,7 @@ const InstallSection = defineAsyncComponent(() => import('@/sections/InstallSect
     <FormatSection />
     <PipelineSection />
     <CommunitySection />
+    <ReleaseSection />
     <InstallSection />
   </main>
 

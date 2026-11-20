@@ -140,7 +140,16 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
 
       <div class="foot__base">
         <p>{{ t(FOOTER.rights) }} © {{ year }} {{ SITE.name }}</p>
-        <button class="foot__top" type="button" @click="toTop">{{ t(UI.toTop) }} ↑</button>
+        <div class="foot__baseend">
+          <a
+            class="foot__learn"
+            :href="CITATION.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            :aria-label="t(FOOTER.learnMoreAria)"
+          >{{ t(FOOTER.learnMore) }}<span aria-hidden="true">↗</span></a>
+          <button class="foot__top" type="button" @click="toTop">{{ t(UI.toTop) }} ↑</button>
+        </div>
       </div>
     </div>
   </footer>
@@ -215,7 +224,10 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
   line-height: 1.7;
   color: var(--ink-body);
   white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  /* Break only when a single token is wider than the line; `anywhere` was
+     splitting ordinary words mid-way and reading as broken text. */
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .foot__base {
@@ -228,6 +240,21 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
   border-top: 1px solid var(--line);
 }
 .foot__base p { font-size: var(--fs-micro); color: var(--ink-mute); margin: 0; }
+.foot__baseend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.15rem;
+}
+.foot__learn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25em;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.foot__learn span { font-size: 0.88em; }
 .foot__top {
   border: 1px solid var(--line-strong);
   background: var(--paper);

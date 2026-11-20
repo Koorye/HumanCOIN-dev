@@ -29,16 +29,18 @@ const current = computed(() => clicked.value ?? active.value)
 const openSection = (item: (typeof NAV)[number]) =>
   current.value === item.id || item.children?.some((c) => c.id === current.value)
 
-/* The cover is a title page, not an article: while it fills the view, the
-   contents has nothing to point at, so it stays out of the way. */
+/* The cover is a title page, not an article: while it still holds most of the
+   view, the contents has nothing to point at, so it stays out of the way. It
+   hands over as soon as the cover is more than half scrolled past, rather than
+   waiting for the last of it to leave the viewport. */
 const heroVisible = ref(true)
 let io: IntersectionObserver | null = null
 
 onMounted(() => {
   const hero = document.getElementById('top')
   if (!hero || typeof IntersectionObserver === 'undefined') return
-  io = new IntersectionObserver(([entry]) => { heroVisible.value = entry.isIntersecting }, {
-    threshold: 0.08,
+  io = new IntersectionObserver(([entry]) => { heroVisible.value = entry.intersectionRatio > 0.5 }, {
+    threshold: [0, 0.5, 1],
   })
   io.observe(hero)
 })
@@ -94,6 +96,8 @@ function go(e: MouseEvent, id: string) {
 .toc {
   position: fixed;
   /* same left edge as the page container, not the viewport */
+  /* 1.25rem floor, not the page gutter: the rail may sit closer to the edge than
+     the article, or its 208px would collide with the article near the breakpoint. */
   left: max(1.25rem, calc(50% - var(--article-w) / 2 - var(--toc-w) - var(--toc-gap)));
   top: calc(var(--nav-h) + 2.8rem);
   width: var(--toc-w);
@@ -151,12 +155,11 @@ function go(e: MouseEvent, id: string) {
 }
 .toc__links a[aria-current='true'] .toc__num { color: var(--c-blue); }
 
-@media (max-width: 1180px) {
-  .toc { display: none; }
-}
-
-/* the contents column needs a clear gutter left of a 1180px article */
-@media (max-width: 1719px) {
+/* The contents column needs a clear gutter left of the article. Between 1680
+   and 1360 the article narrows (see --article-w in tokens.css) so the column
+   keeps its place; below that there is no room left and the page takes the
+   width back. */
+@media (max-width: 1359px) {
   .toc { display: none; }
 }
 </style>

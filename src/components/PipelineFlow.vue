@@ -16,7 +16,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { PIPELINE } from '@/content'
 import type { Bi } from '@/content'
 import { useI18n } from '@/composables/useI18n'
-import { PF_FOOT, PF_PROV } from '@/data/pipelineFlow'
+import FigCaption from '@/components/FigCaption.vue'
 
 const { t } = useI18n()
 
@@ -26,14 +26,14 @@ const COL_W = 190
 const PITCH = 228
 const X0 = 10
 const HEAD_Y = 34
-const HEAD_H = 80
-const STEP_Y = 136
-const STEP_H = 34
-const STEP_GAP = 72
-const RULE_Y = 356
+const HEAD_H = 128
+const STEP_Y = 186
+const STEP_H = 60
+const STEP_GAP = 18
+const RULE_Y = 444
 const EP_X = 1136
 const EP_W = 74
-const H = 410
+const H = 500
 
 interface Step {
   label: Bi
@@ -62,7 +62,7 @@ const GROUPS: Group[] = [
   {
     id: 'sync',
     icon: 'camera',
-    accent: '#4a6f9e',
+    accent: 'var(--c-blue)',
     inputs: { en: 'head RGB · wrist RGB', zh: '头部 RGB · 腕部 RGB' },
     title: { en: 'Synchronize + calibrate', zh: '同步与标定' },
     sub: { en: 'soft sync, no resampling', zh: '软同步，不重采样' },
@@ -93,7 +93,7 @@ const GROUPS: Group[] = [
   {
     id: 'geometry',
     icon: 'depth',
-    accent: '#33796f',
+    accent: 'var(--c-teal)',
     inputs: { en: 'depth · 6-DoF pose', zh: '深度 · 6-DoF 位姿' },
     title: { en: 'Geometry + motion', zh: '几何与运动' },
     sub: { en: 'built on the camera intrinsics', zh: '由相机内参构建' },
@@ -124,7 +124,7 @@ const GROUPS: Group[] = [
   {
     id: 'gaze',
     icon: 'eye',
-    accent: '#6f5aa0',
+    accent: 'var(--c-violet)',
     inputs: { en: 'gaze', zh: '注视' },
     title: { en: 'Gaze', zh: '注视' },
     sub: { en: 'measured at L3, predicted below', zh: 'L3 实测，低层预测' },
@@ -148,7 +148,7 @@ const GROUPS: Group[] = [
   {
     id: 'ephys',
     icon: 'wave',
-    accent: '#a8623c',
+    accent: 'var(--c-amber)',
     inputs: { en: 'EMG · EEG', zh: '肌电 · 脑电' },
     title: { en: 'Electrophysiology', zh: '电生理' },
     sub: { en: 'per-channel cleanup', zh: '逐通道清洗' },
@@ -179,7 +179,7 @@ const GROUPS: Group[] = [
   {
     id: 'annot',
     icon: 'video',
-    accent: '#8a5a6e',
+    accent: 'var(--c-rose)',
     inputs: { en: 'video', zh: '视频' },
     title: { en: 'Annotation', zh: '标注' },
     sub: { en: 'consumes the other four', zh: '依赖其余四组' },
@@ -209,7 +209,89 @@ const GROUPS: Group[] = [
   },
 ]
 
-const cols = GROUPS.map((g, i) => ({ g, x: X0 + i * PITCH, i }))
+const cols = computed(() =>
+  GROUPS.map((g, i) => ({
+    g,
+    x: X0 + i * PITCH,
+    i,
+    headLines: wrap(t(g.title), 13, COL_W - 58),
+    subLines: wrap(t(g.sub), 10.5, COL_W - 58),
+    steps: g.steps.map((s, k) => ({
+      ...s,
+      lines: wrap(t(s.label), 11.5, COL_W - 56),
+      y: STEP_Y + k * (STEP_H + STEP_GAP),
+    })),
+  })),
+)
+
+/**
+ * Greedy two-line wrapper for SVG labels. SVG `<text>` does not wrap, so the
+ * lines are measured here and drawn as tspans; cards are sized for two lines
+ * and grow taller rather than shrinking the type.
+ */
+function textWidth(text: string, fs: number): number {
+  let w = 0
+  for (const ch of text) {
+    if (/\s/.test(ch)) w += fs * 0.26
+    else if (/[\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef]/.test(ch)) w += fs
+    else if (/[A-Z]/.test(ch)) w += fs * 0.62
+    else if (/[a-z]/.test(ch)) w += fs * 0.5
+    else if (/[0-9]/.test(ch)) w += fs * 0.55
+    else if ('·—–-+/'.includes(ch)) w += fs * 0.4
+    else w += fs * 0.35
+  }
+  return w
+}
+
+function wrap(text: string, fs: number, maxW: number, maxLines = 2): string[] {
+  const full = text.trim()
+  if (textWidth(full, fs) <= maxW) return [full]
+  /* A middle dot is a designed break: prefer it over splitting a phrase. */
+  if (full.includes(' · ')) {
+    const parts = full.split(' · ')
+    if (parts.length === 2 && parts.every((p) => textWidth(p, fs) <= maxW)) return parts
+  }
+  const tokens = full.match(/[\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef]|[^\s\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef]+/g) ?? [full]
+  const lines: string[] = []
+  let line = ''
+  const push = () => {
+    if (line) {
+      lines.push(line)
+      line = ''
+    }
+  }
+  for (const token of tokens) {
+    const candidate = line ? `${line} ${token}` : token
+    if (!line || textWidth(candidate, fs) <= maxW) {
+      line = candidate
+      continue
+    }
+    push()
+    line = token
+  }
+  push()
+  /* Rebalance a short final line instead of leaving one orphan word. */
+  if (lines.length === 2) {
+    const a = lines[0].split(' ')
+    const b = lines[1].split(' ')
+    if (a.length > 1 && b.length === 1) {
+      const moved = a[a.length - 1]
+      /* Keep a lone operator with the first phrase: "+ calibrate" is worse
+         than "Synchronize +" / "calibrate". */
+      if (!/^[+·—–-]$/.test(moved)) {
+        a.pop()
+        lines[0] = a.join(' ')
+        lines[1] = `${moved} ${b[0]}`
+      }
+    }
+  }
+  if (lines.length > maxLines) {
+    const head = lines.slice(0, maxLines - 1)
+    head.push(lines.slice(maxLines - 1).join(' '))
+    return head
+  }
+  return lines
+}
 
 /* ---- per-step detail, on hover or keyboard focus ---- */
 /* The detail is written under the figure rather than floated over it, so the
@@ -269,18 +351,19 @@ const running = computed(() => playing.value && !reduced.value)
 
 <template>
   <figure ref="root" class="pf" :data-running="running ? 'true' : 'false'">
-    <div class="pf__bar">
-      <p class="pf__kicker mono">{{ t(PIPELINE.figKicker) }}</p>
-      <button
-        v-if="!reduced"
-        type="button"
-        class="pf__toggle"
-        :aria-pressed="running"
-        @click="toggle"
-      >
-        {{ running ? t(PIPELINE.pauseFlow) : t(PIPELINE.playFlow) }}
-      </button>
-    </div>
+    <FigCaption n="07" :title="{ en: 'Processing framework', zh: '处理框架' }">
+      <template #action>
+        <button
+          v-if="!reduced"
+          type="button"
+          class="pf__toggle"
+          :aria-pressed="running"
+          @click="toggle"
+        >
+          {{ running ? t(PIPELINE.pauseFlow) : t(PIPELINE.playFlow) }}
+        </button>
+      </template>
+    </FigCaption>
 
     <div ref="scroller" class="pf__scroll" role="region" :aria-label="t(PIPELINE.figScrollAria)">
       <svg
@@ -308,16 +391,20 @@ const running = computed(() => playing.value && !reduced.value)
           <!-- the chain's header -->
           <rect class="pf__tint" :x="c.x" :y="HEAD_Y" :width="COL_W" :height="HEAD_H" rx="9" />
           <rect class="pf__card" :x="c.x" :y="HEAD_Y" :width="COL_W" :height="HEAD_H" rx="9" />
-          <g class="pf__glyph" :transform="`translate(${c.x + 14} ${HEAD_Y + 13})`" aria-hidden="true">
+          <g class="pf__glyph" :transform="`translate(${c.x + 14} ${HEAD_Y + 16}) scale(0.85)`" aria-hidden="true">
             <path :d="ICONS[c.g.icon]" />
           </g>
-          <text class="pf__head" :x="c.x + 14" :y="HEAD_Y + 45">{{ t(c.g.title) }}</text>
-          <text class="pf__sub" :x="c.x + 14" :y="HEAD_Y + 63">{{ t(c.g.sub) }}</text>
+          <text class="pf__head" :x="c.x + 44" :y="HEAD_Y + 34">
+            <tspan v-for="(line, li) in c.headLines" :key="li" :x="c.x + 44" :dy="li === 0 ? 0 : 16">{{ line }}</tspan>
+          </text>
+          <text class="pf__sub" :x="c.x + 44" :y="HEAD_Y + 34 + c.headLines.length * 16 + 6">
+            <tspan v-for="(line, li) in c.subLines" :key="li" :x="c.x + 44" :dy="li === 0 ? 0 : 14">{{ line }}</tspan>
+          </text>
 
           <!-- the steps, in the order they run -->
           <path class="pf__link" :d="`M${c.x + COL_W / 2} ${HEAD_Y + HEAD_H + 2}V${STEP_Y - 6}`" />
           <g
-            v-for="(s, k) in c.g.steps"
+            v-for="(s, k) in c.steps"
             :key="k"
             class="pf__step"
             tabindex="0"
@@ -326,13 +413,15 @@ const running = computed(() => playing.value && !reduced.value)
             @focus="showTip($event, s)"
             @blur="hideTip"
           >
-            <rect class="pf__chip" :x="c.x + 16" :y="STEP_Y + k * STEP_GAP" :width="COL_W - 32" :height="STEP_H" rx="8" />
-            <circle class="pf__dot" :cx="c.x + 30" :cy="STEP_Y + k * STEP_GAP + STEP_H / 2" r="2.4" />
-            <text class="pf__chip-t" :x="c.x + 40" :y="STEP_Y + k * STEP_GAP + STEP_H / 2 + 3.6">{{ t(s.label) }}</text>
+            <rect class="pf__chip" :x="c.x + 16" :y="s.y" :width="COL_W - 32" :height="STEP_H" rx="8" />
+            <circle class="pf__dot" :cx="c.x + 30" :cy="s.y + STEP_H / 2 - (s.lines.length > 1 ? 6 : 0)" r="2.4" />
+            <text class="pf__chip-t" :x="c.x + 36" :y="s.y + STEP_H / 2 + (s.lines.length > 1 ? -5 : 4)">
+              <tspan v-for="(line, li) in s.lines" :key="li" :x="c.x + 36" :dy="li === 0 ? 0 : 15">{{ line }}</tspan>
+            </text>
             <path
-              v-if="k < c.g.steps.length - 1"
+              v-if="k < c.steps.length - 1"
               class="pf__link pf__link--live"
-              :d="`M${c.x + COL_W / 2} ${STEP_Y + k * STEP_GAP + STEP_H + 2}V${STEP_Y + (k + 1) * STEP_GAP - 6}`"
+              :d="`M${c.x + COL_W / 2} ${s.y + STEP_H + 2}V${c.steps[k + 1].y - 6}`"
               :style="{ animationDelay: `${k * 0.18}s` }"
             />
           </g>
@@ -340,7 +429,7 @@ const running = computed(() => playing.value && !reduced.value)
           <!-- every chain lands on the shared clock -->
           <path
             class="pf__link pf__link--drop"
-            :d="`M${c.x + COL_W / 2} ${STEP_Y + (c.g.steps.length - 1) * STEP_GAP + STEP_H + 2}V${RULE_Y - 8}`"
+            :d="`M${c.x + COL_W / 2} ${STEP_Y + (c.steps.length - 1) * (STEP_H + STEP_GAP) + STEP_H + 2}V${RULE_Y - 8}`"
           />
         </g>
 
@@ -359,16 +448,11 @@ const running = computed(() => playing.value && !reduced.value)
 
     <p class="pf__detail" aria-live="polite">
       <template v-if="hovered">
-        <b>{{ hovered.label }}</b>
+        <span class="pf__detail-label">{{ hovered.label }}</span>
         <span class="pf__detail-dash">—</span>{{ hovered.detail }}
       </template>
       <span v-else class="pf__detail-idle">{{ t(hint) }}</span>
     </p>
-
-    <figcaption class="pf__cap">
-      <p class="pf__foot">{{ t(PF_FOOT) }}</p>
-      <p v-for="(line, i) in PF_PROV" :key="i" class="pf__prov mono">{{ line }}</p>
-    </figcaption>
 
   </figure>
 </template>
@@ -383,27 +467,14 @@ const running = computed(() => playing.value && !reduced.value)
 /* the article column is now as wide as this figure wants to be */
 
 /* ---- transport ---- */
-.pf__bar {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 0.7rem;
-}
-.pf__kicker {
-  margin: 0;
-  font-size: var(--fs-tick);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
 .pf__toggle {
   border: 0;
   border-bottom: 1px solid var(--line-strong);
   background: none;
   color: var(--ink-soft);
   font: inherit;
-  font-size: var(--fs-tick);
+  font-size: var(--fs-micro);
+  line-height: 1.1;
   padding: 0;
   cursor: pointer;
 }
@@ -423,22 +494,20 @@ const running = computed(() => playing.value && !reduced.value)
 
 .pf__svg text {
   font-family: var(--ff-sans);
-  fill: #5c636b;
-  font-size: 11px;
 }
-.pf__input { font-size: 11.2px; fill: #6d747c; }
-.pf__head { font-size: 13.5px; font-weight: 650; fill: #101317; letter-spacing: -0.008em; }
-.pf__sub { font-size: 10.8px; fill: #6b727a; }
-.pf__chip-t { font-size: 11.6px; fill: #3a4048; font-weight: 500; }
-.pf__note { font-size: 11.2px; fill: #6d747c; letter-spacing: 0.04em; }
-.pf__ep { font-size: 11.6px; font-weight: 600; fill: #16191d; }
+.pf__input { font-size: 10.5px; fill: var(--ink-mute); }
+.pf__head { font-size: 13px; font-weight: 500; fill: var(--ink); letter-spacing: 0; }
+.pf__sub { font-size: 10.5px; fill: var(--ink-mute); }
+.pf__chip-t { font-size: 11.5px; fill: var(--ink-soft); font-weight: 400; }
+.pf__note { font-size: 9.5px; fill: var(--ink-mute); letter-spacing: 0.04em; }
+.pf__ep { font-size: 11.5px; font-weight: 500; fill: var(--ink); }
 
-.pf__card { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
+.pf__card { fill: var(--surface); stroke: var(--line); stroke-width: 1; }
 .pf__step { cursor: default; outline: none; }
 .pf__step:hover .pf__chip,
-.pf__step:focus-visible .pf__chip { stroke: var(--accent, #9aa3ad); }
+.pf__step:focus-visible .pf__chip { stroke: var(--accent, var(--ink-mute)); }
 .pf__step:hover .pf__chip-t,
-.pf__step:focus-visible .pf__chip-t { fill: #16191d; }
+.pf__step:focus-visible .pf__chip-t { fill: var(--ink); }
 
 /* the reading line under the figure: fixed height, so hovering never shifts
    the page */
@@ -450,23 +519,23 @@ const running = computed(() => playing.value && !reduced.value)
   color: var(--ink-soft);
   max-width: 78ch;
 }
-.pf__detail b { font-weight: 600; color: var(--ink); }
+.pf__detail-label { font-weight: 400; color: var(--ink); }
 .pf__detail-dash { margin: 0 0.4em; color: var(--ink-mute); }
 .pf__detail-idle { color: var(--ink-mute); font-style: italic; }
 .pf__tint { fill: var(--accent, transparent); opacity: 0.11; }
-.pf__chip { fill: #fff; stroke: #e7eaed; stroke-width: 1; }
-.pf__dot { fill: var(--accent, #b4bcc4); }
+.pf__chip { fill: var(--surface); stroke: var(--line); stroke-width: 1; }
+.pf__dot { fill: var(--accent, var(--ink-mute)); }
 .pf__glyph path {
   fill: none;
-  stroke: var(--accent, #9aa3ad);
+  stroke: var(--accent, var(--ink-mute));
   stroke-width: 1.35;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.pf__link { fill: none; stroke: #ccd2d8; stroke-width: 1; stroke-dasharray: 4 4; marker-end: url(#pf-arrow); }
-.pf__link--drop { marker-end: none; stroke: var(--accent, #ccd2d8); opacity: 0.55; }
-.pf__rule { fill: none; stroke: #a8b0b8; stroke-width: 1.2; }
-.pf__rule-arrow { fill: none; stroke: #9aa1a9; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+.pf__link { fill: none; stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 4 4; marker-end: url(#pf-arrow); }
+.pf__link--drop { marker-end: none; stroke: var(--accent, var(--line-strong)); opacity: 0.55; }
+.pf__rule { fill: none; stroke: var(--line-strong); stroke-width: 1.2; }
+.pf__rule-arrow { fill: none; stroke: var(--line-strong); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---- the flow reads as motion, but only while the figure is in view ---- */
 .pf__link--live { animation: pf-flow 2.4s linear infinite; animation-play-state: paused; }
@@ -474,22 +543,6 @@ const running = computed(() => playing.value && !reduced.value)
 @keyframes pf-flow { to { stroke-dashoffset: -32; } }
 @media (prefers-reduced-motion: reduce) {
   .pf__link--live { animation: none; }
-}
-
-/* ---- caption + per-chain prose ---- */
-.pf__cap { margin: 0.85rem 0 0; }
-.pf__foot {
-  margin: 0;
-  font-size: var(--fs-micro);
-  line-height: 1.65;
-  color: var(--ink-soft);
-  max-width: 84ch;
-}
-.pf__prov {
-  margin: 0.5rem 0 0;
-  font-size: var(--fs-tick);
-  color: var(--ink-mute);
-  line-height: 1.6;
 }
 
 </style>

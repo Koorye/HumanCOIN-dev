@@ -2,6 +2,7 @@
 import { FORMAT } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import SectionHead from '@/components/SectionHead.vue'
+import RichText from '@/components/RichText.vue'
 import MultiFreqFormat from '@/components/MultiFreqFormat.vue'
 
 const { list } = useI18n()
@@ -21,7 +22,7 @@ const { list } = useI18n()
              a band higher instead of pushing the reader past two paragraphs. -->
         <template #aside>
           <div class="format__lead">
-            <p v-for="(p, i) in list(FORMAT.body)" :key="i">{{ p }}</p>
+            <p v-for="(p, i) in list(FORMAT.body)" :key="i"><RichText :text="p" /></p>
           </div>
         </template>
       </SectionHead>

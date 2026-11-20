@@ -79,7 +79,8 @@ a:hover { text-decoration: underline; }
 
 code, pre, kbd, samp { font-family: var(--ff-mono); }
 
-strong, b { font-weight: 640; color: var(--ink); }
+strong { font-weight: 620; color: var(--ink); }
+b { font-weight: 640; color: var(--ink); }
 
 ::selection { background: var(--t-blue); color: var(--ink); }
 
@@ -106,7 +107,7 @@ strong, b { font-weight: 640; color: var(--ink); }
 
 /* ---- Layout shell ---- */
 .shell {
-  width: min(100% - 2.5rem, var(--article-w));
+  width: min(100% - var(--page-gutter) * 2, var(--article-w));
   margin-inline: auto;
 }
 @media (max-width: 640px) {
@@ -128,6 +129,9 @@ strong, b { font-weight: 640; color: var(--ink); }
   padding-block: var(--section-y);
   border-top: 1px solid var(--line);
 }
+/* The cover settles into the abstract with no seam rule under “Read the
+   release”; the next sections keep their separators. */
+#top.cover + #abstract.section { border-top: 0; }
 .section--tinted { background: var(--paper); }
 
 /* The head is one column: the title takes the full measure so it sets on a
@@ -171,6 +175,21 @@ strong, b { font-weight: 640; color: var(--ink); }
   line-height: var(--lh-loose);
 }
 .section__aside p { margin-bottom: 0.5em; }
+
+/* ---- One reading size for section prose ----
+   Every section's running text is set like the abstract: 17px in the body ink.
+   Only captions, figure notes and mono labels stay smaller and grey — those
+   carry their own classes (figcap, fig__note, mono, section-num). */
+.section__aside,
+.section__aside p,
+.prose p,
+.lead,
+[class$='__lead'] p,
+[class$='__lead'] {
+  font-size: var(--fs-lead) !important;
+  line-height: 1.62 !important;
+  color: var(--ink-body) !important;
+}
 
 /* ---- Generic card / figure ---- */
 .panel {
@@ -289,10 +308,9 @@ figure { margin: 0; }
 
 /* ============================================================
    Journal figure frame
-   A figure carries a number, a title, the plot, and a note. The number
-   is set in the display serif and the title in the sans, which is the
-   convention every printed paper uses and which is what lets a reader
-   tell a figure caption from running prose at a glance.
+   A figure carries a caption, the plot, and a note. The caption itself is
+   `FigCaption`, which every figure uses; this frame only owns its note and
+   the rule above the plate.
    ============================================================ */
 .fig {
   margin: 0;
@@ -303,39 +321,6 @@ figure { margin: 0; }
   padding: clamp(0.7rem, 0.55rem + 0.5vw, 1rem) 0 clamp(0.75rem, 0.6rem + 0.5vw, 1.1rem);
 }
 
-.fig__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.3rem 0.7rem;
-  padding-bottom: 0.7rem;
-  margin-bottom: 0.95rem;
-  border-bottom: 1px solid var(--line);
-}
-.fig__n {
-  font-family: var(--ff-display);
-  font-size: var(--fs-fig-num);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--c-blue);
-  white-space: nowrap;
-}
-.fig__title {
-  font-family: var(--ff-sans);
-  font-size: var(--fs-small);
-  font-weight: 620;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-}
-.fig__aside {
-  margin-left: auto;
-  font-family: var(--ff-mono);
-  font-size: var(--fs-tick);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
 .fig__note {
   margin: 0.8rem 0 0;
   padding-top: 0.65rem;

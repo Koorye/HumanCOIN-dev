@@ -1,0 +1,164 @@
+/* ============================================================
+   Night surfaces
+   ------------------------------------------------------------
+   Tokens.css flips the page palette. This layer handles the few surfaces
+   whose colour is painted directly rather than read from a token:
+
+   · the masthead wordmark (black artwork)
+   · the acrylic hero cover and its film controls
+   · dense figures / instrument panels, which stay on a light paper plate
+     so their existing inks and chart palettes remain legible
+
+   Everything below is scoped to <html data-theme="dark">; the light sheet
+   is untouched.
+   ============================================================ */
+
+/* ---- masthead ---- */
+html[data-theme='dark'] .nav__logo {
+  filter: invert(1) brightness(1.7);
+  opacity: 0.92;
+}
+
+/* ---- hero cover: deep blue-black ground; the wordmark goes light ---- */
+html[data-theme='dark'] .cover {
+  background: radial-gradient(120% 90% at 20% 0%, #162b3d 0%, #0f1c27 55%, var(--paper) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -36px 70px rgba(0, 0, 0, 0.18);
+}
+html[data-theme='dark'] .cover__mark {
+  filter: invert(1) brightness(1.7);
+  opacity: 0.12;
+  mix-blend-mode: screen;
+}
+html[data-theme='dark'] .film__glow::before {
+  background: radial-gradient(closest-side, rgba(140, 188, 226, 0.16), rgba(140, 188, 226, 0) 72%);
+}
+html[data-theme='dark'] .film__bar { border-top-color: var(--line); }
+html[data-theme='dark'] .film__btn {
+  color: var(--ink-body);
+  background: rgba(255, 255, 255, 0.08);
+}
+html[data-theme='dark'] .film__btn:hover { background: rgba(255, 255, 255, 0.16); }
+html[data-theme='dark'] .film__seek::-webkit-slider-runnable-track,
+html[data-theme='dark'] .film__vol::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    var(--c-blue) calc(var(--p, 0) * 100%),
+    rgba(255, 255, 255, 0.18) calc(var(--p, 0) * 100%)
+  );
+}
+html[data-theme='dark'] .film__seek::-moz-range-track,
+html[data-theme='dark'] .film__vol::-moz-range-track {
+  background: rgba(255, 255, 255, 0.18);
+}
+html[data-theme='dark'] .strip {
+  border-top-color: var(--line);
+  border-bottom-color: var(--line);
+}
+
+/* ---- skip link: light ink ground on the dark page ---- */
+html[data-theme='dark'] .skip-link { color: var(--paper); }
+
+/* ---- paper plates ---------------------------------------------------
+   The same DOM, with the light token set restored locally. The plate's own
+   background is white, so every hard-coded `#fff` card inside it still reads
+   as paper; text keeps the light-sheet ink instead of turning white on white. */
+html[data-theme='dark'] :is(.fig, .ir, .pf, .mf, .wc, .body) {
+  --paper: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f9fc;
+  --line: #e9eff5;
+  --line-strong: #cad8e3;
+  --ink: #14202b;
+  --ink-body: #2b3a47;
+  --ink-soft: #55666f;
+  --ink-mute: #6d7f8c;
+
+  --c-blue: #1f5f96;
+  --c-teal: #0f6f68;
+  --c-violet: #6a4c9c;
+  --c-amber: #8a6136;
+  --c-rose: #99505b;
+  --c-slate: #4f6272;
+
+  --t-blue: #dfeaf6;
+  --t-teal: #d9eee9;
+  --t-violet: #e8e0f3;
+  --t-rose: #f6eaec;
+  --t-amber: #f5efe4;
+
+  --p-1: #1f5f96;
+  --p-2: #24707c;
+  --p-3: #5b8bb5;
+  --p-4: #8a6136;
+  --p-5: #99505b;
+  --p-6: #4f6272;
+  --p-7: #7c93a6;
+  --p-8: #a8b8c4;
+
+  --seq-0: #f3f7fa;
+  --seq-1: #e2ecf4;
+  --seq-2: #c6daea;
+  --seq-3: #9dbfd9;
+  --seq-4: #6b9dc4;
+  --seq-5: #3f77a4;
+  --seq-6: #1f4d73;
+
+  --div-neg: #99505b;
+  --div-pos: #1f5f96;
+
+  --e-1: 0 1px 2px rgba(20, 32, 43, 0.05), 0 1px 3px rgba(20, 32, 43, 0.04);
+  --e-2: 0 2px 6px rgba(20, 32, 43, 0.05), 0 10px 28px rgba(20, 32, 43, 0.06);
+  --e-3: 0 6px 16px rgba(20, 32, 43, 0.07), 0 24px 60px rgba(20, 32, 43, 0.09);
+
+  color-scheme: light;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--e-1);
+}
+html[data-theme='dark'] .fig {
+  padding: clamp(0.7rem, 0.55rem + 0.5vw, 0.95rem);
+}
+html[data-theme='dark'] :is(.ir, .pf, .mf, .wc, .body) {
+  padding: clamp(0.8rem, 0.6rem + 0.7vw, 1.1rem);
+}
+
+/* Partner marks are dark artwork on transparent fields; give each one a small
+   paper tile in the night palette, so the seals and wordmarks keep their colour
+   while the names stay light on the page. */
+html[data-theme='dark'] .community img {
+  background: #ffffff;
+  border-radius: var(--r-sm);
+  padding: 0.45rem 0.6rem;
+}
+html[data-theme='dark'] .community .logos img {
+  mix-blend-mode: normal;
+  opacity: 1;
+}
+html[data-theme='dark'] .community .host img {
+  padding: 0.6rem 1rem;
+}
+
+/* Access-section cards are the same kind of paper island, but already carry
+   their own frame and padding; only the token set is restored. */
+html[data-theme='dark'] .card {
+  --paper: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f9fc;
+  --line: #e9eff5;
+  --line-strong: #cad8e3;
+  --ink: #14202b;
+  --ink-body: #2b3a47;
+  --ink-soft: #55666f;
+  --ink-mute: #6d7f8c;
+  --c-blue: #1f5f96;
+  --c-teal: #0f6f68;
+  --c-violet: #6a4c9c;
+  --c-amber: #8a6136;
+  --c-rose: #99505b;
+  --c-slate: #4f6272;
+  color-scheme: light;
+  background: #ffffff;
+}

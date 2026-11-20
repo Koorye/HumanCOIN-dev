@@ -16,6 +16,7 @@ import { onBeforeUnmount, ref, watch } from 'vue'
 import { INSTALL } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import { useInView } from '@/composables/useReveal'
+import RichText from '@/components/RichText.vue'
 
 const { t } = useI18n()
 
@@ -97,7 +98,7 @@ onBeforeUnmount(() => {
           <span class="install__rule" aria-hidden="true"></span>{{ t(INSTALL.kicker) }}
         </p>
         <h2 class="install__title">{{ t(INSTALL.title) }}</h2>
-        <p class="install__aside">{{ t(INSTALL.aside) }}</p>
+        <p class="install__aside"><RichText :text="t(INSTALL.aside)" /></p>
         <a
           class="install__cta"
           :href="INSTALL.ctaHref"

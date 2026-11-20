@@ -1,117 +1,123 @@
-<script setup lang="ts">
+?<script setup lang="ts">
 /**
  * The cover.
  *
  * Laid out as a journal cover rather than as a landing page: the paper title,
- * then one figure with its own numbered caption. Nothing else — a cover carries
- * the title, and the claim and the standfirst belong to the abstract, where
- * there is room to argue them.
+ * the release film, then the numbers it is claiming. The film plays muted on
+ * arrival —?the browser will not let it do otherwise —?and the bar under it
+ * gives back the two controls a reader actually wants: stop it, or hear it.
  *
- * The figure is the release itself, shown as a carousel over a synchronised
- * moment. Three marquee rows carry the takes, one per acquisition tier, each row
- * built from that tier's own captures; pointing at a card opens the take in the
- * panel above — the views it ships, the non-visual channels its capture
- * actually records, and the annotation of the moment the playhead sits on. The
- * footage is the clock master, so the channels and the annotation mark the same
- * instant the views are showing. Click pins a take so it survives the cursor
- * moving on.
- *
- * The three tiers do not carry the same instruments: L3 records every channel,
- * L2 the wrist bands' EMG, and L1 the views alone. Each cell is stamped with
- * what its tier measures, and a channel the take does not ship is drawn as a
- * labelled gap. Nothing is presented as recorded that was not.
- *
- * Motion: the marquees drift continuously (so they read as a feed rather than a
- * slideshow) and the metric values count up once when the strip enters view.
- * Both are decorative; the numbers are correct at rest.
+ * The synchronised-moment figure that used to sit here now closes the page just
+ * before *Start* (see ReleaseSection), where a reader has already been told what
+ * the tiers are and can read it as the last look at the data.
  */
-import { computed, onMounted, ref, shallowRef, watch } from 'vue'
-import { COVER, TIER_PROVENANCE, type TierProvenance } from '@/data/cover'
-import {
-  COVER_TAKES_BY_TIER,
-  loadReel,
-  takeById,
-  type CoverReel,
-  type CoverTake,
-} from '@/data/coverReels'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { COVER } from '@/data/cover'
 import { useI18n } from '@/composables/useI18n'
 import { useCountUp, useInView } from '@/composables/useReveal'
-import CoverCarousel from '@/components/CoverCarousel.vue'
-import CoverMoment from '@/components/CoverMoment.vue'
 
 const { t } = useI18n()
 
 /** The institute's wordmark, blurred into the cover's acrylic ground. */
 const BAAI_MARK = 'logos/baai-acrylic.png'
 
-/* ---------------- which take the moment is showing ---------------- */
+/* ---------------- the film ---------------- */
 
-/** The tier the open take was recorded at, which is the row it came from. */
-const tier = shallowRef<TierProvenance>(TIER_PROVENANCE[0])
-/** Take opened by hovering or focus. */
-const hoveredId = ref('')
-/** Take pinned by a click; wins over hover so a reader can wander the rows. */
-const pinnedId = ref('')
-/** Which take the panel actually shows. The cover opens on the first L3 take. */
-const activeId = ref(COVER_TAKES_BY_TIER.L3[0]?.id ?? '')
+const FILM = { src: 'film/HumanCOIN-film.mp4', poster: 'film/film-poster.jpg' }
 
-const activeTake = computed<CoverTake | null>(() => takeById(activeId.value))
+const videoEl = ref<HTMLVideoElement | null>(null)
+const stageEl = ref<HTMLDivElement | null>(null)
+const isFull = ref(false)
+/** True once the reader stopped the film themselves; scrolling must not resume it. */
+const userPaused = ref(false)
+let visibility: IntersectionObserver | null = null
+const playing = ref(false)
+const muted = ref(true)
+const volume = ref(0.8)
+const current = ref(0)
+const duration = ref(0)
 
-const reel = shallowRef<CoverReel | null>(null)
-const loading = ref(false)
-const failed = ref(false)
-let token = 0
+const clock = (s: number) =>
+  Number.isFinite(s) && s > 0
+    ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+    : '0:00'
 
-/**
- * Fetch the take's reduced signals. The previous take's series are cleared first,
- * because a row now shows its own tier: keeping the last drawing on screen while
- * an L1 take lands would show L3 channels beside L1 footage.
- */
-async function showTake(id: string) {
-  if (!id) return
-  activeId.value = id
-  const my = ++token
-  reel.value = null
-  loading.value = true
-  failed.value = false
-  try {
-    const r = await loadReel(id)
-    if (my === token) reel.value = r
-  } catch {
-    if (my === token) failed.value = true
-  } finally {
-    if (my === token) loading.value = false
+const progress = computed(() => (duration.value ? current.value / duration.value : 0))
+
+function togglePlay() {
+  const el = videoEl.value
+  if (!el) return
+  if (el.paused) {
+    userPaused.value = false
+    void el.play().catch(() => {})
+  } else {
+    userPaused.value = true
+    el.pause()
   }
 }
 
-function onHover(id: string, from: TierProvenance) {
-  // A pinned take stays open, and keeps the tier it was read at, until it is
-  // clicked again — hovering another row must not relabel it.
-  if (pinnedId.value) return
-  tier.value = from
-  hoveredId.value = id
-  if (id !== activeId.value) void showTake(id)
+function setMuted(next: boolean) {
+  const el = videoEl.value
+  if (!el) return
+  el.muted = next
+  muted.value = next
+  if (!next && el.volume === 0) setVolume(0.8)
 }
 
-function onLeave() {
-  if (pinnedId.value) return
-  hoveredId.value = ''
-  // Back to the row's own first take, not to the L3 row: the three rows are
-  // three different sets of captures now.
-  const first = COVER_TAKES_BY_TIER[tier.value.id][0]?.id ?? ''
-  if (first && first !== activeId.value) void showTake(first)
+function setVolume(next: number) {
+  const el = videoEl.value
+  if (!el) return
+  const v = Math.min(1, Math.max(0, next))
+  el.volume = v
+  volume.value = v
+  if (v === 0 && !el.muted) { el.muted = true; muted.value = true }
+  if (v > 0 && el.muted) { el.muted = false; muted.value = false }
 }
 
-function onSelect(id: string, from: TierProvenance) {
-  tier.value = from
-  // A second click on the pinned take releases it.
-  pinnedId.value = pinnedId.value === id ? '' : id
-  if (pinnedId.value && id !== activeId.value) void showTake(id)
+function seek(e: Event) {
+  const el = videoEl.value
+  if (!el) return
+  const next = Number((e.target as HTMLInputElement).value)
+  if (Number.isFinite(next)) el.currentTime = next
+}
+
+/** Autoplay can be refused (power saving, data saver); the button stays honest. */
+const onFullChange = () => { isFull.value = !!document.fullscreenElement }
+
+function toggleFull() {
+  const el = stageEl.value
+  if (!el) return
+  if (document.fullscreenElement) void document.exitFullscreen().catch(() => {})
+  else void el.requestFullscreen?.().catch(() => {})
 }
 
 onMounted(() => {
-  const first = COVER_TAKES_BY_TIER.L3[0]
-  if (first) void showTake(first.id)
+  const el = videoEl.value
+  document.addEventListener('fullscreenchange', onFullChange)
+  if (!el) return
+  el.volume = volume.value
+  playing.value = !el.paused
+  /* The film is 1080p and software-decoded; playing it while the cover is off
+     screen (reading sections 02-07) costs a frame budget on every scroll. It is
+     paused as soon as it leaves the viewport and resumed only if the reader had
+     not stopped it. */
+  visibility = new IntersectionObserver(([entry]) => {
+    const v = videoEl.value
+    if (!v) return
+    if (entry.isIntersecting) {
+      if (!userPaused.value) void v.play().catch(() => {})
+    } else if (!v.paused) {
+      v.pause()
+    }
+  }, { threshold: 0.08 })
+  visibility.observe(el)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('fullscreenchange', onFullChange)
+  visibility?.disconnect()
+  visibility = null
+  videoEl.value?.pause()
 })
 
 /* ---------------- metric strip ---------------- */
@@ -121,8 +127,7 @@ const counters = COVER.metrics.map((m) =>
   useCountUp(m.value, { decimals: m.decimals, duration: 1200 }),
 )
 
-/* The strip is above the fold, so the observer resolves on its first callback —
-   after mount. Watching the flag covers both cases: immediate entry, and the
+/* The strip is above the fold, so the observer resolves on its first callback —?   after mount. Watching the flag covers both cases: immediate entry, and the
    reader arriving at the strip by scrolling. */
 watch(stripIn, (on) => {
   if (on) counters.forEach((c) => c.run())
@@ -149,27 +154,110 @@ onMounted(() => {
         <span>{{ COVER.date }}</span>
       </p>
 
-      <figure class="coverfig">
-        <!-- the moment: the take opened by the carousel, all three bands on one clock -->
-        <CoverMoment
-          :take="activeTake"
-          :reel="reel"
-          :tier="tier"
-          :loading="loading"
-          :failed="failed"
-          :pinned="!!pinnedId"
-        />
+      <figure ref="stageEl" class="film">
+        <div class="film__stage">
+          <div class="film__glow">
+            <video
+            ref="videoEl"
+            class="film__video"
+            :src="FILM.src"
+            :poster="FILM.poster"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            :aria-label="t({ en: 'HumanCOIN release film', zh: 'HumanCOIN 发布短片' })"
+            @play="playing = true"
+            @pause="playing = false"
+            @timeupdate="current = videoEl?.currentTime ?? 0"
+            @loadedmetadata="duration = videoEl?.duration ?? 0; current = 0"
+            @durationchange="duration = videoEl?.duration ?? 0"
+            @click="togglePlay"
+            />
+          </div>
+        </div>
 
-        <!-- the carousel: three tiers, one row each -->
-        <CoverCarousel
-          class="coverfig__car"
-          :active-id="activeTake?.id ?? ''"
-          :pinned-id="pinnedId"
-          @hover="onHover"
-          @leave="onLeave"
-          @select="onSelect"
-        />
+        <div class="film__bar">
+            <button
+              class="film__btn"
+              type="button"
+              :aria-label="playing
+                ? t({ en: 'Pause film', zh: '暂停短片' })
+                : t({ en: 'Play film', zh: '播放短片' })"
+              @click="togglePlay"
+            >
+              <svg v-if="playing" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                <rect x="4" y="3" width="3" height="10" rx="1" fill="currentColor" stroke="none" />
+                <rect x="9" y="3" width="3" height="10" rx="1" fill="currentColor" stroke="none" />
+              </svg>
+              <svg v-else viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                <path d="M5 3.2 13 8l-8 4.8z" fill="currentColor" stroke="none" />
+              </svg>
+            </button>
 
+            <span class="film__time mono">{{ clock(current) }}<i>/</i>{{ clock(duration) }}</span>
+
+            <input
+              class="film__seek"
+              type="range"
+              min="0"
+              :max="duration || 0"
+              step="0.1"
+              :value="current"
+              :style="{ '--p': progress }"
+              :aria-label="t({ en: 'Film position', zh: '短片进度' })"
+              @input="seek"
+            />
+
+            <button
+              class="film__btn film__btn--vol"
+              type="button"
+              :aria-label="muted
+                ? t({ en: 'Unmute film', zh: '打开声音' })
+                : t({ en: 'Mute film', zh: '静音' })"
+              :aria-pressed="!muted"
+              @click="setMuted(!muted)"
+            >
+              <svg v-if="muted || volume === 0" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+                <path d="M2.5 6v4h2.2L8 12.6V3.4L4.7 6z" fill="currentColor" stroke="none" />
+                <path d="m10.4 6.2 3.2 3.2m0-3.2-3.2 3.2" />
+              </svg>
+              <svg v-else viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+                <path d="M2.5 6v4h2.2L8 12.6V3.4L4.7 6z" fill="currentColor" stroke="none" />
+                <path d="M10.4 5.9a3.2 3.2 0 0 1 0 4.2M12.4 4a5.8 5.8 0 0 1 0 8" />
+              </svg>
+            </button>
+
+            <input
+              class="film__vol"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              :value="muted ? 0 : volume"
+              :style="{ '--p': muted ? 0 : volume }"
+              :aria-label="t({ en: 'Film volume', zh: '短片音量' })"
+              @input="setVolume(Number(($event.target as HTMLInputElement).value))"
+            />
+
+            <button
+              class="film__btn"
+              type="button"
+              :aria-label="isFull
+                ? t({ en: 'Exit full screen', zh: '退出全屏' })
+                : t({ en: 'Full screen', zh: '全屏' })"
+              :aria-pressed="isFull"
+              @click="toggleFull"
+            >
+              <svg v-if="isFull" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                <path d="M6.4 2.2v3.9H2.4M9.6 13.8v-3.9h4M6.4 9.9 2.9 13.4M9.6 6.1l3.5-3.5" />
+              </svg>
+              <svg v-else viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                <path d="M2.6 6V2.6H6M13.4 6V2.6H10M2.6 10v3.4H6M13.4 10v3.4H10" />
+              </svg>
+            </button>
+          </div>
       </figure>
     </div>
 
@@ -245,18 +333,12 @@ onMounted(() => {
   color: var(--ink-body);
   padding-top: clamp(1rem, 0.8rem + 0.9vw, 1.6rem);
   padding-bottom: clamp(1.1rem, 0.9rem + 1vw, 1.9rem);
-  /* A pale blue acrylic sheet: cool washes, a white sheen at the top edge, and
-     a soft caustic where the two blues meet. The body below stays white. */
-  background:
-    radial-gradient(900px 520px at 82% -10%, rgba(255, 255, 255, 0.94), transparent 60%),
-    radial-gradient(760px 560px at 98% 10%, rgba(74, 150, 214, 0.40), transparent 66%),
-    radial-gradient(680px 520px at 2% 0%, rgba(168, 212, 244, 0.52), transparent 68%),
-    radial-gradient(900px 700px at 46% 112%, rgba(255, 255, 255, 0.78), transparent 70%),
-    linear-gradient(165deg, #e9f4fd 0%, #d9ecfb 46%, #e9f5fe 100%);
+  /* One even wash, top to bottom: the blue of the release page settles into the
+     white of the article, so the cover has no visible seam with the page below. */
+  background: linear-gradient(180deg, #cfe6fa 0%, #e6f3fd 42%, #f7fbff 74%, #ffffff 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.92),
     inset 0 -36px 70px rgba(255, 255, 255, 0.38);
-  border-bottom: 1px solid rgba(116, 160, 196, 0.24);
 }
 
 /* The blurred wordmark sits behind the figure, under the glass. */
@@ -307,21 +389,180 @@ onMounted(() => {
   color: var(--ink-mute);
 }
 .cover__sep { opacity: 0.6; }
-.coverfig {
+
+/* ---- the film ----
+   One 16:9 frame on the acrylic ground, with a glass bar that carries the two
+   controls a reader wants and the one piece of information they need. */
+.film {
   margin: clamp(0.9rem, 0.7rem + 0.8vw, 1.35rem) 0 0;
-  padding: clamp(0.55rem, 0.45rem + 0.5vw, 0.8rem);
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 22px;
-  background:
-    linear-gradient(138deg, rgba(255, 255, 255, 0.78) 0%, rgba(236, 247, 255, 0.52) 46%, rgba(255, 255, 255, 0.62) 100%);
-  box-shadow:
-    0 24px 60px rgba(43, 92, 133, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
-.coverfig__car {
-  margin-top: clamp(0.7rem, 0.55rem + 0.8vw, 1rem);
-  padding-top: clamp(0.45rem, 0.35rem + 0.45vw, 0.65rem);
+.film__stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+.film__glow {
+  position: relative;
+}
+/* The halo is painted behind the plate as a gradient, not as a drop-shadow
+   filter: a filter over a playing 1080p video re-rasterises every frame and was
+   the main cause of scroll jank on the way back up to the cover. */
+.film__glow::before {
+  content: '';
+  position: absolute;
+  inset: -6%;
+  border-radius: 32px;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 72%);
+  z-index: -1;
+  pointer-events: none;
+}
+.film:fullscreen { display: grid; place-items: center; background: #0b141c; }
+.film:fullscreen .film__stage { width: 100%; flex: 1 1 auto; }
+.film:fullscreen .film__video {
+  width: 100%;
+  height: 100%;
+  max-height: 100vh;
+  object-fit: contain;
+  border-radius: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.film:fullscreen .film__bar { color: rgba(255,255,255,.85); border-top-color: rgba(255,255,255,.18); }
+/* fullscreen puts the bar back on the dark stage, so the controls go white again */
+.film:fullscreen .film__btn { color: rgba(255, 255, 255, 0.92); background: rgba(255, 255, 255, 0.16); }
+.film:fullscreen .film__btn:hover { background: rgba(255, 255, 255, 0.28); }
+.film:fullscreen .film__time { color: rgba(255, 255, 255, 0.86); }
+.film:fullscreen .film__seek::-webkit-slider-runnable-track,
+.film:fullscreen .film__vol::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    #fff calc(var(--p, 0) * 100%),
+    rgba(255, 255, 255, 0.28) calc(var(--p, 0) * 100%)
+  );
+}
+.film:fullscreen .film__seek::-webkit-slider-thumb,
+.film:fullscreen .film__vol::-webkit-slider-thumb { background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); }
+.film:fullscreen .film__seek::-moz-range-track,
+.film:fullscreen .film__vol::-moz-range-track { background: rgba(255, 255, 255, 0.26); }
+.film:fullscreen .film__seek::-moz-range-progress,
+.film:fullscreen .film__vol::-moz-range-progress { background: rgba(255, 255, 255, 0.92); }
+.film:fullscreen .film__seek::-moz-range-thumb,
+.film:fullscreen .film__vol::-moz-range-thumb { background: #fff; }
+.film__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 22px;
+  background: var(--night);
+  cursor: pointer;
+  /* No frame: the picture's own edges dissolve into the acrylic ground, so the
+     plate reads as glass under the film rather than as a box drawn around it. */
+  -webkit-mask-image: radial-gradient(126% 126% at 50% 48%, #000 74%, rgba(0, 0, 0, 0.62) 92%, transparent 100%);
+  mask-image: radial-gradient(126% 126% at 50% 48%, #000 74%, rgba(0, 0, 0, 0.62) 92%, transparent 100%);
+}
+/* The controls sit under the plate, on the page's own white, not on the film. */
+.film__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.55rem;
+  padding: 0.45rem 0.1rem 0.1rem;
   border-top: 1px solid rgba(23, 42, 58, 0.12);
+  color: var(--ink-soft);
+  opacity: 0.95;
+  transition: opacity var(--dur) var(--ease);
+}
+.film:hover .film__bar,
+.film:focus-within .film__bar { opacity: 1; }
+
+.film__btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  /* the bar sits on the page's white, so its controls are inked, not white */
+  color: var(--ink-soft);
+  background: rgba(23, 42, 58, 0.06);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.film__btn:hover { background: rgba(23, 42, 58, 0.13); }
+.film__btn:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 2px; }
+.film__btn svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.film__btn--vol { margin-left: 0.1rem; }
+
+.film__time {
+  flex: none;
+  font-size: var(--fs-tick);
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.film__time i { margin: 0 0.28em; font-style: normal; opacity: 0.5; }
+
+/* Range inputs, drawn as hairlines with a small white handle; --p carries the
+   filled fraction so the track reads as a progress bar rather than a slider. */
+.film__seek,
+.film__vol {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 16px;
+  margin: 0;
+}
+.film__seek { flex: 1 1 auto; min-width: 0; }
+.film__vol { flex: none; width: 58px; }
+.film__seek::-webkit-slider-runnable-track,
+.film__vol::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    var(--c-blue) calc(var(--p, 0) * 100%),
+    rgba(23, 42, 58, 0.18) calc(var(--p, 0) * 100%)
+  );
+}
+.film__seek::-moz-range-track,
+.film__vol::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(23, 42, 58, 0.18);
+}
+.film__seek::-moz-range-progress,
+.film__vol::-moz-range-progress {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--c-blue);
+}
+.film__seek::-webkit-slider-thumb,
+.film__vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px;
+  height: 9px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--c-blue);
+  box-shadow: 0 0 0 3px rgba(31, 95, 150, 0.12);
+}
+.film__seek::-moz-range-thumb,
+.film__vol::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--c-blue);
 }
 
 /* ---- metric strip ---- */
@@ -430,6 +671,4 @@ onMounted(() => {
   text-transform: uppercase;
   color: #4a7595;
 }
-
-
 </style>

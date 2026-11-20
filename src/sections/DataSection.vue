@@ -1,26 +1,30 @@
 <script setup lang="ts">
 /**
- * §03 — data distribution.
+ * §02 — data distribution.
  *
- * The section follows Fig. 2 of the report, panel for panel: the three tiers
- * and their two settings, the eighteen scene classes, the eighty-verb tail and
- * the six hundred object entries. Each figure is a live plate rather than a
- * screenshot: the pointer reads values, a replay re-runs the entrance, and the
- * data behind every bar sits behind a disclosure.
+ * One figure, three registers, all cut from the same 12,500 hours:
  *
- * The strip above the figures states the four numbers a reader should carry
- * into them; the argument sits beside the title, where it can be read before
- * the first chart starts to draw.
+ *   1. the plate — six panels, (a) to (f), on one 1px grid, with the scene
+ *      frames as a row of that grid between (d) and (e);
+ *   2. the vocabulary — two high-frequency clouds, verbs and objects.
+ *
+ * The section previously carried four separate figures with their own chrome,
+ * three of which repeated the same argument at a larger size; they are gone,
+ * together with every "read the data" disclosure. What is left is one plate
+ * that runs the full article measure: no inner max-width, no centred row.
+ *
+ * The four numbers that open the section state what a reader should carry into
+ * the plate; the plate itself is FigureStats.
  */
 import { DATA } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import SectionHead from '@/components/SectionHead.vue'
-import FigFrame from '@/components/FigFrame.vue'
-import SceneCarousel from '@/components/SceneCarousel.vue'
-import VerbTail from '@/components/VerbTail.vue'
-import ObjectTail from '@/components/ObjectTail.vue'
-import { SCENES, TOTAL_HOURS } from '@/data/fig2'
+import RichText from '@/components/RichText.vue'
+import FigCaption from '@/components/FigCaption.vue'
 import FigureStats from '@/components/FigureStats.vue'
+import SceneStrip from '@/components/SceneStrip.vue'
+import TierGlyph from '@/components/TierGlyph.vue'
+import { SCENES, TIERS, TOTAL_HOURS } from '@/data/fig2'
 
 const { t, list } = useI18n()
 const fmt = (n: number) => n.toLocaleString('en-US')
@@ -32,7 +36,7 @@ const fmt = (n: number) => n.toLocaleString('en-US')
       <SectionHead :num="DATA.num" :kicker="DATA.kicker" :title="DATA.title" aside-wide>
         <template #aside>
           <div class="data-lead">
-            <p v-for="(p, i) in list(DATA.body)" :key="i">{{ p }}</p>
+            <p v-for="(p, i) in list(DATA.body)" :key="i"><RichText :text="p" /></p>
           </div>
         </template>
       </SectionHead>
@@ -56,35 +60,37 @@ const fmt = (n: number) => n.toLocaleString('en-US')
         </li>
       </ul>
 
-      <div class="figures">
-        <FigFrame id="data-stats" n="3" :title="DATA.statsTitle" :aside="DATA.statsAside">
-          <FigureStats />
-        </FigFrame>
+      <figure class="dfig" v-reveal>
+        <FigCaption n="03" :title="DATA.statsTitle" :aside="DATA.statsAside" />
 
-        <FigFrame id="data-scenes" n="4" :title="DATA.sceneTitle" :aside="DATA.sceneAside">
-          <SceneCarousel :note="DATA.sceneNote" />
-        </FigFrame>
+        <!-- one accent, three weights, three marks: the plate's tier code -->
+        <ul class="dfig__key">
+          <li v-for="tier in TIERS" :key="tier.id">
+            <TierGlyph :id="tier.id" :w="24" :h="9" />
+            <span class="dfig__id mono">{{ tier.id }}</span>
+            <span>{{ t(tier.name) }}</span>
+            <span class="dfig__v mono">{{ fmt(tier.hours) }} h</span>
+          </li>
+        </ul>
 
-        <FigFrame id="data-tasks" n="5" :title="DATA.verbTitle" :aside="DATA.verbAside">
-          <VerbTail :note="DATA.verbNote" />
-        </FigFrame>
+        <FigureStats id="data-stats" />
+      </figure>
 
-        <FigFrame id="data-objects" n="6" :title="DATA.objectTitle" :aside="DATA.objectAside">
-          <ObjectTail :note="DATA.objectNote" />
-        </FigFrame>
+      <!-- the sampling band: stills, outside the plate, full column width -->
+      <div class="dfig__band-strip">
+        <SceneStrip id="data-scenes" />
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-/* The chapter is a plate of four dense figures: tighten its own rhythm rather
-   than the page's global section spacing. */
+.mono { font-family: var(--ff-mono); }
+
+/* The chapter is a single dense plate: tighten its own rhythm rather than the
+   page's global section spacing. */
 #data { padding-block: clamp(2rem, 1.6rem + 1.2vw, 2.7rem); }
 #data :deep(.section__head) { margin-bottom: clamp(0.9rem, 0.75rem + 0.4vw, 1.15rem); }
-#data :deep(.fig) { padding-top: 0.6rem; padding-bottom: 0.65rem; }
-#data :deep(.fig__head) { padding-bottom: 0.45rem; margin-bottom: 0.65rem; }
-#data :deep(.fig__note) { margin-top: 0.6rem; padding-top: 0.5rem; max-width: 100%; }
 
 .data-lead {
   font-size: var(--fs-micro);
@@ -141,10 +147,35 @@ const fmt = (n: number) => n.toLocaleString('en-US')
   color: var(--ink-soft);
 }
 
-/* The figures share the page's figure chrome; only the spacing between them is
-   decided here, so the section reads as a sequence of plates. */
-.figures {
-  display: grid;
-  gap: clamp(0.7rem, 0.55rem + 0.35vw, 1rem);
+/* ---- the figure ---- */
+.dfig {
+  margin: 0;
+  border-top: 1px solid var(--line);
+  padding-top: 0.7rem;
+  min-width: 0;
 }
+
+.dfig__key {
+  list-style: none;
+  margin: 0;
+  padding: 0.45rem 0 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.2rem;
+  font-size: var(--fs-tick);
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+.dfig__key li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.32rem;
+  white-space: nowrap;
+}
+.dfig__id { color: var(--ink); font-weight: 600; letter-spacing: 0.03em; }
+.dfig__v { color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+
+/* the stills sit below the plate, at its width, a breath away from it */
+.dfig__band-strip { margin-top: clamp(1.2rem, 1.05rem + 0.4vw, 1.6rem); }
 </style>

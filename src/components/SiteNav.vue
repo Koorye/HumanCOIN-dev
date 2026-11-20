@@ -8,13 +8,54 @@
  * section in view is marked with colour. A hairline along the bottom edge fills
  * as the document is read.
  */
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { UI } from '@/content'
 import { useI18n } from '@/composables/useI18n'
 import { useScrollSpy } from '@/composables/useScrollSpy'
+import { useTheme, type ThemeMode } from '@/composables/useTheme'
 
 const { t, toggle } = useI18n()
+const { mode, resolved, setMode } = useTheme()
 
 const { progress } = useScrollSpy([])
+
+const THEMES: { id: ThemeMode; label: { en: string; zh: string } }[] = [
+  { id: 'system', label: { en: 'Follow system', zh: '跟随系统' } },
+  { id: 'light', label: { en: 'Light', zh: '浅色' } },
+  { id: 'dark', label: { en: 'Dark', zh: '深色' } },
+]
+
+const themeOpen = ref(false)
+const themeRoot = ref<HTMLElement | null>(null)
+
+const themeLabel = computed(() =>
+  t({
+    en: `Theme: ${mode.value === 'system' ? 'follow system' : mode.value}`,
+    zh: `主题：${mode.value === 'system' ? '跟随系统' : mode.value === 'dark' ? '深色' : '浅色'}`,
+  }),
+)
+
+function chooseTheme(next: ThemeMode) {
+  setMode(next)
+  themeOpen.value = false
+}
+
+function onThemeOutside(e: PointerEvent) {
+  if (themeOpen.value && themeRoot.value && !themeRoot.value.contains(e.target as Node)) {
+    themeOpen.value = false
+  }
+}
+function onThemeKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') themeOpen.value = false
+}
+onMounted(() => {
+  document.addEventListener('pointerdown', onThemeOutside)
+  document.addEventListener('keydown', onThemeKey)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', onThemeOutside)
+  document.removeEventListener('keydown', onThemeKey)
+})
 
 const BAAI_MARK = 'logos/baai-acrylic.png'
 
@@ -79,6 +120,44 @@ const ACTIONS = [
           <span class="nav__act-label">{{ t(action.label) }}</span>
         </a>
 
+        <div ref="themeRoot" class="nav__themewrap">
+          <button
+            class="nav__theme"
+            type="button"
+            :aria-label="themeLabel"
+            :title="themeLabel"
+            aria-haspopup="menu"
+            :aria-expanded="themeOpen"
+            @click="themeOpen = !themeOpen"
+          >
+            <svg v-if="mode === 'system'" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <circle cx="8" cy="8" r="5.2" />
+              <path d="M8 2.8a5.2 5.2 0 0 0 0 10.4z" fill="currentColor" stroke="none" />
+            </svg>
+            <svg v-else-if="resolved === 'dark'" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path d="M13.2 9.8A5.6 5.6 0 0 1 6.2 2.8a5.6 5.6 0 1 0 7 7z" />
+            </svg>
+            <svg v-else viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <circle cx="8" cy="8" r="3.1" />
+              <path d="M8 1.4v1.7M8 12.9v1.7M1.4 8h1.7M12.9 8h1.7M3.3 3.3l1.2 1.2M11.5 11.5l1.2 1.2M3.3 12.7l1.2-1.2M11.5 4.5l1.2-1.2" />
+            </svg>
+          </button>
+
+          <div v-if="themeOpen" class="nav__thememenu" role="menu" :aria-label="themeLabel">
+            <button
+              v-for="opt in THEMES"
+              :key="opt.id"
+              type="button"
+              role="menuitemradio"
+              :aria-checked="mode === opt.id"
+              @click="chooseTheme(opt.id)"
+            >
+              <span>{{ t(opt.label) }}</span>
+              <span v-if="mode === opt.id" class="nav__themeticks" aria-hidden="true">✓</span>
+            </button>
+          </div>
+        </div>
+
         <button
           class="nav__lang"
           type="button"
@@ -97,7 +176,7 @@ const ACTIONS = [
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 60;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--nav-bg);
   backdrop-filter: saturate(160%) blur(12px);
 }
 .nav__inner {
@@ -107,7 +186,7 @@ const ACTIONS = [
   justify-content: space-between;
   gap: 1.25rem;
   /* the bar runs from the contents column's left edge to the article's right */
-  width: min(100% - 2.5rem, calc(var(--article-w) + var(--toc-w) + var(--toc-gap)));
+  width: min(100% - var(--page-gutter) * 2, calc(var(--article-w) + var(--toc-w) + var(--toc-gap)));
   margin-left: max(1.25rem, calc(50% - var(--article-w) / 2 - var(--toc-w) - var(--toc-gap)));
 }
 
@@ -192,6 +271,71 @@ const ACTIONS = [
 }
 .nav__lang:hover { color: var(--ink); }
 
+.nav__theme {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-left: 0.1rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.nav__theme:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+.nav__theme svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav__themewrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.nav__thememenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 80;
+  min-width: 168px;
+  padding: 0.35rem;
+  display: grid;
+  gap: 1px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  box-shadow: var(--e-2);
+}
+.nav__thememenu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: var(--fs-micro);
+  text-align: left;
+  cursor: pointer;
+}
+.nav__thememenu button:hover { background: var(--surface-2); color: var(--ink); }
+.nav__thememenu button[aria-checked='true'] { color: var(--ink); font-weight: 600; }
+.nav__themeticks { color: var(--c-blue); }
+
 .nav__progress {
   height: 1px;
   background: var(--c-blue);
@@ -213,7 +357,7 @@ const ACTIONS = [
 }
 
 /* with the contents column hidden, the bar simply rides the article */
-@media (max-width: 1719px) {
+@media (max-width: 1359px) {
   .nav__inner {
     width: min(100% - 2.5rem, var(--article-w));
     margin-inline: auto;
