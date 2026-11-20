@@ -380,7 +380,7 @@ const running = computed(() => playing.value && !reduced.value)
   /* the drawing gains width to the right of the column, where the contents
      column is not in the way, so its labels are not scaled down */
 }
-@media (min-width: 1600px) { .pf { margin-right: -180px; } }
+/* the article column is now as wide as this figure wants to be */
 
 /* ---- transport ---- */
 .pf__bar {

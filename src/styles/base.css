@@ -654,3 +654,16 @@ figure { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   [class*='hc-'] { animation: none !important; }
 }
+
+/* The column is wide enough for the figures; prose keeps a readable measure
+   inside it rather than running the full 1180px. */
+.section__aside p,
+.section__head p.section__lead,
+.section__body p,
+.foot p {
+  max-width: 76ch;
+}
+.section__aside p.mono,
+.foot p.mono {
+  max-width: none;
+}

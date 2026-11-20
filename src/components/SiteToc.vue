@@ -154,4 +154,9 @@ function go(e: MouseEvent, id: string) {
 @media (max-width: 1180px) {
   .toc { display: none; }
 }
+
+/* the contents column needs a clear gutter left of a 1180px article */
+@media (max-width: 1719px) {
+  .toc { display: none; }
+}
 </style>

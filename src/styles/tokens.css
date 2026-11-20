@@ -109,7 +109,7 @@
   /* The article column, and the contents column that sits to its left. The
      article is centred on the viewport; the contents is not part of that
      measure. */
-  --article-w: 1000px;
+  --article-w: 1180px;
   --toc-w: 240px;
   --toc-gap: 1.5rem;
   --shell-wide: 1440px;

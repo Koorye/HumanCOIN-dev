@@ -211,4 +211,12 @@ const ACTIONS = [
   .nav__act-label { display: none; }
   .nav__ico { margin-right: 0; }
 }
+
+/* with the contents column hidden, the bar simply rides the article */
+@media (max-width: 1719px) {
+  .nav__inner {
+    width: min(100% - 2.5rem, var(--article-w));
+    margin-inline: auto;
+  }
+}
 </style>
