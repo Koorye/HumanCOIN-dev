@@ -22,11 +22,11 @@ interface Partner {
 
 const NAMES: Record<string, { en: string; zh: string }> = {
   baai: { en: 'BAAI', zh: '智源人工智能研究院' },
-  pku: { en: 'Peking University', zh: '北京大学' },
+  pku: { en: 'School of Computer Science, Peking University', zh: '北京大学计算机学院' },
   ustc: { en: 'University of Science and Technology of China', zh: '中国科学技术大学' },
-  thu: { en: 'College of AI, Tsinghua University', zh: '清华大学' },
+  thu: { en: 'College of AI, Tsinghua University', zh: '清华大学人工智能学院' },
   fudan: { en: 'Fudan University', zh: '复旦大学' },
-  beihang: { en: 'Institute of Robotics, Beihang University', zh: '北京航空航天大学' },
+  beihang: { en: 'Institute of Robotics, Beihang University', zh: '北京航空航天大学机器人研究所' },
   jdcloud: { en: 'JD Cloud', zh: '京东云' },
   mifeng: { en: 'Maniformer', zh: '觅蜂科技' },
   ant: { en: 'Ant Digital Technologies (AntDT)', zh: '蚂蚁数科' },
