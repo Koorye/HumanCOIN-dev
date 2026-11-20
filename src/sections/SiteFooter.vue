@@ -134,7 +134,8 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
         <section>
           <h3 class="foot__h">{{ t(FOOTER.contactTitle) }}</h3>
           <p class="foot__p">{{ t(FOOTER.contactBody) }}</p>
-          <p class="foot__p"><a href="mailto:humancoin@baai.ac.cn">humancoin@baai.ac.cn</a></p>
+          <p class="foot__p"><a href="mailto:gcyao1@baai.ac.cn">gcyao1@baai.ac.cn</a></p>
+          <p class="foot__p"><a href="mailto:shihan.wu.koorye@outlook.com">shihan.wu.koorye@outlook.com</a></p>
         </section>
       </div>
 

@@ -142,8 +142,8 @@ const ACTIONS = [
 
 .nav__brand { display: flex; align-items: center; flex: none; }
 .nav__brand:hover { text-decoration: none; }
-.nav__logo { height: 30px; width: auto; display: block; }
-@media (max-width: 520px) { .nav__logo { height: 26px; } }
+.nav__logo { height: 24px; width: auto; display: block; }
+@media (max-width: 520px) { .nav__logo { height: 21px; } }
 
 .nav__links {
   position: absolute;

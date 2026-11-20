@@ -22,11 +22,11 @@ interface Partner {
 
 const NAMES: Record<string, { en: string; zh: string }> = {
   baai: { en: 'BAAI', zh: '智源人工智能研究院' },
-  pku: { en: 'School of Computer Science, Peking University', zh: '北京大学计算机学院' },
+  pku: { en: 'Peking University', zh: '北京大学' },
   ustc: { en: 'University of Science and Technology of China', zh: '中国科学技术大学' },
-  thu: { en: 'College of AI, Tsinghua University', zh: '清华大学人工智能学院' },
+  thu: { en: 'Tsinghua University', zh: '清华大学' },
   fudan: { en: 'Fudan University', zh: '复旦大学' },
-  beihang: { en: 'Institute of Robotics, Beihang University', zh: '北京航空航天大学机器人研究所' },
+  beihang: { en: 'Beihang University', zh: '北京航空航天大学' },
   jdcloud: { en: 'JD Cloud', zh: '京东云' },
   mifeng: { en: 'Maniformer', zh: '觅蜂科技' },
   ant: { en: 'Ant Digital Technologies (AntDT)', zh: '蚂蚁数科' },
@@ -134,7 +134,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   margin-bottom: 1.1rem;
 }
 .host img {
-  max-height: 5.4rem;
+  max-height: 4.55rem;
   width: auto;
   object-fit: contain;
   transition: transform var(--dur) var(--ease);
@@ -147,14 +147,18 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.75rem;
 }
-@media (max-width: 980px) { .logos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (max-width: 700px) { .logos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 460px) { .logos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.logos li { display: grid; }
+/* Five to a row, sized by the row rather than by how many partners load. The
+   wall ends on a short row, and centring it closes the block instead of
+   leaving a hole at the right edge. */
+.logos li { display: grid; width: calc((100% - 3rem) / 5); }
+@media (max-width: 980px) { .logos li { width: calc((100% - 2.25rem) / 4); } }
+@media (max-width: 700px) { .logos li { width: calc((100% - 1.5rem) / 3); } }
+@media (max-width: 460px) { .logos li { width: calc((100% - 0.75rem) / 2); } }
 .logos__item {
   display: grid;
   grid-template-rows: 1fr auto;
@@ -162,7 +166,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   align-content: center;
   gap: 0.5rem;
   width: 100%;
-  height: 7rem;
+  height: 8.4rem;
   padding: 0.7rem 0.6rem 0.6rem;
   border-radius: var(--r-sm);
   transition: background var(--dur) var(--ease);
@@ -175,7 +179,7 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   object-fit: contain;
   transition: transform var(--dur) var(--ease);
 }
-.logos img.is-seal { max-height: 4.15rem; }
+.logos img.is-seal { max-height: 5.6rem; }
 .logos__item:hover img { transform: scale(1.04); }
 /* Companies whose mark has not been supplied yet are set as a wordmark, so the
    wall keeps one cell size and no placeholder graphic is invented. */

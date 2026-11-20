@@ -1013,7 +1013,10 @@ export const FOOTER = {
     zh: '三个层级的参与者在录制前均签署书面知情同意，并可随时退出。发布片段均已去标识化：不含可识别个人身份的信息，所有发布视角中的人脸均已模糊处理。L1、L2、L3 遵循同一套知情同意流程。',
   },
   contactTitle: { en: 'Contact', zh: '联系' },
-  contactBody: { en: 'Correspondence regarding data access and collaboration:', zh: '数据获取与合作事宜请联系：' },
+  contactBody: {
+    en: 'Corresponding authors: Zhongyuan Wang and Guocai Yao. Data access and collaboration:',
+    zh: '通讯作者：Zhongyuan Wang、Guocai Yao。数据获取与合作：',
+  },
   rights: { en: 'Public-facing research outline.', zh: '对外研究说明。' },
 } as const
 

@@ -256,7 +256,7 @@ onMounted(() => {
 .cover__mark {
   position: absolute;
   top: clamp(1rem, -1rem + 8vw, 7rem);
-  right: clamp(-2.5rem, -4vw, 1.5rem);
+  right: clamp(-1rem, 2vw, 5rem);
   width: clamp(320px, 31vw, 500px);
   height: auto;
   opacity: 0.22;
