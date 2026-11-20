@@ -280,17 +280,15 @@ onMounted(() => {
 /* ---- the paper title ---- */
 .cover__title {
   font-family: var(--ff-display);
-  /* One line, always: the scale is set so the longest title still fits the
-     column at the breakpoint, rather than wrapping onto a second row. */
+  /* Two rows are allowed: at this scale the longest title sets as a pair of
+     balanced lines instead of being shrunk to fit a single one. */
   font-size: var(--fs-cover);
   font-weight: 500;
   line-height: 1.16;
   letter-spacing: -0.025em;
   color: var(--ink);
   margin: 0;
-}
-@media (min-width: 1081px) {
-  .cover__title { white-space: nowrap; }
+  text-wrap: balance;
 }
 .cover__tldr {
   margin: 0.75rem 0 0;
