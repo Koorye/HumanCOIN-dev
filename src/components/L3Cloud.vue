@@ -82,10 +82,14 @@ const RGB = [
 /* gaze is measured in the rectified headband-left frame, so that is the image
    the trajectory is drawn on */
 const DEPTH_SRC = 'real/l3/depth.mp4'
+/* the camera the tracker writes against */
+const EYE_SRC = 'real/l3/eye.mp4'
+const EYE_LABEL = 'Scene camera'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
 const rgbEls = ref<HTMLVideoElement[]>([])
 const depthEl = ref<HTMLVideoElement | null>(null)
+const eyeEl = ref<HTMLVideoElement | null>(null)
 const gazeCanvas = ref<HTMLCanvasElement | null>(null)
 
 const meta = ref<CloudMeta | null>(null)
@@ -143,10 +147,13 @@ const regionOf = (name: string) => REGION[name.charAt(0)] ?? '#33796f'
 const bands = computed(() => {
   const s = signals.value
   if (!s) return []
-  const row = (label: string, v: number[], color: string) => ({ label, color, points: windowed(v, RH) })
+  const Hz = RH
+  const hz = Math.round(RH / 2)
+  const row = (label: string, v: number[], color: string, h = Hz) => ({ label, color, points: windowed(v, h) })
   return [
     {
       key: 'gaze',
+      rowH: Hz,
       title: 'Gaze · x / y',
       legend: [
         { label: 'x', color: '#6f5aa0' },
@@ -156,18 +163,20 @@ const bands = computed(() => {
     },
     {
       key: 'emg',
+      rowH: hz,
       title: `EMG · ${s.channels.emgL} left + ${s.channels.emgR} right`,
       legend: [
         { label: 'left', color: '#a8623c' },
         { label: 'right', color: '#2f6f8f' },
       ],
       rows: [
-        ...s.emgL.map((v, i) => row(`L${i + 1}`, v, '#a8623c')),
-        ...s.emgR.map((v, i) => row(`R${i + 1}`, v, '#2f6f8f')),
+        ...s.emgL.map((v, i) => row(`L${i + 1}`, v, '#a8623c', hz)),
+        ...s.emgR.map((v, i) => row(`R${i + 1}`, v, '#2f6f8f', hz)),
       ],
     },
     {
       key: 'eeg',
+      rowH: hz,
       title: 'EEG · 16 of 128',
       legend: [
         { label: 'frontal', color: '#33796f' },
@@ -175,7 +184,7 @@ const bands = computed(() => {
         { label: 'posterior', color: '#8a5a6e' },
         { label: 'temporal', color: '#9a7b2e' },
       ],
-      rows: s.eeg.map((v, i) => row(s.eegNames[i] ?? `ch ${i + 1}`, v, regionOf(s.eegNames[i] ?? 'F'))),
+      rows: s.eeg.map((v, i) => row(s.eegNames[i] ?? `ch ${i + 1}`, v, regionOf(s.eegNames[i] ?? 'F'), hz)),
     },
   ]
 })
@@ -272,7 +281,7 @@ function drawGaze() {
   ctx.imageSmoothingEnabled = true
   ctx.save()
   ctx.filter = 'blur(6px)'
-  ctx.globalAlpha = 0.75
+  ctx.globalAlpha = 0.4
   ctx.drawImage(heatCanvas, 0, 0, w, h)
   ctx.restore()
 
@@ -283,19 +292,19 @@ function drawGaze() {
     if (i === 0) ctx.moveTo(x, y)
     else ctx.lineTo(x, y)
   }
-  ctx.strokeStyle = 'rgba(52,42,92,0.85)'
-  ctx.lineWidth = 1.6
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)'
+  ctx.lineWidth = 1.4
   ctx.stroke()
 
   const cx = px(sx[sx.length - 1])
   const cy = py(sy[sy.length - 1])
   ctx.beginPath()
-  ctx.arc(cx, cy, 5, 0, Math.PI * 2)
-  ctx.fillStyle = 'rgba(255,255,255,0.95)'
+  ctx.arc(cx, cy, 4.5, 0, Math.PI * 2)
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
   ctx.fill()
   ctx.beginPath()
-  ctx.arc(cx, cy, 3, 0, Math.PI * 2)
-  ctx.fillStyle = '#3a2f6b'
+  ctx.arc(cx, cy, 2.4, 0, Math.PI * 2)
+  ctx.fillStyle = 'rgba(255,255,255,0.92)'
   ctx.fill()
 }
 
@@ -440,7 +449,7 @@ function resize() {
 }
 
 function seek(to: number) {
-  const vids = [...rgbEls.value].filter(Boolean) as HTMLVideoElement[]
+  const vids = [...rgbEls.value, eyeEl.value].filter(Boolean) as HTMLVideoElement[]
   vids.forEach((v) => {
     if (Math.abs(v.currentTime - to) > 0.25) v.currentTime = to
   })
@@ -474,7 +483,7 @@ watch(playing, (on) => {
   if (on) seek(t.value)
 })
 watch(speed, (s) => {
-  ;[...rgbEls.value].forEach((v) => { if (v) v.playbackRate = s })
+  ;[...rgbEls.value, eyeEl.value].forEach((v) => { if (v) v.playbackRate = s })
 })
 watch(t, (v) => seek(v))
 watch(
@@ -616,7 +625,7 @@ onMounted(async () => {
   drawGaze()
   window.addEventListener('resize', resize)
   raf = requestAnimationFrame(loop)
-  ;[...rgbEls.value].forEach((v) => v && void v.play().catch(() => {}))
+  ;[...rgbEls.value, eyeEl.value].forEach((v) => v && void v.play().catch(() => {}))
 })
 
 onBeforeUnmount(() => {
@@ -683,12 +692,9 @@ onBeforeUnmount(() => {
           <figcaption class="mono">Depth · pseudo-colour</figcaption>
         </figure>
         <div class="rail__cell rail__cell--gaze">
-          <figcaption class="mono">Gaze · tracker frame · fitted</figcaption>
+          <video ref="eyeEl" :src="EYE_SRC" muted playsinline preload="auto" />
           <canvas ref="gazeCanvas" class="gaze__overlay" aria-hidden="true" />
-          <div class="rail__cam">
-            <video :src="RGB[0].src" muted playsinline preload="auto" />
-            <span class="mono">{{ RGB[0].label }}</span>
-          </div>
+          <figcaption class="mono">{{ EYE_LABEL }} · gaze overlay</figcaption>
         </div>
       </div>
     </div>
@@ -706,7 +712,12 @@ onBeforeUnmount(() => {
         <div class="band__grid">
           <div v-for="row in band.rows" :key="row.label" class="band__row">
             <span class="band__label mono" :style="{ color: row.color }">{{ row.label }}</span>
-            <svg class="band__svg" :viewBox="`0 0 ${TW} ${RH}`" preserveAspectRatio="none">
+            <svg
+              class="band__svg"
+              :style="{ height: `${band.rowH}px` }"
+              :viewBox="`0 0 ${TW} ${band.rowH}`"
+              preserveAspectRatio="none"
+            >
               <polyline :points="row.points" fill="none" :stroke="row.color" stroke-width="1" vector-effect="non-scaling-stroke" />
             </svg>
           </div>
@@ -832,7 +843,7 @@ onBeforeUnmount(() => {
   padding: 0.25rem 0.45rem;
   font-size: var(--fs-tick);
   color: var(--ink-mute);
-  background: #f6f9fb;
+  background: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -985,7 +996,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.rail__cell--gaze { grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); background: #fff; min-height: 0; }
+.rail__cell--gaze { grid-template-rows: minmax(0, 1fr) auto; background: #0c1018; min-height: 0; }
 .rail__cell--gaze figcaption {
   padding: 0.2rem 0.4rem;
   font-size: var(--fs-tick);
@@ -995,18 +1006,13 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.rail__cell--gaze video { width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block; }
 .rail__cell--gaze .gaze__overlay {
-  position: relative;
-  inset: auto;
+  position: absolute;
+  inset: 0 0 1.55rem 0;
   width: 100%;
-  height: 100%;
-  min-height: 0;
+  height: auto;
   pointer-events: none;
-  border-bottom: 1px solid #eef1f3;
-  background-color: #fff;
-  background-image:
-    repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 40px),
-    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 40px);
 }
 
 .cams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.5rem; min-width: 0; }
@@ -1014,7 +1020,7 @@ onBeforeUnmount(() => {
 
 /* ---- three modality bands, white graph paper, no grey frame ---- */
 .bands { display: grid; gap: 0.5rem; margin-top: 0.5rem; }
-.band { background: #fff; border-radius: 9px; padding: 0.35rem 0 0.15rem; }
+.band { background: transparent; padding: 0.35rem 0 0.15rem; }
 .band__head {
   display: flex;
   align-items: baseline;
@@ -1035,11 +1041,11 @@ onBeforeUnmount(() => {
 .band__grid {
   background-image:
     repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 56px),
-    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 20px);
+    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 10px);
 }
 .band__row { display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: center; gap: 0.3rem; }
 .band__label { font-size: 10px; text-align: right; opacity: 0.8; }
-.band__svg { width: 100%; min-width: 0; height: 20px; display: block; }
+.band__svg { width: 100%; min-width: 0; display: block; }
 
 /* the camera that sits under the trajectory, inside the same cell */
 .rail__cam { position: relative; background: #0c1018; overflow: hidden; min-height: 0; }
