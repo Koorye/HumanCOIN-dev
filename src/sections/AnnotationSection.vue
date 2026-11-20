@@ -9,7 +9,10 @@ import SectionHead from '@/components/SectionHead.vue'
  * copy that would have sat beside the title now sits where it is read — on the
  * streams, the window and the annotation themselves.
  */
-const ViewerSection = defineAsyncComponent(() => import('@/sections/ViewerSection.vue'))
+const L3Cloud = defineAsyncComponent(() => import('@/components/L3Cloud.vue'))
+// The earlier video-derived viewer is kept in the tree; re-import it to bring
+// it back beside or instead of the recorded cloud.
+// const ViewerSection = defineAsyncComponent(() => import('@/sections/ViewerSection.vue'))
 
 const visible = ref(false)
 const host = ref<HTMLElement | null>(null)
@@ -39,7 +42,7 @@ onMounted(() => {
       <SectionHead :num="ANNOTATION.num" :kicker="ANNOTATION.kicker" :title="ANNOTATION.title" />
 
       <div ref="host" class="host">
-        <ViewerSection v-if="visible" />
+        <L3Cloud v-if="visible" />
         <div v-else class="skeleton" aria-hidden="true">
           <span v-for="i in 4" :key="i" />
         </div>
