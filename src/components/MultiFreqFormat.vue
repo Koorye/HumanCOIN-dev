@@ -29,15 +29,15 @@ import {
   nearestMs,
 } from '@/data/mfFormat'
 
-const { t, isZh } = useI18n()
+const { t } = useI18n()
 
 /* ---- geometry, in SVG user units ---- */
-const W = 600
-const H = 232
-const X0 = 100
-const X1 = 588
-const RAIL_Y = 26
-const LANE_Y0 = 62
+const W = 660
+const H = 206
+const X0 = 168
+const X1 = 566
+const RAIL_Y = 34
+const LANE_Y0 = 74
 const LANE_GAP = 36
 
 const span = X1 - X0
@@ -60,7 +60,13 @@ const lanes = MF_LANES.map((lane, i) => {
   }
 })
 
-const frames = FRAME_MS.map((ms) => ({ ms, x: xOf(ms) }))
+const RAIL_NAME_X = 96
+const frames = FRAME_MS.map((ms, i) => ({
+  ms,
+  x: xOf(ms),
+  /* the query sits on the last frame, so the ticks read n−2, n−1, n */
+  label: i === FRAME_MS.length - 1 ? 'n' : i === FRAME_MS.length - 2 ? 'n−1' : 'n−2',
+}))
 
 /* ---- animation ---- */
 /** Progress marks inside the 0..1 cycle. */
@@ -210,51 +216,43 @@ void inView
     <!-- the timeline itself: clocks, samples, window. Nothing else. -->
     <div class="mf__stage">
       <svg class="mf__svg" :viewBox="`0 0 ${W} ${H}`" role="img" :aria-label="t(FORMAT.figRead)">
-        <!-- master clock rail -->
-        <text class="mf__rail-label" x="0" :y="RAIL_Y + 4">{{ isZh ? '主时钟' : 'master clock' }}</text>
-        <text class="mf__rail-sub mono" x="0" :y="RAIL_Y + 17">{{ FPS }} fps</text>
+        <!-- master clock: one rail, three frames named around the query -->
+        <text class="mf__name" x="0" :y="RAIL_Y + 3.5">master_index</text>
+        <text class="mf__hz mono" :x="RAIL_NAME_X" :y="RAIL_Y + 3.5">{{ FPS }} fps</text>
         <line class="mf__rail" :x1="X0" :x2="X1" :y1="RAIL_Y" :y2="RAIL_Y" />
+
         <g v-for="f in frames" :key="f.ms">
-          <line
-            class="mf__tick"
-            :class="{ 'is-past': frameOn(f.ms) }"
-            :x1="f.x"
-            :x2="f.x"
-            :y1="RAIL_Y - 7"
-            :y2="H - 18"
-          />
-          <circle class="mf__tick-dot" :class="{ 'is-past': frameOn(f.ms) }" :cx="f.x" :cy="RAIL_Y" r="3.2" />
+          <line class="mf__tick" :class="{ 'is-past': frameOn(f.ms) }" :x1="f.x" :x2="f.x" :y1="RAIL_Y - 6" :y2="RAIL_Y + 6" />
+          <text class="mf__frame mono" :x="f.x" :y="RAIL_Y - 13" text-anchor="middle">{{ f.label }}</text>
         </g>
 
-        <!-- the read window -->
+        <!-- the window the query reads from -->
         <rect
           class="mf__band"
           :class="{ 'is-on': queryOn }"
           :x="windowFromX"
-          :y="RAIL_Y - 7"
+          :y="LANE_Y0 - 9"
           :width="X1 - windowFromX"
-          :height="H - 18 - (RAIL_Y - 7)"
+          :height="LANE_Y0 + LANE_GAP * (lanes.length - 1) - LANE_Y0 + 18"
         />
 
-        <!-- feature lanes: name, native rate, samples -->
         <g v-for="l in lanes" :key="l.lane.id">
-          <text class="mf__name" x="0" :y="l.y + 4">{{ t(l.lane.label) }}</text>
-          <text class="mf__hz mono" x="0" :y="l.y + 17">{{ l.lane.rateLabel }}</text>
+          <text class="mf__name" x="0" :y="l.y + 3.5">{{ t(l.lane.label) }}</text>
+          <text class="mf__hz mono" :x="RAIL_NAME_X" :y="l.y + 3.5">{{ l.lane.rateLabel }}</text>
           <line class="mf__axis" :x1="X0" :x2="X1" :y1="l.y" :y2="l.y" />
-          <text class="mf__mode-tag mono" :x="X1" :y="l.y - 9" text-anchor="end">
-            {{ l.lane.mode }} · {{ l.lane.rateLabel }}
-          </text>
+          <text class="mf__mode-tag mono" :x="X1 + 8" :y="l.y + 3" text-anchor="start">{{ l.lane.mode }}</text>
 
-          <circle
+          <line
             v-for="(d, j) in l.dots"
             :key="j"
-            class="mf__dot"
+            class="mf__sample"
             :class="{ 'is-in': queryOn && d.inWindow && rowOn(l.i) }"
-            :cx="d.x"
-            :cy="l.y"
-            :r="l.lane.dotRadius"
-            :fill="l.lane.color"
-            :opacity="dotOn(d.ms) ? 1 : 0.12"
+            :x1="d.x"
+            :x2="d.x"
+            :y1="l.y - l.lane.dotRadius * 2.4"
+            :y2="l.y + l.lane.dotRadius * 2.4"
+            :stroke="l.lane.color"
+            :opacity="dotOn(d.ms) ? 0.85 : 0.14"
           />
 
           <circle
@@ -262,25 +260,29 @@ void inView
             class="mf__pick"
             :cx="l.nearX"
             :cy="l.y"
-            :r="l.lane.dotRadius + 4.5"
+            :r="3.4"
             :stroke="l.lane.color"
           />
         </g>
 
-        <!-- query cursor -->
+        <!-- the query instant, drawn through every lane -->
         <g class="mf__query" :class="{ 'is-on': queryOn }">
-          <line :x1="X1" :x2="X1" :y1="RAIL_Y - 7" :y2="H - 18" />
-          <text :x="X1 - 3" :y="RAIL_Y - 12" text-anchor="end">{{ t(FORMAT.queryLabel) }}</text>
+          <line :x1="X1" :x2="X1" :y1="RAIL_Y" :y2="LANE_Y0 + LANE_GAP * (lanes.length - 1) + 12" />
+          <text :x="X1 - 5" :y="RAIL_Y - 13" text-anchor="end">{{ t(FORMAT.queryLabel) }}</text>
         </g>
+
+        <!-- independent clocks: one bracket over the four lanes -->
+        <path
+          class="mf__brace"
+          :d="`M ${X1 + 42} ${LANE_Y0 - 9} q 7 0 7 7 V ${LANE_Y0 + LANE_GAP * (lanes.length - 1) + 3} q 0 7 -7 7`"
+        />
         <text
-          v-if="queryOn"
-          class="mf__band-label mono"
-          :x="(windowFromX + X1) / 2"
-          :y="H - 4"
+          class="mf__brace-label mono"
+          :x="X1 + 56"
+          :y="(LANE_Y0 + LANE_Y0 + LANE_GAP * (lanes.length - 1)) / 2"
+          :transform="`rotate(90 ${X1 + 56} ${(LANE_Y0 + LANE_Y0 + LANE_GAP * (lanes.length - 1)) / 2})`"
           text-anchor="middle"
-        >
-          {{ t(FORMAT.windowBand) }}
-        </text>
+        >independent clocks</text>
       </svg>
 
       <p class="mf__hint">{{ side === 'write' ? t(FORMAT.writeHint) : t(FORMAT.readHint) }}</p>
@@ -288,22 +290,6 @@ void inView
     </div>
 
     <!-- everything that is not a timestamp: shapes, rows, files, modes -->
-    <aside class="mf__data">
-      <p class="mf__subhead mono">{{ t(FORMAT.perFeature) }}</p>
-      <ul class="feat">
-        <li v-for="l in lanes" :key="l.lane.id" :class="{ 'is-on': rowOn(l.i) }">
-          <div class="feat__top">
-            <span class="mono feat__key">{{ l.lane.key }}</span>
-            <code class="mf__mode" :style="{ '--mode': l.lane.color }">{{ l.lane.mode }}</code>
-          </div>
-          <p class="feat__meta mono">
-            <span>{{ l.shape }}</span>
-            <span>{{ l.rows }} {{ l.rows === 1 ? t({ en: 'row', zh: '行' }) : t(FORMAT.rowsWord) }} / frame</span>
-          </p>
-          <p class="feat__file mono">{{ l.file }} · {{ l.written.toLocaleString('en-US') }} {{ t(FORMAT.rowsWord) }}</p>
-        </li>
-      </ul>
-    </aside>
   </figure>
 </template>
 
@@ -419,7 +405,7 @@ void inView
 /* ---- svg ---- */
 .mf__svg { width: 100%; height: auto; display: block; }
 .mf__rail-label { font-size: 8.6px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); }
-.mf__rail-sub { font-size: 7.6px; fill: #6d747c; }
+.mf__rail-sub { display: none; }
 .mf__rail { stroke: var(--line-strong); stroke-width: 1.4; }
 .mf__tick { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 3; transition: stroke var(--dur) var(--ease); }
 .mf__tick.is-past { stroke: var(--c-slate); stroke-dasharray: none; opacity: 0.45; }
@@ -431,6 +417,11 @@ void inView
 .mf__name { font-size: 8.6px; fill: #101317; font-weight: 620; font-family: var(--ff-sans); letter-spacing: -0.005em; }
 .mf__hz { font-size: 7.6px; fill: #6d747c; }
 .mf__mode-tag { font-size: 7.2px; fill: #8b929a; letter-spacing: 0.02em; }
+.mf__frame { font-size: 8.4px; fill: #16191d; }
+.mf__sample { stroke-width: 1; }
+.mf__sample.is-in { stroke-width: 1.2; }
+.mf__brace { fill: none; stroke: #b8c0c8; stroke-width: 1; }
+.mf__brace-label { font-size: 7.2px; fill: #8b929a; letter-spacing: 0.08em; }
 .mf__axis { stroke: var(--line); stroke-width: 1.2; }
 .mf__dot { transition: opacity 240ms var(--ease); }
 .mf__dot.is-in { stroke: var(--ink); stroke-width: 1.1; }
