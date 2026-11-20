@@ -1,14 +1,11 @@
 <script setup lang="ts">
 /**
- * One recorded L3 episode, read four ways at once.
+ * One recorded L3 episode, read six ways at once.
  *
- * The clock is one number: seconds into the clip. It drives the point cloud
- * (ten frames a second, taken straight from the capture), the rectified RGB and
- * depth videos, the gaze/EMG/EEG traces and the annotation strip, so every panel
- * shows the same instant rather than its own idea of one.
- *
- * The cloud geometry is the recorded one — int16 millimetres plus an RGB byte
- * per point from the exporter — not a re-derivation from the depth video.
+ * A single clock — seconds into the clip — drives everything: the point cloud
+ * (7.5 frames a second, recorded geometry), the four camera views, the eye
+ * camera with its gaze trajectory and heat, the four signal traces (drawn as a
+ * sliding window, so the waveform moves), and the annotation strip.
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import * as THREE from 'three'
@@ -39,6 +36,11 @@ interface Signals {
   emgL: number[]
   emgR: number[]
 }
+interface Gaze2D {
+  fps: number
+  x: number[]
+  y: number[]
+}
 interface Step {
   start: number
   end: number
@@ -52,14 +54,26 @@ interface Steps {
 }
 
 const CLIP = 30
-const RGB_SRC = 'real/l3/rgb.mp4'
+const WINDOW = 6 /* seconds of signal shown at once */
+
+const RGB = [
+  { key: 'left', src: 'real/l3/rgb-left.mp4', label: 'Headband · left' },
+  { key: 'right', src: 'real/l3/rgb-right.mp4', label: 'Headband · right' },
+  { key: 'wl', src: 'real/l3/rgb-wl.mp4', label: 'Left wrist' },
+  { key: 'wr', src: 'real/l3/rgb-wr.mp4', label: 'Right wrist' },
+]
+const EYE_SRC = 'real/l3/eye.mp4'
 const DEPTH_SRC = 'real/l3/depth.mp4'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
-const rgbEl = ref<HTMLVideoElement | null>(null)
+const rgbEls = ref<HTMLVideoElement[]>([])
+const eyeEl = ref<HTMLVideoElement | null>(null)
 const depthEl = ref<HTMLVideoElement | null>(null)
+const gazeCanvas = ref<HTMLCanvasElement | null>(null)
+
 const meta = ref<CloudMeta | null>(null)
 const signals = ref<Signals | null>(null)
+const gaze2d = ref<Gaze2D | null>(null)
 const steps = ref<Step[]>([])
 const task = ref('')
 
@@ -72,9 +86,9 @@ const frame = computed(() => Math.round(200 + t.value * 30))
 const clock = computed(() => `${t.value.toFixed(2)} s`)
 const step = computed(() => steps.value.find((s) => t.value >= s.start && t.value < s.end) ?? null)
 
-/* ---------- traces ---------- */
-const W = 900
-const TRACE_H = 30
+/* ---------- sliding-window traces ---------- */
+const TW = 900
+const TH = 30
 const TRACES = [
   { key: 'gaze' as const, label: 'Gaze X', color: '#6f5aa0' },
   { key: 'emgL' as const, label: 'EMG left', color: '#a8623c' },
@@ -82,16 +96,118 @@ const TRACES = [
   { key: 'eeg' as const, label: 'EEG · FP1', color: '#33796f' },
 ]
 
-function polyline(values: number[] | undefined): string {
-  if (!values?.length) return ''
-  const n = values.length
-  return values.map((v, i) => `${((i / (n - 1)) * W).toFixed(1)},${((1 - v) * TRACE_H).toFixed(1)}`).join(' ')
-}
-
 const traces = computed(() =>
-  TRACES.map((tr) => ({ ...tr, points: polyline(signals.value?.[tr.key]) })),
+  TRACES.map((tr) => {
+    const s = signals.value
+    if (!s) return { ...tr, points: '' }
+    const data = s[tr.key]
+    const n = data.length
+    const i1 = Math.min(n - 1, Math.round(t.value * s.fps))
+    const i0 = Math.max(0, Math.round((t.value - WINDOW) * s.fps))
+    const span = Math.max(1, i1 - i0)
+    const pts: string[] = []
+    for (let i = i0; i <= i1; i++) {
+      const x = ((i - i0) / span) * TW
+      pts.push(`${x.toFixed(1)},${((1 - data[i]) * TH).toFixed(1)}`)
+    }
+    return { ...tr, points: pts.join(' ') }
+  }),
 )
-const playhead = computed(() => Math.min(1, t.value / CLIP))
+
+/* ---------- gaze heat + trail ---------- */
+const HEAT_W = 128
+const HEAT_H = 72
+let heatCanvas: HTMLCanvasElement | null = null
+let heatCtx: CanvasRenderingContext2D | null = null
+
+function drawGaze() {
+  const g = gaze2d.value
+  const cv = gazeCanvas.value
+  if (!g || !cv) return
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)
+  const w = cv.clientWidth
+  const h = cv.clientHeight
+  if (!w || !h) return
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) {
+    cv.width = Math.round(w * dpr)
+    cv.height = Math.round(h * dpr)
+  }
+  const ctx = cv.getContext('2d')
+  if (!ctx) return
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  ctx.clearRect(0, 0, w, h)
+
+  if (!heatCanvas) {
+    heatCanvas = document.createElement('canvas')
+    heatCanvas.width = HEAT_W
+    heatCanvas.height = HEAT_H
+    heatCtx = heatCanvas.getContext('2d')
+  }
+  const hc = heatCtx!
+  hc.clearRect(0, 0, HEAT_W, HEAT_H)
+
+  const i1 = Math.min(g.x.length - 1, Math.round(t.value * g.fps))
+  const i0 = Math.max(0, Math.round((t.value - WINDOW) * g.fps))
+  /* a short moving average, because raw gaze jitters between saccades */
+  const sx: number[] = []
+  const sy: number[] = []
+  for (let i = i0; i <= i1; i++) {
+    let ax = 0
+    let ay = 0
+    let n = 0
+    for (let k = Math.max(i0, i - 2); k <= Math.min(i1, i + 2); k++) {
+      ax += g.x[k]
+      ay += g.y[k]
+      n++
+    }
+    sx.push(ax / n)
+    sy.push(ay / n)
+  }
+  const grid = new Float32Array(HEAT_W * HEAT_H)
+  for (let i = 0; i < sx.length; i++) {
+    const cx = Math.floor(sx[i] * (HEAT_W - 1))
+    const cy = Math.floor(sy[i] * (HEAT_H - 1))
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        const px = cx + dx
+        const py = cy + dy
+        if (px < 0 || py < 0 || px >= HEAT_W || py >= HEAT_H) continue
+        grid[py * HEAT_W + px] += dx === 0 && dy === 0 ? 1 : 0.35
+      }
+    }
+  }
+  let max = 0
+  for (let i = 0; i < grid.length; i++) if (grid[i] > max) max = grid[i]
+  const img = hc.createImageData(HEAT_W, HEAT_H)
+  for (let i = 0; i < grid.length; i++) {
+    const v = max > 0 ? Math.pow(grid[i] / max, 0.7) : 0
+    img.data[i * 4] = 36 + 200 * v
+    img.data[i * 4 + 1] = 90 + 120 * (1 - v)
+    img.data[i * 4 + 2] = 160 + 70 * (1 - v)
+    img.data[i * 4 + 3] = 235 * v
+  }
+  hc.putImageData(img, 0, 0)
+  ctx.imageSmoothingEnabled = true
+  ctx.drawImage(heatCanvas, 0, 0, w, h)
+
+  ctx.beginPath()
+  for (let i = 0; i < sx.length; i++) {
+    const x = sx[i] * w
+    const y = sy[i] * h
+    if (i === 0) ctx.moveTo(x, y)
+    else ctx.lineTo(x, y)
+  }
+  ctx.strokeStyle = 'rgba(22,25,29,0.45)'
+  ctx.lineWidth = 1
+  ctx.stroke()
+
+  const cx = sx[sx.length - 1] * w
+  const cy = sy[sy.length - 1] * h
+  ctx.beginPath()
+  ctx.arc(cx, cy, 3.5, 0, Math.PI * 2)
+  ctx.fillStyle = '#16191d'
+  ctx.fill()
+}
 
 /* ---------- three.js ---------- */
 let buffer: ArrayBuffer | null = null
@@ -118,13 +234,9 @@ function seed() {
   const [cx, cy, cz] = meta.value.center
   const [fx, fy, fz] = meta.value.forward
   const r = Math.max(meta.value.radius, 0.25)
-  /* aim a touch below the geometric centre: the wall is the tall half of the
-     cloud, the work surface is what the figure is about */
   target = new THREE.Vector3(cx, cy - r * 0.16, cz)
   const v = new THREE.Vector3(fx * -r * 1.9, fy * -r * 1.9 + r * 0.45, fz * -r * 1.9).multiplyScalar(0.58)
   dist = v.length()
-  /* Start off the capture's own forward axis, swung a little to the left, so
-     the table reads in three dimensions before anyone touches the canvas. */
   pitch = Math.asin(v.y / dist) + 0.02
   yaw = Math.atan2(v.x, v.z) + 0.34
   applyCamera()
@@ -152,8 +264,6 @@ function drawCloud(index: number) {
   const col = cc.array as Float32Array
   for (let i = 0; i < f.count * 3; i++) {
     pos[i] = ints[i] * s
-    /* compress the capture's colours into the upper-mid tones: the wall is
-       bright enough that it would vanish on a pale ground */
     col[i] = 0.06 + 0.56 * (cols[i] / 255)
   }
   cp.needsUpdate = true
@@ -171,8 +281,6 @@ function drawCloud(index: number) {
   hc.needsUpdate = true
   handPts.geometry.setDrawRange(0, hands.length / 6)
 
-  /* the three pose frames (head, left wrist, right wrist): fat cylinders rather
-     than GL lines, because line width is capped at one pixel almost everywhere */
   const up = new THREE.Vector3(0, 1, 0)
   const a = new THREE.Vector3()
   const b = new THREE.Vector3()
@@ -182,9 +290,7 @@ function drawCloud(index: number) {
     a.set(row[0], row[1], row[2])
     b.set(row[3], row[4], row[5])
     const dir = b.clone().sub(a)
-    /* the capture ships short triads; stretch them so the three pose frames
-       read at page size */
-    const len = dir.length() * 2.6
+    const len = dir.length() * 1.8
     dir.normalize()
     mesh.position.copy(a).addScaledVector(dir, len * 0.5)
     mesh.quaternion.setFromUnitVectors(up, dir)
@@ -207,19 +313,18 @@ function drawCloud(index: number) {
 function resize() {
   const el = canvas.value
   if (!el || !renderer || !camera) return
-  const w = el.clientWidth
-  const h = el.clientHeight
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
-  renderer.setSize(w, h, false)
-  camera.aspect = w / Math.max(h, 1)
+  renderer.setSize(el.clientWidth, el.clientHeight, false)
+  camera.aspect = el.clientWidth / Math.max(el.clientHeight, 1)
   camera.updateProjectionMatrix()
+  drawGaze()
 }
 
 function seek(to: number) {
-  if (Math.abs((rgbEl.value?.currentTime ?? 0) - to) > 0.25) {
-    if (rgbEl.value) rgbEl.value.currentTime = to
-    if (depthEl.value) depthEl.value.currentTime = to
-  }
+  const vids = [...rgbEls.value, eyeEl.value].filter(Boolean) as HTMLVideoElement[]
+  vids.forEach((v) => {
+    if (Math.abs(v.currentTime - to) > 0.25) v.currentTime = to
+  })
 }
 
 function loop(now: number) {
@@ -230,13 +335,15 @@ function loop(now: number) {
     t.value += (dt / 1000) * speed.value
     if (t.value >= CLIP) t.value = 0
   }
-  const idx = meta.value ? Math.min(meta.value.frames.length - 1, Math.round(t.value * 10)) : 0
+  const n = meta.value?.frames.length ?? 0
+  const idx = n ? Math.min(n - 1, Math.round((t.value / CLIP) * (n - 1))) : 0
   if (idx !== drawn) drawCloud(idx)
+  drawGaze()
   if (renderer && scene && camera) renderer.render(scene, camera)
 }
 
 watch(playing, (on) => {
-  const vids = [rgbEl.value, depthEl.value].filter(Boolean) as HTMLVideoElement[]
+  const vids = [...rgbEls.value, eyeEl.value].filter(Boolean) as HTMLVideoElement[]
   vids.forEach((v) => {
     v.playbackRate = speed.value
     if (on) void v.play().catch(() => {})
@@ -245,7 +352,7 @@ watch(playing, (on) => {
   if (on) seek(t.value)
 })
 watch(speed, (s) => {
-  ;[rgbEl.value, depthEl.value].forEach((v) => { if (v) v.playbackRate = s })
+  ;[...rgbEls.value, eyeEl.value].forEach((v) => { if (v) v.playbackRate = s })
 })
 watch(t, (v) => seek(v))
 watch(
@@ -293,15 +400,17 @@ function onWheel(e: WheelEvent) {
 onMounted(async () => {
   const el = canvas.value
   if (!el) return
-  const [m, bin, sig, st] = await Promise.all([
+  const [m, bin, sig, g2, st] = await Promise.all([
     fetch('real/l3/cloud.json').then((r) => r.json() as Promise<CloudMeta>),
     fetch('real/l3/cloud.bin').then((r) => r.arrayBuffer()),
     fetch('real/l3/signals.json').then((r) => r.json() as Promise<Signals>),
+    fetch('real/l3/gaze2d.json').then((r) => r.json() as Promise<Gaze2D>),
     fetch('real/l3/steps.json').then((r) => r.json() as Promise<Steps>),
   ])
   meta.value = m
   buffer = bin
   signals.value = sig
+  gaze2d.value = g2
   steps.value = st.steps
   task.value = st.task
 
@@ -314,14 +423,14 @@ onMounted(async () => {
   const cg = new THREE.BufferGeometry()
   cg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(maxPts * 3), 3))
   cg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(maxPts * 3), 3))
-  cloud = new THREE.Points(cg, new THREE.PointsMaterial({ size: 2.6, sizeAttenuation: false, vertexColors: true }))
+  cloud = new THREE.Points(cg, new THREE.PointsMaterial({ size: 2.4, sizeAttenuation: false, vertexColors: true }))
   cloud.frustumCulled = false
   scene.add(cloud)
 
   const hg = new THREE.BufferGeometry()
   hg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(256 * 3), 3))
   hg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(256 * 3), 3))
-  handPts = new THREE.Points(hg, new THREE.PointsMaterial({ size: 8, sizeAttenuation: false, vertexColors: true }))
+  handPts = new THREE.Points(hg, new THREE.PointsMaterial({ size: 6, sizeAttenuation: false, vertexColors: true }))
   handPts.frustumCulled = false
   scene.add(handPts)
 
@@ -332,29 +441,22 @@ onMounted(async () => {
   bones.frustumCulled = false
   scene.add(bones)
 
-  /* nine fat segments: three axes on each of the three pose frames */
-  const segGeo = new THREE.CylinderGeometry(1, 1, 1, 8, 1, true)
   for (let i = 0; i < 9; i++) {
-    const mesh = new THREE.Mesh(segGeo, new THREE.MeshBasicMaterial({ color: 0x334155 }))
+    const geo = new THREE.CylinderGeometry(1, 1, 1, 8, 1, true)
+    geo.scale(0.009, 1, 0.009)
+    const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x334155 }))
     mesh.frustumCulled = false
-    mesh.scale.setScalar(1)
-    // radius is baked into the geometry, length comes from the per-frame scale
-    mesh.geometry = segGeo.clone()
-    mesh.geometry.scale(0.022, 1, 0.022)
     scene.add(mesh)
     axisMeshes.push(mesh)
   }
 
-  /* a ground plane under the cloud, so the figure reads in space rather than
-     floating in a void */
   const ys: number[] = []
   const first = m.frames[0]
   const ints0 = new Int16Array(bin, first.offset, first.count * 3)
   for (let i = 1; i < first.count * 3; i += 30) ys.push(ints0[i] * m.scale)
   ys.sort((a, b) => a - b)
   const floor = ys[Math.floor(ys.length * 0.08)] ?? 0
-  const span = Math.max(m.radius * 2.3, 2)
-  grid = new THREE.GridHelper(span, 28, 0x7d9cb6, 0xa8c0d4)
+  grid = new THREE.GridHelper(Math.max(m.radius * 2.3, 2), 28, 0x7d9cb6, 0xa8c0d4)
   grid.position.set(m.center[0], floor, m.center[2])
   ;(grid.material as THREE.Material).transparent = true
   ;(grid.material as THREE.Material).opacity = 0.8
@@ -363,9 +465,10 @@ onMounted(async () => {
   seed()
   resize()
   drawCloud(0)
+  drawGaze()
   window.addEventListener('resize', resize)
   raf = requestAnimationFrame(loop)
-  ;[rgbEl.value, depthEl.value].forEach((v) => v && void v.play().catch(() => {}))
+  ;[...rgbEls.value, eyeEl.value].forEach((v) => v && void v.play().catch(() => {}))
 })
 
 onBeforeUnmount(() => {
@@ -402,55 +505,73 @@ onBeforeUnmount(() => {
         <p class="viewer__help mono">drag to orbit · wheel zoom</p>
       </div>
 
-      <div class="viewer__cams">
-        <figure class="cam">
-          <video ref="rgbEl" :src="RGB_SRC" muted playsinline preload="auto" />
-          <figcaption class="mono">RGB · headband left (rectified)</figcaption>
+      <div class="cams">
+        <figure v-for="(c, i) in RGB" :key="c.key" class="cam">
+          <video
+            :ref="(el) => { if (el) rgbEls[i] = el as HTMLVideoElement }"
+            :src="c.src"
+            muted
+            playsinline
+            preload="auto"
+          />
+          <figcaption class="mono">{{ c.label }}</figcaption>
         </figure>
-        <figure class="cam">
+      </div>
+    </div>
+
+    <div class="viewer__grid2">
+      <div class="gaze">
+        <div class="gaze__eye">
+          <video ref="eyeEl" :src="EYE_SRC" muted playsinline preload="auto" />
+          <span class="gaze__tag mono">eye camera</span>
+        </div>
+        <canvas ref="gazeCanvas" class="gaze__map" />
+        <div class="gaze__keys mono">
+          <span>gaze · last {{ WINDOW }} s</span>
+          <span class="gaze__heat">heat = dwell</span>
+        </div>
+      </div>
+
+      <div class="side">
+        <figure class="cam cam--depth">
           <video ref="depthEl" :src="DEPTH_SRC" muted playsinline preload="auto" />
           <figcaption class="mono">Depth · headband left (rectified)</figcaption>
         </figure>
+
+        <div class="traces" aria-hidden="true">
+          <div v-for="tr in traces" :key="tr.key" class="trace">
+            <span class="trace__label mono">{{ tr.label }}</span>
+            <svg class="trace__svg" :viewBox="`0 0 ${TW} ${TH}`" preserveAspectRatio="none">
+              <polyline :points="tr.points" fill="none" :stroke="tr.color" stroke-width="1" vector-effect="non-scaling-stroke" />
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="traces" aria-hidden="true">
-      <div v-for="tr in traces" :key="tr.key" class="trace">
-        <span class="trace__label mono">{{ tr.label }}</span>
-        <svg class="trace__svg" :viewBox="`0 0 ${W} ${TRACE_H}`" preserveAspectRatio="none">
-          <polyline :points="tr.points" fill="none" :stroke="tr.color" stroke-width="1" vector-effect="non-scaling-stroke" />
-          <line
-            :x1="playhead * W"
-            :x2="playhead * W"
-            y1="0"
-            :y2="TRACE_H"
-            stroke="#16191d"
-            stroke-width="1"
-            vector-effect="non-scaling-stroke"
-            opacity="0.35"
-          />
-        </svg>
+    <div class="anno">
+      <div class="anno__chips">
+        <button
+          v-for="(s, i) in steps"
+          :key="i"
+          type="button"
+          class="anno__chip mono"
+          :class="{ 'is-on': step === s }"
+          @click="t = s.start + 0.01"
+        >{{ s.label }}</button>
       </div>
+      <p class="anno__line mono">
+        <template v-if="step">{{ step.label }} · {{ step.object }} — {{ step.start.toFixed(1) }}–{{ step.end.toFixed(1) }} s</template>
+        <template v-else>{{ task }}</template>
+      </p>
     </div>
-
-    <p class="anno mono">
-      <span class="anno__dot" />
-      <template v-if="step">{{ step.label }} · {{ step.object }} — {{ step.start.toFixed(1) }}–{{ step.end.toFixed(1) }} s</template>
-      <template v-else>{{ task }}</template>
-    </p>
 
     <div class="viewer__foot">
       <button class="viewer__play" type="button" @click="playing = !playing">
         {{ playing ? 'Pause' : 'Play' }}
       </button>
       <div class="viewer__speed" role="group" aria-label="Playback speed">
-        <button
-          v-for="s in [1, 2, 4]"
-          :key="s"
-          type="button"
-          :aria-pressed="speed === s"
-          @click="speed = s"
-        >{{ s }}×</button>
+        <button v-for="s in [1, 2, 4]" :key="s" type="button" :aria-pressed="speed === s" @click="speed = s">{{ s }}×</button>
       </div>
       <input v-model.number="t" class="viewer__range" type="range" min="0" :max="CLIP" step="0.033" aria-label="Time" />
       <p class="viewer__read mono">frame {{ frame }} · {{ clock }}</p>
@@ -476,24 +597,24 @@ onBeforeUnmount(() => {
   text-transform: uppercase;
   color: var(--ink-mute);
 }
-.viewer__layers { display: flex; gap: 0.9rem; }
-.viewer__check {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: var(--fs-tick);
-  color: var(--ink-soft);
-  cursor: pointer;
-}
+.viewer__layers { display: flex; gap: 0.85rem; }
+.viewer__check { display: inline-flex; align-items: center; gap: 0.3rem; font-size: var(--fs-tick); color: var(--ink-soft); cursor: pointer; }
 .viewer__check input { accent-color: var(--c-blue); }
 
 .viewer__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-  gap: 0.6rem;
+  grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr);
+  gap: 0.55rem;
+}
+.viewer__grid2 {
+  display: grid;
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.32fr);
+  gap: 0.55rem;
+  margin-top: 0.55rem;
 }
 @media (max-width: 900px) {
-  .viewer__grid { grid-template-columns: minmax(0, 1fr); }
+  .viewer__grid, .viewer__grid2 { grid-template-columns: minmax(0, 1fr); }
 }
 
 .viewer__stage {
@@ -506,15 +627,15 @@ onBeforeUnmount(() => {
 .viewer__canvas { display: block; width: 100%; aspect-ratio: 16 / 10; touch-action: none; outline: none; }
 .viewer__help {
   position: absolute;
-  left: 0.85rem;
-  bottom: 0.7rem;
+  left: 0.8rem;
+  bottom: 0.6rem;
   margin: 0;
   font-size: var(--fs-tick);
   color: rgba(22, 25, 29, 0.4);
   pointer-events: none;
 }
 
-.viewer__cams { display: grid; grid-template-rows: 1fr 1fr; gap: 0.6rem; }
+.cams { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
 .cam {
   margin: 0;
   display: grid;
@@ -523,33 +644,67 @@ onBeforeUnmount(() => {
   border-radius: 10px;
   overflow: hidden;
   background: #0c1018;
+  min-width: 0;
 }
-.cam video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cam video { width: 100%; height: 100%; min-height: 90px; object-fit: cover; display: block; }
 .cam figcaption {
-  padding: 0.35rem 0.55rem;
+  padding: 0.25rem 0.45rem;
   font-size: var(--fs-tick);
   color: var(--ink-mute);
   background: #fff;
   border-top: 1px solid #e4e7ea;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.traces { margin-top: 0.6rem; display: grid; gap: 0.15rem; }
-.trace { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); align-items: center; gap: 0.6rem; }
-.trace__label { font-size: var(--fs-tick); color: var(--ink-mute); }
-.trace__svg { width: 100%; height: 30px; display: block; border-bottom: 1px solid #eef1f3; }
-
-.anno {
-  margin: 0.7rem 0 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.gaze {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 0.4rem;
+  height: 330px;
+  border: 1px solid #e4e7ea;
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+.gaze__eye { position: relative; border-radius: 7px; overflow: hidden; background: #0c1018; min-height: 0; }
+.gaze__eye video { width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block; }
+.gaze__tag {
+  position: absolute;
+  left: 0.4rem;
+  bottom: 0.35rem;
   font-size: var(--fs-tick);
-  color: var(--ink-soft);
-  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.7);
 }
-.anno__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-blue); flex: none; }
+.gaze__map { width: 100%; height: 100%; min-height: 0; border-radius: 7px; background: #f6f9fb; border: 1px solid #eef1f3; display: block; }
+.gaze__keys { grid-column: 1 / -1; display: flex; justify-content: space-between; font-size: var(--fs-tick); color: var(--ink-mute); }
+.gaze__heat { color: var(--c-blue); }
 
-.viewer__foot { display: flex; align-items: center; gap: 0.8rem; padding-top: 0.7rem; }
+.side { display: grid; grid-template-rows: auto 1fr; gap: 0.55rem; min-width: 0; min-height: 0; }
+.cam--depth video { aspect-ratio: 16 / 9; height: auto; min-height: 0; }
+
+.traces { display: grid; gap: 0.1rem; align-content: start; min-width: 0; overflow: hidden; }
+.trace { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: center; gap: 0.5rem; min-width: 0; }
+.trace__label { font-size: var(--fs-tick); color: var(--ink-mute); }
+.trace__svg { width: 100%; min-width: 0; height: 26px; display: block; border-bottom: 1px solid #eef1f3; }
+
+.anno { margin-top: 0.6rem; }
+.anno__chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.anno__chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  padding: 0.12rem 0.5rem;
+  font-size: var(--fs-tick);
+  color: var(--ink-mute);
+  cursor: pointer;
+}
+.anno__chip:hover { color: var(--ink); border-color: var(--line-strong); }
+.anno__chip.is-on { color: var(--c-blue); border-color: var(--c-blue); background: var(--t-blue); }
+.anno__line { margin: 0.45rem 0 0; font-size: var(--fs-tick); color: var(--ink-soft); }
+
+.viewer__foot { display: flex; align-items: center; gap: 0.7rem; padding-top: 0.6rem; }
 .viewer__play {
   border: 0;
   border-bottom: 1px solid var(--line-strong);
@@ -561,12 +716,12 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 .viewer__play:hover { color: var(--ink); }
-.viewer__speed { display: flex; gap: 0.3rem; }
+.viewer__speed { display: flex; gap: 0.25rem; }
 .viewer__speed button {
   border: 1px solid var(--line);
   background: none;
   border-radius: 5px;
-  padding: 0.1rem 0.35rem;
+  padding: 0.08rem 0.32rem;
   font: inherit;
   font-size: var(--fs-tick);
   color: var(--ink-mute);
