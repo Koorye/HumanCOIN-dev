@@ -40,7 +40,7 @@ const { list } = useI18n()
 
 /* Body copy sits in the section head's aside, so it is set at the aside's own
    scale rather than the prose scale. */
-.format__lead { max-width: 46ch; }
+.format__lead { max-width: none; }
 .format__lead p { margin-bottom: 0.7em; color: var(--ink-soft); }
 .format__lead p:last-child { margin-bottom: 0; }
 

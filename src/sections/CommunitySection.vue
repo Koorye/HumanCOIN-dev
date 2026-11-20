@@ -188,17 +188,13 @@ const rest = computed(() => partners.value.filter((p) => p.id !== LEAD_ID))
   /* One ink for the whole wall: the marks keep their shape and internal
      contrast, but lose their own colour so the grid reads as a texture rather
      than as twenty competing brands. */
-  filter: grayscale(0.92) contrast(0.94) brightness(0.9);
-  opacity: 0.82;
+  opacity: 0.62;
   mix-blend-mode: multiply;
   transition: filter var(--dur) var(--ease), opacity var(--dur) var(--ease),
     transform var(--dur) var(--ease);
 }
 .logos__item:hover img,
-.host:hover img {
-  filter: grayscale(0.35) contrast(1) brightness(1);
-  opacity: 1;
-}
+.host:hover img { opacity: 1; }
 .logos img.is-seal { max-height: 4.3rem; }
 .logos__item:hover img { transform: scale(1.04); }
 /* Companies whose mark has not been supplied yet are set as a wordmark, so the

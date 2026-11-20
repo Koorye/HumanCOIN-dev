@@ -36,7 +36,7 @@ const { list } = useI18n()
 .mono { font-family: var(--ff-mono); }
 
 /* The section's argument sits in the head's aside, at the aside's own scale. */
-.pl__lead { max-width: 46ch; }
+.pl__lead { max-width: none; }
 .pl__lead p { margin-bottom: 0.7em; color: var(--ink-soft); }
 .pl__lead p:last-child { margin-bottom: 0; }
 

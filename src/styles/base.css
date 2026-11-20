@@ -159,9 +159,9 @@ strong, b { font-weight: 640; color: var(--ink); }
 }
 .section-num b { color: var(--ink-mute); font-weight: 600; margin-right: 0.15em; }
 
-.section__title { max-width: 38ch; }
+.section__title { max-width: none; }
 .section__aside {
-  max-width: 74ch;
+  max-width: none;
   font-size: var(--fs-small);
   color: var(--ink-soft);
   line-height: var(--lh-loose);
