@@ -26,8 +26,8 @@ import type { Bi } from '@/content'
 export const COVER = {
   /* The cover carries the report's title and nothing else. */
   title: {
-    en: 'HumanCOIN: The Human-Signal Dataset at the Scale of Egocentric Manipulation',
-    zh: 'HumanCOIN：第一人称操作规模下的人体信号数据集',
+    en: 'HumanCOIN: A 12,500-Hour Dataset for Human Intent in Egocentric Manipulation',
+    zh: 'HumanCOIN：第一人称操作中人类意图的 12,500 小时数据集',
   },
   figureLabel: { en: 'Cover figure', zh: '封面图' },
   figureNote: {
