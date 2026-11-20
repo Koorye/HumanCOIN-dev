@@ -1,117 +1,32 @@
 [
-  {
-    "id": "baai",
-    "src": "logos/baai-7UyGXpn5.png",
-    "url": "https://www.baai.ac.cn/"
-  },
-  {
-    "id": "jdcloud",
-    "src": "",
-    "url": "https://www.jdcloud.com/"
-  },
-  {
-    "id": "mifeng",
-    "src": "logos/partners/mifeng.png",
-    "url": "https://www.maniformer.net/"
-  },
-  {
-    "id": "ant",
-    "src": "logos/partners/ant.png",
-    "url": "https://www.antdigital.com/"
-  },
-  {
-    "id": "guanglun",
-    "src": "logos/partners/guanglun.png",
-    "url": "https://www.lightwheel.ai/"
-  },
-  {
-    "id": "jianzhi",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "tashi",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "paxini",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "jijia",
-    "src": "logos/partners/jijia.png",
-    "url": ""
-  },
-  {
-    "id": "boden",
-    "src": "logos/partners/boden.png",
-    "url": ""
-  },
-  {
-    "id": "wujie",
-    "src": "logos/partners/wujie.png",
-    "url": ""
-  },
-  {
-    "id": "octopus",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "qiyi",
-    "src": "logos/partners/qiyi.png",
-    "url": ""
-  },
-  {
-    "id": "jiazi",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "huazhi",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "shutu",
-    "src": "logos/partners/shutu.png",
-    "url": ""
-  },
-  {
-    "id": "zhiyu",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "ioai",
-    "src": "logos/partners/ioai.png",
-    "url": ""
-  },
-  {
-    "id": "maiqing",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "lingmei",
-    "src": "logos/partners/lingmei.png",
-    "url": ""
-  },
-  {
-    "id": "purity",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "lingsheng",
-    "src": "",
-    "url": ""
-  },
-  {
-    "id": "zhiyue",
-    "src": "",
-    "url": ""
-  }
+  { "id": "baai", "src": "logos/partners/baai.png", "url": "https://www.baai.ac.cn/" },
+  { "id": "pku", "src": "logos/partners/pku.png", "url": "https://www.pku.edu.cn/" },
+  { "id": "ustc", "src": "logos/partners/ustc.png", "url": "https://www.ustc.edu.cn/" },
+  { "id": "thu", "src": "logos/partners/thu.png", "url": "https://www.tsinghua.edu.cn/" },
+  { "id": "fudan", "src": "logos/partners/fudan.png", "url": "https://www.fudan.edu.cn/" },
+  { "id": "beihang", "src": "logos/partners/beihang.png", "url": "https://www.buaa.edu.cn/" },
+  { "id": "jdcloud", "src": "logos/partners/jdcloud.png", "url": "https://www.jdcloud.com/" },
+  { "id": "mifeng", "src": "logos/partners/mifeng.png", "url": "https://www.maniformer.net/" },
+  { "id": "ant", "src": "logos/partners/ant.png", "url": "https://www.antdigital.com/" },
+  { "id": "guanglun", "src": "logos/partners/guanglun.png", "url": "https://www.lightwheel.ai/" },
+  { "id": "jianzhi", "src": "logos/partners/jianzhi.png", "url": "https://www.genrobot.com/" },
+  { "id": "jijia", "src": "logos/partners/jijia.png", "url": "https://gigaai.cc/" },
+  { "id": "boden", "src": "logos/partners/boden.png", "url": "https://www.bodenai.com/" },
+  { "id": "wujie", "src": "logos/partners/wujie.png", "url": "" },
+  { "id": "qiyi", "src": "logos/partners/qiyi.png", "url": "https://www.strange-attractor.cn/" },
+  { "id": "jiazi", "src": "logos/partners/jiazi.png", "url": "" },
+  { "id": "huazhi", "src": "logos/partners/huazhi.png", "url": "" },
+  { "id": "zhiyu", "src": "logos/partners/zhiyu.png", "url": "https://www.archebase.cn/" },
+  { "id": "ioai", "src": "logos/partners/ioai.png", "url": "https://io-ai.tech/" },
+  { "id": "maiqing", "src": "logos/partners/maiqing.png", "url": "https://www.omniego.com/" },
+  { "id": "damon", "src": "logos/partners/damon.png", "url": "https://www.damon-group.com/" },
+  { "id": "lingmei", "src": "logos/partners/lingmei.png", "url": "https://lumiworld.ai/" },
+  { "id": "purity", "src": "logos/partners/purity.png", "url": "" },
+  { "id": "shutu", "src": "logos/partners/shutu.png", "url": "https://www.synapath.com/" },
+  { "id": "tashi", "src": "logos/partners/tashi.png", "url": "" },
+  { "id": "octopus", "src": "logos/partners/octopus.png", "url": "https://synapxdynamics.ai/" },
+  { "id": "lingsheng", "src": "logos/partners/lingsheng.png", "url": "https://www.livsynrobotics.com/" },
+  { "id": "zhiyue", "src": "logos/partners/zhiyue.png", "url": "" },
+  { "id": "quanyu", "src": "logos/partners/quanyu.png", "url": "" },
+  { "id": "feiyuxing", "src": "logos/partners/feiyuxing.png", "url": "https://www.fistar.com.cn/" }
 ]
