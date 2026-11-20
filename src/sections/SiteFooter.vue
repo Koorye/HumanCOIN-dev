@@ -99,7 +99,6 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
     <div class="shell foot__inner">
       <div class="foot__brand">
         <p class="foot__mark mono">{{ SITE.name }}</p>
-        <p class="foot__tagline">{{ t(FOOTER.tagline) }}</p>
       </div>
 
       <!-- the citation takes a row of its own: the author list needs the width -->
@@ -155,10 +154,9 @@ onBeforeUnmount(() => clearTimeout(resetTimer))
   background: var(--surface);
   padding-block: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem) 1.5rem;
 }
-.foot__inner { display: grid; gap: clamp(1.75rem, 1.4rem + 2vw, 2.75rem); }
+.foot__inner { display: grid; gap: clamp(1.4rem, 1.1rem + 1.4vw, 2rem); }
 
 .foot__mark { font-size: var(--fs-h4); font-weight: 660; color: var(--ink); margin: 0 0 0.3rem; letter-spacing: -0.02em; }
-.foot__tagline { font-size: var(--fs-small); color: var(--ink-soft); margin: 0; max-width: 40ch; }
 
 /* ---- citation: a single full-width row ---- */
 .foot__cite { min-width: 0; }
