@@ -12,7 +12,14 @@ import { useI18n } from '@/composables/useI18n'
 import { useScrollSpy } from '@/composables/useScrollSpy'
 
 const { t } = useI18n()
-const { active } = useScrollSpy(NAV.map((n) => n.id))
+
+/* The spy watches the sections and their sub-blocks in one flat list, so a
+   sub-entry can take the highlight without the section losing it. */
+const ids = NAV.flatMap((n) => [n.id, ...(n.children?.map((c) => c.id) ?? [])])
+const { active } = useScrollSpy(ids)
+
+const openSection = (item: (typeof NAV)[number]) =>
+  active.value === item.id || item.children?.some((c) => c.id === active.value)
 
 function go(e: MouseEvent, id: string) {
   e.preventDefault()
@@ -26,15 +33,25 @@ function go(e: MouseEvent, id: string) {
   <aside class="toc" :aria-label="t({ en: 'Contents', zh: '目录' })">
     <p class="toc__label">{{ t(UI.contents) }}</p>
     <nav class="toc__links">
-      <a
-        v-for="item in NAV"
-        :key="item.id"
-        :href="`#${item.id}`"
-        :aria-current="active === item.id ? 'true' : undefined"
-        @click="go($event, item.id)"
-      >
-        <span class="toc__num">{{ item.num }}</span>{{ t(item.label) }}
-      </a>
+      <template v-for="item in NAV" :key="item.id">
+        <a
+          class="toc__item"
+          :class="{ 'is-open': openSection(item) }"
+          :href="`#${item.id}`"
+          :aria-current="active === item.id ? 'true' : undefined"
+          @click="go($event, item.id)"
+        >
+          <span class="toc__num">{{ item.num }}</span>{{ t(item.label) }}
+        </a>
+        <a
+          v-for="child in item.children"
+          :key="child.id"
+          class="toc__sub"
+          :href="`#${child.id}`"
+          :aria-current="active === child.id ? 'true' : undefined"
+          @click="go($event, child.id)"
+        >{{ t(child.label) }}</a>
+      </template>
     </nav>
   </aside>
 </template>
@@ -70,6 +87,14 @@ function go(e: MouseEvent, id: string) {
 }
 .toc__links a:hover { color: var(--ink); text-decoration: none; }
 .toc__links a[aria-current='true'] { color: var(--c-blue); font-weight: 560; }
+.toc__item.is-open { color: var(--ink); }
+.toc__sub {
+  padding-left: 1.5rem !important;
+  font-size: 0.8rem !important;
+  color: var(--ink-mute) !important;
+}
+.toc__sub:hover { color: var(--ink) !important; }
+.toc__sub[aria-current='true'] { color: var(--c-blue) !important; font-weight: 560; }
 .toc__num {
   font-family: var(--ff-mono);
   font-size: var(--fs-micro);

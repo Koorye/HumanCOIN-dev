@@ -14,13 +14,40 @@ export const SITE = {
   version: 'v2.0',
 } as const
 
-export const NAV: { id: string; label: Bi; num: string }[] = [
+export interface NavChild {
+  id: string
+  label: Bi
+}
+export interface NavItem {
+  id: string
+  num: string
+  label: Bi
+  /** Blocks inside the section that are worth jumping to directly. */
+  children?: NavChild[]
+}
+
+export const NAV: NavItem[] = [
   { id: 'overview', num: '01', label: { en: 'Overview', zh: '总览' } },
   { id: 'acquisition', num: '02', label: { en: 'Acquisition', zh: '采集体系' } },
-  { id: 'data', num: '03', label: { en: 'Data', zh: '数据集' } },
+  {
+    id: 'data',
+    num: '03',
+    label: { en: 'Data', zh: '数据集' },
+    children: [
+      { id: 'data-tiers', label: { en: 'Three tiers', zh: '三层级' } },
+      { id: 'data-scenes', label: { en: 'Scenes', zh: '场景' } },
+      { id: 'data-tasks', label: { en: 'Tasks', zh: '任务' } },
+      { id: 'data-objects', label: { en: 'Objects', zh: '物体' } },
+    ],
+  },
   { id: 'annotation', num: '04', label: { en: 'Viewer', zh: '查看器' } },
   { id: 'format', num: '05', label: { en: 'Format', zh: '数据格式' } },
-  { id: 'pipeline', num: '06', label: { en: 'Pipeline', zh: '处理流程' } },
+  {
+    id: 'pipeline',
+    num: '06',
+    label: { en: 'Pipeline', zh: '处理流程' },
+    children: [{ id: 'pipeline-framework', label: { en: 'Five chains', zh: '五条链路' } }],
+  },
   { id: 'community', num: '07', label: { en: 'Community', zh: '合作机构' } },
 ]
 

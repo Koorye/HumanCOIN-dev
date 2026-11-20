@@ -58,6 +58,7 @@ const fmt = (n: number) => n.toLocaleString('en-US')
 
       <div class="figures">
         <FigFrame
+          id="data-tiers"
           n="3"
           :title="DATA.depthTitle"
           :aside="DATA.depthAside"
@@ -66,15 +67,15 @@ const fmt = (n: number) => n.toLocaleString('en-US')
           <TierDepthFigure />
         </FigFrame>
 
-        <FigFrame n="4" :title="DATA.sceneTitle" :aside="DATA.sceneAside">
+        <FigFrame id="data-scenes" n="4" :title="DATA.sceneTitle" :aside="DATA.sceneAside">
           <SceneCarousel :note="DATA.sceneNote" />
         </FigFrame>
 
-        <FigFrame n="5" :title="DATA.verbTitle" :aside="DATA.verbAside">
+        <FigFrame id="data-tasks" n="5" :title="DATA.verbTitle" :aside="DATA.verbAside">
           <VerbTail :note="DATA.verbNote" />
         </FigFrame>
 
-        <FigFrame n="6" :title="DATA.objectTitle" :aside="DATA.objectAside">
+        <FigFrame id="data-objects" n="6" :title="DATA.objectTitle" :aside="DATA.objectAside">
           <ObjectTail :note="DATA.objectNote" />
         </FigFrame>
       </div>

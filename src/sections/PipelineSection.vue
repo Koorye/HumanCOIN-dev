@@ -25,7 +25,7 @@ const { list } = useI18n()
         </template>
       </SectionHead>
 
-      <div class="pl__fig">
+      <div id="pipeline-framework" class="pl__fig">
         <PipelineFlow />
       </div>
     </div>
