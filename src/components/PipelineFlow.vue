@@ -78,7 +78,7 @@ const GROUPS: Group[] = [
     steps: [
       { en: 'FoundationStereo', zh: 'FoundationStereo' },
       { en: 'point cloud', zh: '点云' },
-      { en: '6-DoF pose · hand reconstruction', zh: '6-DoF 位姿 · 手部重建' },
+      { en: '6-DoF pose · hand recon', zh: '6-DoF 位姿 · 手部重建' },
     ],
   },
   {
