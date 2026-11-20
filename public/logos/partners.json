@@ -18,7 +18,7 @@
   { "id": "huazhi", "src": "logos/partners/huazhi.png", "url": "" },
   { "id": "zhiyu", "src": "logos/partners/zhiyu.png", "url": "https://www.archebase.cn/" },
   { "id": "ioai", "src": "logos/partners/ioai.png", "url": "https://io-ai.tech/" },
-  { "id": "maiqing", "src": "logos/partners/maiqing.png", "url": "" },
+  { "id": "maiqing", "src": "logos/partners/maiqing.png", "url": "https://www.omniego.com/" },
   { "id": "damon", "src": "logos/partners/damon.png", "url": "https://www.damon-group.com/" },
   { "id": "lingmei", "src": "logos/partners/lingmei.png", "url": "https://lumiworld.ai/" },
   { "id": "purity", "src": "logos/partners/purity.png", "url": "" },
@@ -27,6 +27,6 @@
   { "id": "octopus", "src": "logos/partners/octopus.png", "url": "https://synapxdynamics.ai/" },
   { "id": "lingsheng", "src": "logos/partners/lingsheng.png", "url": "https://www.livsynrobotics.com/" },
   { "id": "zhiyue", "src": "logos/partners/zhiyue.png", "url": "" },
-  { "id": "quanyu", "src": "logos/partners/quanyu.png", "url": "https://www.omniego.com/" },
+  { "id": "quanyu", "src": "logos/partners/quanyu.png", "url": "" },
   { "id": "feiyuxing", "src": "logos/partners/feiyuxing.png", "url": "https://www.fistar.com.cn/" }
 ]
