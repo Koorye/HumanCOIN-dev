@@ -79,6 +79,10 @@ const FOOT_RULE = BUS_BOTTOM + 32
 
 const stageX = [RAW_X, A_X, CH_X, OUT_X]
 
+/** The shared contract is one layer, so it is drawn inside one pale panel. */
+const panelY = chain[0].y - 16
+const panelH = chain[chain.length - 1].y + CH_H + 16 - panelY
+
 /** Per-lane glyph, drawn in a 22×22 box at the lane origin. */
 const GLYPHS: Record<string, string> = {
   geometry: 'M2 3h13l4 4v12H2z M11 3v5h5 M4 16l4-4 3 3 3-4 4 5',
@@ -163,7 +167,7 @@ const running = computed(() => playing.value && !reduced.value)
             markerHeight="6"
             orient="auto-start-reverse"
           >
-            <path d="M0 0L8 4L0 8Z" fill="#64717c" />
+            <path d="M0 0L8 4L0 8Z" fill="#a7aeb6" />
           </marker>
           <marker
             id="pf-arrow-rej"
@@ -174,7 +178,7 @@ const running = computed(() => playing.value && !reduced.value)
             markerHeight="6"
             orient="auto-start-reverse"
           >
-            <path d="M0 0L8 4L0 8Z" fill="#a97667" />
+            <path d="M0 0L8 4L0 8Z" fill="#c2b0a8" />
           </marker>
         </defs>
 
@@ -220,7 +224,7 @@ const running = computed(() => playing.value && !reduced.value)
           <path class="pf__arrow" :d="`M${RAW_END} ${l.mid - 5}H${A_X - 6}`" />
 
           <g class="pf__mod">
-            <rect :x="A_X" :y="l.y" :width="A_W" :height="LANE_H" />
+            <rect :x="A_X" :y="l.y" :width="A_W" :height="LANE_H" rx="9" />
             <text class="pf__mod-t" :x="A_X + 12" :y="l.y + 20">{{ t(l.lane.a.title) }}</text>
             <text
               v-for="(v, j) in l.lane.a.lines"
@@ -236,7 +240,7 @@ const running = computed(() => playing.value && !reduced.value)
           <path class="pf__arrow" :d="`M${A_X + A_W + 6} ${l.mid - 5}H${B_X - 6}`" />
 
           <g class="pf__mod">
-            <rect :x="B_X" :y="l.y" :width="B_W" :height="LANE_H" />
+            <rect :x="B_X" :y="l.y" :width="B_W" :height="LANE_H" rx="9" />
             <text class="pf__mod-t" :x="B_X + 12" :y="l.y + 20">{{ t(l.lane.b.title) }}</text>
             <text
               v-for="(v, j) in l.lane.b.lines"
@@ -259,7 +263,7 @@ const running = computed(() => playing.value && !reduced.value)
             :style="{ animationDelay: `${l.i * 0.24}s` }"
           />
           <g class="pf__out">
-            <rect :x="OUT_X" :y="l.y" :width="OUT_W" :height="LANE_H" />
+            <rect :x="OUT_X" :y="l.y" :width="OUT_W" :height="LANE_H" rx="9" />
             <text class="pf__out-t" :x="OUT_X + 12" :y="l.y + 20">
               {{ t(PIPELINE.fields) }}
             </text>
@@ -278,9 +282,10 @@ const running = computed(() => playing.value && !reduced.value)
         <!-- lanes → the shared contract -->
         <path class="pf__arrow" :d="`M${BUS1 + 6} ${lanes[0].mid - 5}H${CH_X - 6}`" />
 
-        <!-- the shared contract, drawn once -->
+        <!-- the shared contract, drawn once, inside one pale panel -->
+        <rect class="pf__panel" :x="CH_X - 16" :y="panelY" :width="CH_W + 32" :height="panelH" rx="14" />
         <g v-for="(c, i) in chain" :key="c.node.id" class="pf__chain">
-          <rect :x="CH_X" :y="c.y" :width="CH_W" :height="CH_H" />
+          <rect :x="CH_X" :y="c.y" :width="CH_W" :height="CH_H" rx="9" />
           <text class="pf__chain-t" :x="CH_X + 12" :y="c.y + 21">{{ t(c.node.title) }}</text>
           <text
             v-for="(v, j) in c.node.lines"
@@ -305,7 +310,7 @@ const running = computed(() => playing.value && !reduced.value)
           :d="`M${CH_END + 6} ${qc.mid - 5}H${REJ_X - 6}`"
         />
         <g class="pf__chain pf__chain--rej">
-          <rect :x="REJ_X" :y="rejY" :width="REJ_W" :height="REJ_H" />
+          <rect :x="REJ_X" :y="rejY" :width="REJ_W" :height="REJ_H" rx="9" />
           <text class="pf__chain-t" :x="REJ_X + 12" :y="rejY + 20">
             {{ t(reject.title) }}
           </text>
@@ -396,30 +401,31 @@ const running = computed(() => playing.value && !reduced.value)
 /* text */
 .pf__svg text {
   font-family: var(--ff-sans);
-  fill: var(--ink-body);
-  font-size: 11.5px;
+  fill: #7f868f;
+  font-size: 11px;
+  letter-spacing: 0.005em;
 }
-.pf__stage-n { font-size: 12px; font-weight: 600; fill: var(--ink-mute); letter-spacing: 0.08em; }
-.pf__stage-t { font-size: 16px; font-weight: 600; fill: var(--ink); }
-.pf__stage-s { font-size: 11.5px; fill: var(--ink-mute); }
-.pf__legend { font-size: 11.5px; fill: var(--ink-mute); }
-.pf__lane-t { font-size: 12.5px; font-weight: 600; }
-.pf__raw { font-size: 11px; fill: var(--ink-mute); }
-.pf__mod-t { font-size: 12px; font-weight: 600; fill: var(--ink); }
-.pf__mod-l, .pf__out-l, .pf__chain-l { font-size: 11px; fill: var(--ink-body); }
-.pf__out-t, .pf__chain-t { font-size: 12px; font-weight: 600; fill: var(--ink); }
-.pf__foot-t { font-size: 12px; font-weight: 600; fill: var(--ink); letter-spacing: 0.06em; }
-.pf__foot-l { font-size: 11px; fill: var(--ink-mute); }
+.pf__stage-n { font-size: 10.5px; font-weight: 600; fill: #a6acb4; letter-spacing: 0.16em; }
+.pf__stage-t { font-size: 15px; font-weight: 600; fill: #16191d; letter-spacing: -0.012em; }
+.pf__stage-s { font-size: 11px; fill: #8c939b; }
+.pf__legend { font-size: 11px; fill: #8c939b; }
+.pf__lane-t { font-size: 12.5px; font-weight: 600; fill: #1b1f24; }
+.pf__raw { font-size: 10.8px; fill: #8c939b; }
+.pf__mod-t { font-size: 12px; font-weight: 600; fill: #16191d; }
+.pf__mod-l, .pf__out-l, .pf__chain-l { font-size: 10.8px; fill: #7f868f; }
+.pf__out-t, .pf__chain-t { font-size: 12px; font-weight: 600; fill: #16191d; }
+.pf__foot-t { font-size: 11.5px; font-weight: 600; fill: #16191d; letter-spacing: 0.06em; }
+.pf__foot-l { font-size: 10.8px; fill: #8c939b; }
 
 /* strokes */
-.pf__rule { fill: none; stroke: var(--line-strong); stroke-width: 1; }
-.pf__lanerule { fill: none; stroke: var(--line); stroke-width: 1; }
-.pf__key { fill: none; stroke: var(--ink-mute); stroke-width: 1.2; stroke-dasharray: 5 3; }
-.pf__arrow { fill: none; stroke: var(--line-strong); stroke-width: 1.2; stroke-linejoin: round; marker-end: url(#pf-arrow); }
-.pf__arrow--rej { stroke: #a97667; stroke-dasharray: 3 3; marker-end: url(#pf-arrow-rej); }
-.pf__bus { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
-.pf__bus--live { stroke: var(--c-blue); }
-.pf__junction { fill: var(--ink-mute); }
+.pf__rule { fill: none; stroke: #e8ebee; stroke-width: 1; }
+.pf__lanerule { fill: none; stroke: #f1f3f5; stroke-width: 1; }
+.pf__key { fill: none; stroke: #b9c0c7; stroke-width: 1; stroke-dasharray: 4 4; }
+.pf__arrow { fill: none; stroke: #ccd2d8; stroke-width: 1; stroke-linejoin: round; stroke-dasharray: 4 4; marker-end: url(#pf-arrow); }
+.pf__arrow--rej { stroke: #c8b6ae; stroke-dasharray: 3 4; marker-end: url(#pf-arrow-rej); }
+.pf__bus { fill: none; stroke: #dfe3e7; stroke-width: 1.2; }
+.pf__bus--live { stroke: #cfd6dc; }
+.pf__junction { fill: #c2c9d0; }
 
 /* lane accent, so a row reads as one pathway */
 .pf__lane.is-blue { --pf: var(--c-blue); }
@@ -430,22 +436,23 @@ const running = computed(() => playing.value && !reduced.value)
 .pf__lane.is-slate { --pf: var(--c-slate); }
 .pf__lane.is-ink { --pf: var(--ink-soft); }
 
-.pf__lane .pf__lane-t { fill: var(--pf, var(--ink)); }
+.pf__lane .pf__lane-t { fill: #1b1f24; }
 .pf__glyph path {
   fill: none;
-  stroke: var(--pf, var(--ink-soft));
-  stroke-width: 1.6;
+  stroke: #9aa3ad;
+  stroke-width: 1.4;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.pf__mod rect { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1; }
-.pf__chain rect { fill: var(--paper); stroke: var(--ink-mute); stroke-width: 1; }
-.pf__chain--rej rect { fill: #fdf6f8; stroke: #a97667; stroke-dasharray: 4 3; }
-.pf__out rect { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1; }
+.pf__mod rect { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
+.pf__chain rect { fill: #fff; stroke: #dfe3e7; stroke-width: 1; }
+.pf__panel { fill: #f7f8f9; stroke: none; }
+.pf__chain--rej rect { fill: #fbfbfa; stroke: #d9cfc9; stroke-width: 1; }
+.pf__out rect { fill: #fff; stroke: #e4e7ea; stroke-width: 1; }
 
 /* ---- flow motion: dash travel along the post-contract connectors ---- */
 .pf__arrow--live {
-  stroke: var(--c-blue);
+  stroke: #aeb8c2;
   stroke-dasharray: 5 4;
   animation: pf-travel 2.6s linear infinite;
   animation-play-state: paused;
@@ -476,14 +483,12 @@ const running = computed(() => playing.value && !reduced.value)
   padding-top: 1.35rem;
   border-top: 1px solid var(--line);
 }
-.pf__lanecard { border-left: 2px solid var(--line-strong); padding-left: 0.7rem; }
-.pf__lanecard.is-blue { border-color: var(--c-blue); }
-.pf__lanecard.is-teal { border-color: var(--c-teal); }
-.pf__lanecard.is-rose { border-color: var(--c-rose); }
-.pf__lanecard.is-violet { border-color: var(--c-violet); }
-.pf__lanecard.is-amber { border-color: var(--c-amber); }
-.pf__lanecard.is-slate { border-color: var(--c-slate); }
-.pf__lanecard.is-ink { border-color: var(--ink-soft); }
+.pf__lanecard {
+  border: 1px solid #e7eaed;
+  border-radius: 10px;
+  padding: 0.85rem 0.95rem;
+  background: #fff;
+}
 .pf__lanecard-t { font-size: var(--fs-small); font-weight: 620; margin-bottom: 0.3rem; }
 .pf__lanecard-p { margin: 0; font-size: var(--fs-micro); line-height: 1.65; color: var(--ink-body); }
 .pf__lanecard-m { margin: 0.45rem 0 0; font-size: var(--fs-tick); color: var(--ink-mute); }
