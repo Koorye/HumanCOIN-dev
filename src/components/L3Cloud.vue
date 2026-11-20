@@ -116,7 +116,8 @@ const shownSub = computed(() => subtask.value ?? subtasks.value.find((s) => s.st
 /* ---------- sliding-window traces ---------- */
 const TW = 900
 const TH = 24
-const BH = 42
+const RH = 20
+
 
 function windowed(values: number[], h = TH): string {
   const n = values.length
@@ -142,7 +143,7 @@ const regionOf = (name: string) => REGION[name.charAt(0)] ?? '#33796f'
 const bands = computed(() => {
   const s = signals.value
   if (!s) return []
-  const line = (v: number[], color: string) => ({ points: windowed(v, BH), color })
+  const row = (label: string, v: number[], color: string) => ({ label, color, points: windowed(v, RH) })
   return [
     {
       key: 'gaze',
@@ -151,7 +152,7 @@ const bands = computed(() => {
         { label: 'x', color: '#6f5aa0' },
         { label: 'y', color: '#a8623c' },
       ],
-      lines: [line(s.gazeX, '#6f5aa0'), line(s.gazeY, '#a8623c')],
+      rows: [row('x', s.gazeX, '#6f5aa0'), row('y', s.gazeY, '#a8623c')],
     },
     {
       key: 'emg',
@@ -160,9 +161,9 @@ const bands = computed(() => {
         { label: 'left', color: '#a8623c' },
         { label: 'right', color: '#2f6f8f' },
       ],
-      lines: [
-        ...s.emgL.map((v) => line(v, '#a8623c')),
-        ...s.emgR.map((v) => line(v, '#2f6f8f')),
+      rows: [
+        ...s.emgL.map((v, i) => row(`L${i + 1}`, v, '#a8623c')),
+        ...s.emgR.map((v, i) => row(`R${i + 1}`, v, '#2f6f8f')),
       ],
     },
     {
@@ -174,7 +175,7 @@ const bands = computed(() => {
         { label: 'posterior', color: '#8a5a6e' },
         { label: 'temporal', color: '#9a7b2e' },
       ],
-      lines: s.eeg.map((v, i) => line(v, regionOf(s.eegNames[i] ?? 'F'))),
+      rows: s.eeg.map((v, i) => row(s.eegNames[i] ?? `ch ${i + 1}`, v, regionOf(s.eegNames[i] ?? 'F'))),
     },
   ]
 })
@@ -352,8 +353,8 @@ function seed() {
 
   yaw = refBase.yaw + 0.44
   pitch = refBase.pitch + 0.14
-  dist = 1.3
-  pan = 0.12
+  dist = 1.55
+  pan = 0.06
   applyCamera()
 }
 
@@ -684,6 +685,10 @@ onBeforeUnmount(() => {
         <div class="rail__cell rail__cell--gaze">
           <figcaption class="mono">Gaze · tracker frame · fitted</figcaption>
           <canvas ref="gazeCanvas" class="gaze__overlay" aria-hidden="true" />
+          <div class="rail__cam">
+            <video :src="RGB[0].src" muted playsinline preload="auto" />
+            <span class="mono">{{ RGB[0].label }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -698,24 +703,14 @@ onBeforeUnmount(() => {
             </span>
           </span>
         </header>
-        <svg class="band__plot" :viewBox="`0 0 ${TW} ${BH}`" preserveAspectRatio="none">
-          <defs>
-            <pattern :id="`grid-${band.key}`" width="56" height="10" patternUnits="userSpaceOnUse">
-              <path d="M56 0 H0 V10" fill="none" stroke="#eef1f3" stroke-width="1" />
-            </pattern>
-          </defs>
-          <rect :width="TW" :height="BH" :fill="`url(#grid-${band.key})`" />
-          <polyline
-            v-for="(line, i) in band.lines"
-            :key="i"
-            :points="line.points"
-            fill="none"
-            :stroke="line.color"
-            stroke-width="1"
-            opacity="0.6"
-            vector-effect="non-scaling-stroke"
-          />
-        </svg>
+        <div class="band__grid">
+          <div v-for="row in band.rows" :key="row.label" class="band__row">
+            <span class="band__label mono" :style="{ color: row.color }">{{ row.label }}</span>
+            <svg class="band__svg" :viewBox="`0 0 ${TW} ${RH}`" preserveAspectRatio="none">
+              <polyline :points="row.points" fill="none" :stroke="row.color" stroke-width="1" vector-effect="non-scaling-stroke" />
+            </svg>
+          </div>
+        </div>
       </section>
     </div>
 
@@ -805,7 +800,8 @@ onBeforeUnmount(() => {
 
 .viewer__stage {
   position: relative;
-  min-height: 240px;
+  min-height: 0;
+  overflow: hidden;
   border-radius: 10px;
   background: #dfeaf3;
   overflow: hidden;
@@ -831,7 +827,7 @@ onBeforeUnmount(() => {
   background: #0c1018;
   min-width: 0;
 }
-.cam video { width: 100%; height: 100%; min-height: 90px; object-fit: cover; display: block; }
+.cam video { width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block; }
 .cam figcaption {
   padding: 0.25rem 0.45rem;
   font-size: var(--fs-tick);
@@ -962,12 +958,13 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr) minmax(0, 0.95fr);
   gap: 0.5rem;
+  height: 380px;
   align-items: stretch;
 }
-@media (max-width: 1100px) { .viewer__top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media (max-width: 1100px) { .viewer__top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: auto; } }
 @media (max-width: 760px) { .viewer__top { grid-template-columns: minmax(0, 1fr); } }
 
-.rail { display: grid; grid-template-rows: 1fr 1fr; gap: 0.5rem; min-width: 0; }
+.rail { display: grid; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.45rem; min-width: 0; min-height: 0; }
 .rail__cell {
   position: relative;
   margin: 0;
@@ -988,7 +985,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.rail__cell--gaze { grid-template-rows: auto 1fr; background: #fff; }
+.rail__cell--gaze { grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr); background: #fff; min-height: 0; }
 .rail__cell--gaze figcaption {
   padding: 0.2rem 0.4rem;
   font-size: var(--fs-tick);
@@ -1005,6 +1002,7 @@ onBeforeUnmount(() => {
   height: 100%;
   min-height: 0;
   pointer-events: none;
+  border-bottom: 1px solid #eef1f3;
   background-color: #fff;
   background-image:
     repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 40px),
@@ -1034,5 +1032,26 @@ onBeforeUnmount(() => {
 .band__key { display: inline-flex; align-items: center; gap: 0.25rem; }
 .band__key i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
 
-.band__plot { width: 100%; height: 42px; display: block; border-top: 1px solid #eef1f3; }
+.band__grid {
+  background-image:
+    repeating-linear-gradient(90deg, #eef1f3 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(0deg, #eef1f3 0 1px, transparent 1px 20px);
+}
+.band__row { display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); align-items: center; gap: 0.3rem; }
+.band__label { font-size: 10px; text-align: right; opacity: 0.8; }
+.band__svg { width: 100%; min-width: 0; height: 20px; display: block; }
+
+/* the camera that sits under the trajectory, inside the same cell */
+.rail__cam { position: relative; background: #0c1018; overflow: hidden; min-height: 0; }
+.rail__cam video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rail__cam span {
+  position: absolute;
+  left: 0.4rem;
+  top: 0.3rem;
+  font-size: var(--fs-tick);
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(12, 16, 24, 0.45);
+  padding: 0 0.25rem;
+  border-radius: 3px;
+}
 </style>
